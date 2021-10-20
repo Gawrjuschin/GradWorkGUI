@@ -39,7 +39,7 @@ set(PROJECT_SOURCES src/main.cpp
     src/worker_table.cpp
     src/resources.qrc
     )
-
+#
 set(PROJECT_HEADERS include/main_window.h
     include/Backend/backend_object.h
     include/Backend/graphs_data.h
