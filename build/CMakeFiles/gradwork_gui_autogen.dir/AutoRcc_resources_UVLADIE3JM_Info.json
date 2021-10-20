@@ -1,0 +1,31 @@
+{
+	"BUILD_DIR" : "D:/GitHub/GradWorkGUI/build/gradwork_gui_autogen",
+	"CMAKE_BINARY_DIR" : "D:/GitHub/GradWorkGUI/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "D:/GitHub/GradWorkGUI/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "D:/GitHub/GradWorkGUI",
+	"CMAKE_SOURCE_DIR" : "D:/GitHub/GradWorkGUI",
+	"INCLUDE_DIR" : "D:/GitHub/GradWorkGUI/build/gradwork_gui_autogen/include",
+	"INPUTS" : 
+	[
+		"D:/GitHub/GradWorkGUI/src/style.qss",
+		"D:/GitHub/GradWorkGUI/src/Images/zoom_out.png",
+		"D:/GitHub/GradWorkGUI/src/Images/up_arrow.png",
+		"D:/GitHub/GradWorkGUI/src/Images/down_arrow.png",
+		"D:/GitHub/GradWorkGUI/src/Images/loading.png",
+		"D:/GitHub/GradWorkGUI/src/Images/zoom_reset.png",
+		"D:/GitHub/GradWorkGUI/src/Images/zoom_in_pressed.png",
+		"D:/GitHub/GradWorkGUI/src/Images/zoom_reset_pressed.png",
+		"D:/GitHub/GradWorkGUI/src/Images/zoom_out_pressed.png",
+		"D:/GitHub/GradWorkGUI/src/Images/zoom_in.png"
+	],
+	"LOCK_FILE" : "D:/GitHub/GradWorkGUI/build/CMakeFiles/gradwork_gui_autogen.dir/AutoRcc_resources_UVLADIE3JM_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "resources" ],
+	"OUTPUT_CHECKSUM" : "UVLADIE3JM",
+	"OUTPUT_NAME" : "qrc_resources.cpp",
+	"RCC_EXECUTABLE" : "E:/Programms/Qt/6.2.0/mingw81_64/./bin/rcc.exe",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "D:/GitHub/GradWorkGUI/build/CMakeFiles/gradwork_gui_autogen.dir/AutoRcc_resources_UVLADIE3JM_Used.txt",
+	"SOURCE" : "D:/GitHub/GradWorkGUI/src/resources.qrc",
+	"VERBOSITY" : 0
+}

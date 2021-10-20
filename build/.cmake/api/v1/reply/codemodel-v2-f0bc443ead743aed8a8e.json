@@ -1,0 +1,165 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-Release-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						3,
+						4,
+						5
+					]
+				},
+				{
+					"build" : "QueSys",
+					"jsonFile" : "directory-QueSys-Release-f9a53037fbf490565cc6.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "QueSys",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						6,
+						7,
+						8
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "GradWorkGUI",
+					"targetIndexes" : 
+					[
+						3,
+						4,
+						5
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "QueSysLib",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						6,
+						7,
+						8
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "QueSys::@1fa00f0ffd1fbe4435df",
+					"jsonFile" : "target-QueSys-Release-f3a5508ce51bd012b0d4.json",
+					"name" : "QueSys",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "QueSys_autogen::@1fa00f0ffd1fbe4435df",
+					"jsonFile" : "target-QueSys_autogen-Release-2e61083f47846f0de6f5.json",
+					"name" : "QueSys_autogen",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "QueSys_autogen_timestamp_deps::@1fa00f0ffd1fbe4435df",
+					"jsonFile" : "target-QueSys_autogen_timestamp_deps-Release-7002dd69304317e24291.json",
+					"name" : "QueSys_autogen_timestamp_deps",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "gradwork_gui::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-gradwork_gui-Release-340e62f1a178606589cb.json",
+					"name" : "gradwork_gui",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "gradwork_gui_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-gradwork_gui_autogen-Release-e103c2fb31fda30fe144.json",
+					"name" : "gradwork_gui_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "gradwork_gui_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-gradwork_gui_autogen_timestamp_deps-Release-f6378aa754ec5c41d45e.json",
+					"name" : "gradwork_gui_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "gradwork_nogui::@1fa00f0ffd1fbe4435df",
+					"jsonFile" : "target-gradwork_nogui-Release-40fa11171f927266eef1.json",
+					"name" : "gradwork_nogui",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "gradwork_nogui_autogen::@1fa00f0ffd1fbe4435df",
+					"jsonFile" : "target-gradwork_nogui_autogen-Release-ef5883ba72876ac758b6.json",
+					"name" : "gradwork_nogui_autogen",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "gradwork_nogui_autogen_timestamp_deps::@1fa00f0ffd1fbe4435df",
+					"jsonFile" : "target-gradwork_nogui_autogen_timestamp_deps-Release-7ac1e9ca96ae17dee05e.json",
+					"name" : "gradwork_nogui_autogen_timestamp_deps",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/GitHub/GradWorkGUI/build",
+		"source" : "D:/GitHub/GradWorkGUI"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

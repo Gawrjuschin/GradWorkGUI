@@ -1,0 +1,453 @@
+Input_Widget
+{
+        background-color:white;
+}
+Input_Widget QPushButton
+{
+        font: 14px;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 white, stop: 1 lightgray);
+        border: 1px solid gray;
+}
+Input_Widget QPushButton:hover
+{
+        border-color: black;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 lightgray, stop: 1 gray);
+}
+Input_Widget QPushButton:pressed
+{
+        background-color:darkgray;
+}
+Input_Widget QGroupBox,
+Results_Widget QGroupBox
+{
+        font: 14px;
+        border: 1px solid gray;
+        margin-top: 3ex;
+}
+Input_Widget QGroupBox::title,
+Results_Widget QGroupBox::title
+{
+        subcontrol-origin: margin;
+        subcontrol-position: top center;
+        padding: 0 2px;
+}
+Input_Widget QLabel
+{
+        font: 12px;
+}
+
+Input_Widget QSpinBox,
+Input_Widget QDoubleSpinBox
+{
+        border: 1px solid gray;
+        padding: 2px;
+}
+Input_Widget QSpinBox:hover,
+Input_Widget QDoubleSpinBox:hover
+{
+        border: 1px solid black;
+}
+Input_Widget QSpinBox::up-button,
+Input_Widget QDoubleSpinBox::up-button
+{
+        subcontrol-origin: margin;
+        subcontrol-position: top right;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 white, stop: 1 lightgray);
+        width: 16px;
+        border-left: solid;
+        border-top: solid;
+        border-right: solid;
+        border-bottom: none;
+        border-width: 1px;
+        border-color: gray;
+}
+Input_Widget QSpinBox::up-button:hover,
+Input_Widget QDoubleSpinBox::up-button:hover
+{	
+        border-color: black;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 lightgray, stop: 1 gray);
+}
+Input_Widget QSpinBox::up-button:pressed,
+Input_Widget QDoubleSpinBox::up-button:pressed
+{
+        background-color: gray;
+}
+Input_Widget QSpinBox::up-arrow,
+Input_Widget QDoubleSpinBox::up-arrow
+{
+    image: url(:/images/up_arrow.png);
+    width: 6px;
+    height: 6px;
+}
+
+Input_Widget QSpinBox::down-button,
+Input_Widget QDoubleSpinBox::down-button
+{
+        subcontrol-origin: margin;
+        subcontrol-position: bottom right;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 lightgray, stop: 0.5 white);
+        width: 16px;
+        border-left: solid;
+        border-top: none;
+        border-right: solid;
+        border-bottom: solid;
+        border-width: 1px;
+        border-color: gray;
+}
+Input_Widget QSpinBox::down-button:hover,
+Input_Widget QDoubleSpinBox::down-button:hover
+{	
+        border-color: black;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 gray, stop: 0.5 lightgray);
+}
+Input_Widget QSpinBox::down-button:pressed,
+Input_Widget QDoubleSpinBox::down-button:pressed
+{
+        background-color: gray;
+}
+Input_Widget QSpinBox::down-arrow,
+Input_Widget QDoubleSpinBox::down-arrow,
+Results_Widget QComboBox::down-arrow
+{
+        image: url(:/images/down_arrow.png);
+    width: 6px;
+    height: 6px;
+}
+
+Results_Widget
+,Graphs_View
+{
+        background-color:white;
+}
+Results_Widget QLabel
+{
+        font: 14px;
+}
+
+Results_Widget QTabBar::tab {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 gray, stop: 0.5 lightgray);
+    border: 1px solid lightgray;
+    border-bottom: none; /* same as the pane color */
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+        font: 14px;
+    min-width: 16ex;
+    padding: 4px;
+}
+
+Results_Widget QTabWidget::pane
+{ /* The tab widget frame */
+  border: 1px solid gray;
+  top:-1px;
+}
+
+Results_Widget QTabBar::tab:selected, Results_Widget QTabBar::tab:hover
+{
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 lightgray, stop: 0.5 white);
+    border-color: gray;
+}
+
+Results_Widget QTabBar::tab:selected 
+{
+    border-color: gray;
+}
+
+Results_Widget QTabBar::tab:!selected 
+{
+    margin-top: 2px; /* make non-selected tabs look smaller */
+    border-color: darkgray;
+        border-bottom: 1px solid gray;
+    top:0px;
+}
+Results_Widget QTableView
+{
+         selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 white, stop: 1 lightgray);
+         selection-color: black;
+         gridline-color: gray;
+         border: 1px solid gray;
+}
+
+Results_Widget QHeaderView
+{
+        font-size:12px;
+}
+Results_Widget QHeaderView::section:horizontal
+{
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 lightgray, stop: 0.5 white);
+    color: black;
+    padding-left: 12px;
+    border-style: none;  /* БЕЗ ЭТОГО НЕ РАБОТАЕТ */
+    border-bottom: 2px solid gray;
+    border-right: 1px solid gray;
+}
+
+Results_Widget QHeaderView::section:checked
+{    
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 gray, stop: 0.5 lightgray);
+}
+
+/* style the sort indicator */
+Results_Widget QHeaderView::down-arrow 
+{
+    image: url(:/images/down_arrow.png);
+}
+
+Results_Widget QHeaderView::up-arrow 
+{
+    image: url(:/images/down_arrow.png);
+}
+
+QScrollBar:vertical
+{
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.1 lightgray, stop: 0.5 white, stop: 0.9 lightgray);
+    width: 16px;
+        border: 1px solid darkgray;
+    margin: 20px 0px 20px 0px;
+
+}
+
+QScrollBar::handle:vertical
+{
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.0 gray, stop: 0.4 white, stop: 0.6 white, stop: 1.0 gray);
+        border: 1px solid gray;
+        border-left: none;
+        border-right: none;
+    min-height: 22px;
+}
+
+QScrollBar::add-line:vertical
+{
+        /* Возьми из спинбокса */
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.25 white, stop: 1.0 gray);
+        border: 1px solid gray;
+    height: 19px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::add-line:vertical:hover
+{
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 lightgray, stop: 1.0 darkgray);
+        border: 1px solid gray;
+    height: 19px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+
+QScrollBar::sub-line:vertical
+{
+        background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0, stop: 0.25 white, stop: 1.0 gray);
+        border: 1px solid gray;
+    height: 19px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:vertical:hover
+{
+        background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0, stop: 0.5 lightgray, stop: 1.0 darkgray);
+        border: 1px solid gray;
+    height: 19px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+
+QScrollBar::up-arrow:vertical
+{
+    image: url(:/images/up_arrow.png);
+    width: 6px;
+    height: 6px;
+}
+
+
+QScrollBar::down-arrow:vertical
+{
+    image: url(:/images/down_arrow.png);
+    width: 6px;
+    height: 6px;
+}
+
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+{
+    background: none;
+}
+
+
+Results_Widget QPushButton
+{
+        font: 14px;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 white, stop: 1 lightgray);
+        border: 1px solid gray;
+}
+
+Results_Widget QMenu
+{
+        font-size: 14px;
+        border: 1px solid black;
+}
+
+Results_Widget QMenu::item
+{
+        background-color: white;
+}
+Results_Widget QMenu::item:selected
+{
+        color: black;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 white, stop: 1 lightgray);
+}
+
+Results_Widget QPushButton:hover
+{
+        border-color: black;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 lightgray, stop: 1 gray);
+}
+Results_Widget QPushButton:pressed
+{
+        background-color:darkgray;
+}
+Results_Widget QPushButton#zoomInBtn
+{
+    border-image: url(:/images/zoom_in.png);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 white, stop: 1 lightgray);
+}
+Results_Widget QPushButton#zoomInBtn:hover
+{
+    border-image: url(:/images/zoom_in.png);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 lightgray, stop: 1 gray);
+}
+Results_Widget QPushButton#zoomInBtn:pressed
+{
+    border-image: url(:/images/zoom_in_pressed.png);
+    background-color:darkgray;
+}
+Results_Widget QPushButton#zoomOutBtn
+{
+    border-image: url(:/images/zoom_out.png);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 white, stop: 1 lightgray);
+}
+Results_Widget QPushButton#zoomOutBtn:hover
+{
+    border-image: url(:/images/zoom_out.png);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 lightgray, stop: 1 gray);
+}
+Results_Widget QPushButton#zoomOutBtn:pressed
+{
+    border-image: url(:/images/zoom_out_pressed.png);
+    background-color:darkgray;
+}
+Results_Widget QPushButton#zoomResetBtn
+{
+    border-image: url(:/images/zoom_reset.png);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 white, stop: 1 lightgray);
+}
+Results_Widget QPushButton#zoomResetBtn:hover
+{
+    border-image: url(:/images/zoom_reset.png);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 lightgray, stop: 1 gray);
+}
+Results_Widget QPushButton#zoomResetBtn:pressed
+{
+    border-image: url(:/images/zoom_reset_pressed.png);
+    background-color:darkgray;
+}
+QPushButton::menu-indicator 
+{
+    top: 2px;
+    right:4px;
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+    image: url(:/images/down_arrow.png);
+        width: 8px;
+        height: 8px;
+}
+
+Results_Widget  QComboBox
+{
+    font: 14px;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 white, stop: 1.0 lightgray);
+    border: 1px solid gray;
+    padding: 1px 18px 1px 3px;
+    min-width: 4em;
+}
+Results_Widget  QComboBox:hover
+{
+        border-color:black;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.5 lightgray, stop: 1.0 gray);
+}
+
+/* Активирован */
+Results_Widget QComboBox:!editable:on, QComboBox::drop-down:editable:on 
+{    
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.0 lightgray, stop: 1.0 gray);
+}
+
+Results_Widget QComboBox:on
+{ /* shift the text when the popup opens */
+    padding-top: 2px;
+    padding-left: 4px;
+
+}
+
+Results_Widget QComboBox::drop-down 
+{
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 18px;
+    border-left: 1px solid black;
+}
+
+Results_Widget QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+    top: 1px;
+    left: 1px;
+}
+
+Results_Widget QComboBox QAbstractItemView 
+{
+    border: 1px solid black;
+}
+Results_Widget QComboBox QAbstractItemView::item
+{
+        background-color: white;
+}
+Results_Widget QComboBox QAbstractItemView::item:selected
+{
+        color: black;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 white, stop: 1 lightgray);
+}
+
+Results_Widget Loading_Widget
+{
+        qproperty-pixmap: url(:/images/loading.png);
+}
+Results_Widget Loading_Widget QGraphicsView
+{ /* Убрать сроллбары и границу у зоны с картинкой */
+    border: none;
+    background: transparent;
+}
+
+Status_Bar
+{
+        border-top: 1px solid gray;
+}
+
+Status_Bar::item 
+{
+        border: none;
+}
+Status_Bar QLabel
+{
+        font: 14px;
+}
+Status_Bar QProgressBar 
+{
+    border: 1px solid gray;
+    text-align: center;
+}
+
+Status_Bar QProgressBar::chunk
+{
+    background-color: lightgreen;
+    width: 10px;
+}

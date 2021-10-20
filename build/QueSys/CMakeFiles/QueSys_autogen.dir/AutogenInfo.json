@@ -1,0 +1,120 @@
+{
+	"BUILD_DIR" : "D:/GitHub/GradWorkGUI/build/QueSys/QueSys_autogen",
+	"CMAKE_BINARY_DIR" : "D:/GitHub/GradWorkGUI/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "D:/GitHub/GradWorkGUI/build/QueSys",
+	"CMAKE_CURRENT_SOURCE_DIR" : "D:/GitHub/GradWorkGUI/QueSys",
+	"CMAKE_EXECUTABLE" : "E:/Programms/Qt/Tools/CMake_64/bin/cmake.exe",
+	"CMAKE_LIST_FILES" : 
+	[
+		"D:/GitHub/GradWorkGUI/QueSys/CMakeLists.txt",
+		"E:/Programms/Qt/Tools/QtCreator/share/qtcreator/package-manager/auto-setup.cmake",
+		"D:/GitHub/GradWorkGUI/build/CMakeFiles/3.21.1/CMakeCCompiler.cmake",
+		"E:/Programms/Qt/Tools/CMake_64/share/cmake-3.21/Modules/CMakeCInformation.cmake",
+		"E:/Programms/Qt/Tools/CMake_64/share/cmake-3.21/Modules/CMakeLanguageInformation.cmake",
+		"E:/Programms/Qt/Tools/CMake_64/share/cmake-3.21/Modules/Compiler/GNU-C.cmake",
+		"E:/Programms/Qt/Tools/CMake_64/share/cmake-3.21/Modules/Compiler/GNU.cmake",
+		"E:/Programms/Qt/Tools/CMake_64/share/cmake-3.21/Modules/Platform/Windows-GNU-C.cmake",
+		"E:/Programms/Qt/Tools/CMake_64/share/cmake-3.21/Modules/Platform/Windows-GNU.cmake",
+		"E:/Programms/Qt/Tools/CMake_64/share/cmake-3.21/Modules/Platform/Windows-GNU-C-ABI.cmake",
+		"E:/Programms/Qt/Tools/CMake_64/share/cmake-3.21/Modules/CMakeCommonLanguageInclude.cmake"
+	],
+	"CMAKE_SOURCE_DIR" : "D:/GitHub/GradWorkGUI",
+	"DEP_FILE" : "D:/GitHub/GradWorkGUI/build/QueSys/QueSys_autogen/deps",
+	"DEP_FILE_RULE_NAME" : "QueSys_autogen/timestamp",
+	"HEADERS" : 
+	[
+		[
+			"D:/GitHub/GradWorkGUI/QueSys/include/QueSys/event.h",
+			"MU",
+			"2R6LGQLE2R/moc_event.cpp",
+			null
+		],
+		[
+			"D:/GitHub/GradWorkGUI/QueSys/include/QueSys/queueing_system.h",
+			"MU",
+			"2R6LGQLE2R/moc_queueing_system.cpp",
+			null
+		],
+		[
+			"D:/GitHub/GradWorkGUI/QueSys/include/QueSys/req_flow.h",
+			"MU",
+			"2R6LGQLE2R/moc_req_flow.cpp",
+			null
+		],
+		[
+			"D:/GitHub/GradWorkGUI/QueSys/include/QueSys/req_queue.h",
+			"MU",
+			"2R6LGQLE2R/moc_req_queue.cpp",
+			null
+		],
+		[
+			"D:/GitHub/GradWorkGUI/QueSys/include/QueSys/request_info.h",
+			"MU",
+			"2R6LGQLE2R/moc_request_info.cpp",
+			null
+		],
+		[
+			"D:/GitHub/GradWorkGUI/QueSys/include/QueSys/system_parameters_types.h",
+			"MU",
+			"2R6LGQLE2R/moc_system_parameters_types.cpp",
+			null
+		]
+	],
+	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
+	"INCLUDE_DIR" : "D:/GitHub/GradWorkGUI/build/QueSys/QueSys_autogen/include",
+	"MOC_COMPILATION_FILE" : "D:/GitHub/GradWorkGUI/build/QueSys/QueSys_autogen/mocs_compilation.cpp",
+	"MOC_DEFINITIONS" : [],
+	"MOC_DEPEND_FILTERS" : 
+	[
+		[
+			"Q_PLUGIN_METADATA",
+			"[\n][ \t]*Q_PLUGIN_METADATA[ \t]*\\([^\\)]*FILE[ \t]*\"([^\"]+)\""
+		]
+	],
+	"MOC_INCLUDES" : 
+	[
+		"D:/GitHub/GradWorkGUI/build/QueSys",
+		"D:/GitHub/GradWorkGUI/QueSys",
+		"D:/GitHub/GradWorkGUI/QueSys/include/QueSys",
+		"D:/GitHub/GradWorkGUI/QueSys/include",
+		"E:/Programms/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++",
+		"E:/Programms/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/x86_64-w64-mingw32",
+		"E:/Programms/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/backward",
+		"E:/Programms/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include",
+		"E:/Programms/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed",
+		"E:/Programms/Qt/Tools/mingw810_64/x86_64-w64-mingw32/include"
+	],
+	"MOC_MACRO_NAMES" : [ "Q_OBJECT", "Q_GADGET", "Q_NAMESPACE", "Q_NAMESPACE_EXPORT" ],
+	"MOC_OPTIONS" : [],
+	"MOC_PATH_PREFIX" : false,
+	"MOC_PREDEFS_CMD" : 
+	[
+		"E:/Programms/Qt/Tools/mingw810_64/bin/g++.exe",
+		"-dM",
+		"-E",
+		"-c",
+		"E:/Programms/Qt/Tools/CMake_64/share/cmake-3.21/Modules/CMakeCXXCompilerABI.cpp"
+	],
+	"MOC_PREDEFS_FILE" : "D:/GitHub/GradWorkGUI/build/QueSys/QueSys_autogen/moc_predefs.h",
+	"MOC_RELAXED_MODE" : false,
+	"MOC_SKIP" : [],
+	"MULTI_CONFIG" : false,
+	"PARALLEL" : 8,
+	"PARSE_CACHE_FILE" : "D:/GitHub/GradWorkGUI/build/QueSys/CMakeFiles/QueSys_autogen.dir/ParseCache.txt",
+	"QT_MOC_EXECUTABLE" : "E:/Programms/Qt/6.2.0/mingw81_64/./bin/moc.exe",
+	"QT_UIC_EXECUTABLE" : "E:/Programms/Qt/6.2.0/mingw81_64/./bin/uic.exe",
+	"QT_VERSION_MAJOR" : 6,
+	"QT_VERSION_MINOR" : 2,
+	"SETTINGS_FILE" : "D:/GitHub/GradWorkGUI/build/QueSys/CMakeFiles/QueSys_autogen.dir/AutogenUsed.txt",
+	"SOURCES" : 
+	[
+		[ "D:/GitHub/GradWorkGUI/QueSys/src/event.cpp", "MU", null ],
+		[ "D:/GitHub/GradWorkGUI/QueSys/src/queueing_system.cpp", "MU", null ],
+		[ "D:/GitHub/GradWorkGUI/QueSys/src/request_info.cpp", "MU", null ]
+	],
+	"UIC_OPTIONS" : [],
+	"UIC_SEARCH_PATHS" : [],
+	"UIC_SKIP" : [],
+	"UIC_UI_FILES" : [],
+	"VERBOSITY" : 0
+}

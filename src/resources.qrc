@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>style.qss</file>
+        <file>images/down_arrow.png</file>
+        <file>images/up_arrow.png</file>
+        <file>images/loading.png</file>
+        <file>images/zoom_in.png</file>
+        <file>images/zoom_out.png</file>
+        <file>images/zoom_reset.png</file>
+        <file>images/zoom_in_pressed.png</file>
+        <file>images/zoom_out_pressed.png</file>
+        <file>images/zoom_reset_pressed.png</file>
+    </qresource>
+</RCC>
