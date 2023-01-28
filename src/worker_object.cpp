@@ -1,8 +1,8 @@
-#include "Backend/worker_object.h"
-#include "Backend/graphs_data.h"
-#include "Backend/progress.h"
-#include "Backend/synchronizer.h"
-#include "Backend/system_data.h"
+#include "worker_object.h"
+#include "graphs_data.h"
+#include "progress.h"
+#include "synchronizer.h"
+#include "system_data.h"
 
 #include <QueSys/queueing_system.h>
 

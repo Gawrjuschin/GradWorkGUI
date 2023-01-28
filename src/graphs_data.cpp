@@ -1,4 +1,4 @@
-#include "Backend/graphs_data.h"
+#include "graphs_data.h"
 
 #include <QLineSeries>
 

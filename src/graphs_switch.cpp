@@ -1,4 +1,4 @@
-#include "Widgets/Graphs/graphs_switch.h"
+#include "graphs_switch.h"
 
 #include <QAction>
 #include <QBrush>

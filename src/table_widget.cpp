@@ -1,6 +1,6 @@
-#include <Backend/models.h>
-#include <Widgets/table_widget.h>
-#include <Backend/table_data.h>
+#include "models.h"
+#include "table_widget.h"
+#include "table_data.h"
 
 #include <QHeaderView>
 #include <QLabel>

@@ -1,4 +1,4 @@
-#include "Widgets/loading_widget.h"
+#include "loading_widget.h"
 
 #include <QApplication>
 #include <QGraphicsProxyWidget>

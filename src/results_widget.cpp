@@ -1,9 +1,9 @@
-#include "Widgets/results_widget.h"
-#include "Backend/graphs_data.h"
-#include "Backend/models.h"
-#include "Widgets/Graphs/graphs_widget.h"
-#include "Widgets/loading_widget.h"
-#include "Widgets/table_widget.h"
+#include "results_widget.h"
+#include "graphs_data.h"
+#include "models.h"
+#include "graphs_widget.h"
+#include "loading_widget.h"
+#include "table_widget.h"
 
 #include <QLabel>
 #include <QStackedWidget>

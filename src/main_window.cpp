@@ -1,9 +1,9 @@
 #include "main_window.h"
-#include "Backend/backend_object.h"
-#include "Backend/graphs_data.h"
-#include "Widgets/input_widget.h"
-#include "Widgets/results_widget.h"
-#include "Widgets/status_bar.h"
+#include "backend_object.h"
+#include "graphs_data.h"
+#include "input_widget.h"
+#include "results_widget.h"
+#include "status_bar.h"
 
 #include <QApplication>
 #include <QCloseEvent>

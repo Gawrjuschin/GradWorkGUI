@@ -1,7 +1,7 @@
-#include "Widgets/Graphs/graphs_widget.h"
-#include "Backend/graphs_data.h"
-#include "Widgets/Graphs/graphs_switch.h"
-#include "Widgets/Graphs/graphs_view.h"
+#include "graphs_widget.h"
+#include "graphs_data.h"
+#include "graphs_switch.h"
+#include "graphs_view.h"
 
 #include <QElapsedTimer>
 #include <QGraphicsLayout>

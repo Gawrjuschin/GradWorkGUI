@@ -20,51 +20,48 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Widgets Charts REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets Charts REQUIRED)
 
 set(PROJECT_SOURCES src/main.cpp
-    src/main_window.cpp
+    src/backend_object.h
     src/backend_object.cpp
+    src/graphs_data.h
     src/graphs_data.cpp
     src/graphs_switch.cpp
+    src/graphs_switch.h
     src/graphs_view.cpp
+    src/graphs_view.h
+    src/graphs_widget.h
     src/graphs_widget.cpp
+    src/input_widget.h
     src/input_widget.cpp
+    src/loading_widget.h
     src/loading_widget.cpp
+    src/main_window.h
+    src/main_window.cpp
+    src/models.h
     src/models.cpp
+    src/progress.h
     src/progress.cpp
+    src/results_widget.h
     src/results_widget.cpp
+    src/status_bar.h
     src/status_bar.cpp
+    src/synchronizer.h
     src/synchronizer.cpp
+    src/system_data.h
+    src/table_data.h
     src/table_data.cpp
+    src/table_widget.h
     src/table_widget.cpp
+    src/worker_object.h
     src/worker_object.cpp
+    src/worker_table.h
     src/worker_table.cpp
     src/resources.qrc
-    )
-#
-set(PROJECT_HEADERS include/main_window.h
-    include/Backend/backend_object.h
-    include/Backend/graphs_data.h
-    include/Widgets/Graphs/graphs_switch.h
-    include/Widgets/Graphs/graphs_view.h
-    include/Widgets/Graphs/graphs_widget.h
-    include/Widgets/input_widget.h
-    include/Widgets/loading_widget.h
-    include/Backend/models.h
-    include/Backend/progress.h
-    include/Widgets/results_widget.h
-    include/Widgets/status_bar.h
-    include/Backend/synchronizer.h
-    include/Backend/system_data.h
-    include/Backend/table_data.h
-    include/Widgets/table_widget.h
-    include/Backend/worker_object.h
-    include/Backend/worker_table.h
     )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(${APP_NAME}
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        ${PROJECT_HEADERS}
     )
 
 # Define target properties for Android with Qt 6 as:
@@ -75,21 +72,17 @@ else()
     if(ANDROID)
         add_library(${APP_NAME} SHARED
             ${PROJECT_SOURCES}
-            ${PROJECT_HEADERS}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(${APP_NAME}
             ${PROJECT_SOURCES}
-            ${PROJECT_HEADERS}
         )
     endif()
 endif()
 
 add_subdirectory(QueSys)
-
-target_include_directories(${APP_NAME} PUBLIC include/)
 
 target_link_libraries(${APP_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core
                                   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets

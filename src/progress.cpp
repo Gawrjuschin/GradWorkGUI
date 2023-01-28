@@ -1,4 +1,4 @@
-#include "Backend/progress.h"
+#include "progress.h"
 
 #include <QAtomicInt>
 

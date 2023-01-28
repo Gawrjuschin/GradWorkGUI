@@ -1,8 +1,8 @@
-#include "Backend/worker_table.h"
-#include "Backend/models.h"
-#include "Backend/synchronizer.h"
-#include "Backend/system_data.h"
-#include "Backend/table_data.h"
+#include "worker_table.h"
+#include "models.h"
+#include "synchronizer.h"
+#include "system_data.h"
+#include "table_data.h"
 
 #include <QueSys/queueing_system.h>
 

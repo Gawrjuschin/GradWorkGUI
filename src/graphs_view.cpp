@@ -1,4 +1,4 @@
-#include "Widgets/Graphs/graphs_view.h"
+#include "graphs_view.h"
 
 #include <QApplication>
 #include <QFileDialog>

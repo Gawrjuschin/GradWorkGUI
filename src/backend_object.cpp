@@ -1,11 +1,11 @@
-#include "Backend/backend_object.h"
-#include "Backend/graphs_data.h"
-#include "Backend/models.h"
-#include "Backend/synchronizer.h"
-#include "Backend/system_data.h"
-#include "Backend/table_data.h"
-#include "Backend/worker_object.h"
-#include "Backend/worker_table.h"
+#include "backend_object.h"
+#include "graphs_data.h"
+#include "models.h"
+#include "synchronizer.h"
+#include "system_data.h"
+#include "table_data.h"
+#include "worker_object.h"
+#include "worker_table.h"
 
 #include <QHBoxLayout>
 #include <QHeaderView>

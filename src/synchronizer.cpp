@@ -1,5 +1,5 @@
-#include "Backend/synchronizer.h"
-#include "Backend/progress.h"
+#include "synchronizer.h"
+#include "progress.h"
 
 #include <QMutex>
 #include <QWaitCondition>

@@ -1,5 +1,5 @@
-#include "Widgets/status_bar.h"
-#include "Backend/progress.h"
+#include "status_bar.h"
+#include "progress.h"
 
 #include <QHBoxLayout>
 #include <QLabel>

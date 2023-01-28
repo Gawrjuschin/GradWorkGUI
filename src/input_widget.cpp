@@ -1,5 +1,5 @@
-#include "Widgets/input_widget.h"
-#include "Backend/system_data.h"
+#include "input_widget.h"
+#include "system_data.h"
 
 #include <QDoubleSpinBox>
 #include <QGridLayout>
