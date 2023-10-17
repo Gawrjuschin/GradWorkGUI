@@ -5,7 +5,7 @@
 #include <memory>
 
 class  Synchronizer;
-struct System_Data;
+struct InputData;
 class  Graphs_Data;
 
 class Worker_Object : public QObject
@@ -14,7 +14,7 @@ class Worker_Object : public QObject
 
 public:
 
-  explicit Worker_Object(std::shared_ptr<System_Data> sdata,
+  explicit Worker_Object(const InputData& input_data,
                          std::shared_ptr<Graphs_Data> gdata,
                          int id,
                          QObject *parent = nullptr);
@@ -30,7 +30,7 @@ signals:
   void signal_done();
 
 private:
-  std::shared_ptr<System_Data>      p_sdata;
+  const InputData& r_input_data;
   std::shared_ptr<Graphs_Data>      p_gdata;
   int                 m_thr_id;
   int                 m_counter{0};

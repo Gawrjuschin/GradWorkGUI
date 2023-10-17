@@ -2,7 +2,7 @@
 #include "graphs_data.h"
 #include "progress.h"
 #include "synchronizer.h"
-#include "system_data.h"
+#include "input_widget.h"
 
 #include <QueSys/queueing_system.h>
 
@@ -10,11 +10,11 @@
 
 std::shared_ptr<Synchronizer> Worker_Object::p_sync{};
 
-Worker_Object::Worker_Object(std::shared_ptr<System_Data> sdata,
+Worker_Object::Worker_Object(const InputData& input_data,
                              std::shared_ptr<Graphs_Data> gdata,
                              int thr_id, QObject *parent)
   : QObject(parent)
-  , p_sdata(sdata)
+  , r_input_data(input_data)
   , p_gdata(gdata)
   , m_thr_id(thr_id)
 {
@@ -34,9 +34,9 @@ std::shared_ptr<Synchronizer> Worker_Object::getSynchronizer()
 
 void Worker_Object::process()
 {
-  auto lambda = p_sdata->load.x() * p_sdata->mu * p_sdata->ch_num;
+  auto lambda = InputData::min_load * r_input_data.mu * r_input_data.channels;
   m_counter = m_thr_id;
-  const double dL = (p_sdata->load.y() - p_sdata->load.x()) / Graphs_Data::POINTS_COUNT;
+  constexpr double dL = (InputData::max_load - InputData::min_load) / Graphs_Data::POINTS_COUNT;
 
   //Шаг нагрузки. Остальное будет считаться через него
   auto& w_0 = p_gdata->data(0);    auto& w_1 = p_gdata->data(1);
@@ -68,7 +68,7 @@ void Worker_Object::process()
 
   // Прогоняю первый раз, чтобы заполнить пределы графов
   {
-    Queueing_system system(lambda, p_sdata->mu, p_sdata->ch_num, p_sdata->prop, p_sdata->ev_num);
+    Queueing_system system(lambda, r_input_data.mu, r_input_data.channels, r_input_data.propability, r_input_data.events);
     system.simulate( );
 
     w_0[m_counter] = { lambda, system.getWait().first  };
@@ -92,9 +92,9 @@ void Worker_Object::process()
   while(m_counter < Graphs_Data::POINTS_COUNT && !sync.canceled())
     {
       sync.sleep(); // Реализация паузы
-      lambda = (p_sdata->load.x() + dL * m_counter) * (p_sdata->mu * p_sdata->ch_num);
+      lambda = (InputData::min_load + dL * m_counter) * (r_input_data.mu * r_input_data.channels);
 
-      Queueing_system system(lambda, p_sdata->mu, p_sdata->ch_num, p_sdata->prop, p_sdata->ev_num);
+      Queueing_system system(lambda, r_input_data.mu, r_input_data.channels, r_input_data.propability, r_input_data.events);
       system.simulate( );
 
       w_0[m_counter] = { lambda, system.getWait().first  };

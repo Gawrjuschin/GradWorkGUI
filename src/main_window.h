@@ -18,9 +18,9 @@ public:
 
 private:
     Input_Widget*   p_input;
+    Backend_Object* p_backend;
     Results_Widget* p_results;
     Status_Bar*     p_status;
-    Backend_Object* p_backend;
 
 protected:
     void closeEvent(QCloseEvent *event) override;

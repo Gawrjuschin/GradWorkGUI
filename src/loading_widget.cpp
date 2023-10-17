@@ -72,7 +72,7 @@ void Loading_Widget::setPixmap(const QPixmap& pic)
 
 QPixmap Loading_Widget::pixmap() const
 {
-  return p_pic_lbl->pixmap();
+  return p_pic_lbl->pixmap(Qt::ReturnByValueConstant{});
 }
 
 void Loading_Widget::slot_stop()

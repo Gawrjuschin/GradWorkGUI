@@ -1,6 +1,7 @@
 #include "graphs_data.h"
 
 #include <QLineSeries>
+#include <math.h>
 
 Graphs_Data::Graphs_Data()
   : m_exp_data(QVector<QVector<QPointF>>(GRAPHS_COUNT))
@@ -20,8 +21,8 @@ void Graphs_Data::construct_series()
   pen_apr.setStyle(Qt::PenStyle::DotLine);
   for (auto i = 0; i < m_points_exp.size(); ++i)
     {
-      m_points_exp[i] = new QLineSeries;
-      m_points_apr[i] = new QLineSeries;
+      m_points_exp[i] = new QtCharts::QLineSeries;
+      m_points_apr[i] = new QtCharts::QLineSeries;
       series(i)->setPen(pen_exp);
       series_apr(i)->setPen(pen_apr);
       m_exp_data[i].resize(POINTS_COUNT);
@@ -29,12 +30,12 @@ void Graphs_Data::construct_series()
     }
 }
 
-QLineSeries* Graphs_Data::series(int i)
+QtCharts::QLineSeries* Graphs_Data::series(int i)
 {
   return m_points_exp[i];
 }
 
-QLineSeries* Graphs_Data::series_apr(int i)
+QtCharts::QLineSeries* Graphs_Data::series_apr(int i)
 {
   return m_points_apr[i];
 }

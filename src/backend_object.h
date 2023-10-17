@@ -4,7 +4,6 @@
 #include <QObject>
 #include <memory>
 
-struct System_Data;
 class Graphs_Data;
 class Table_Data;
 class Worker_Object;
@@ -12,15 +11,16 @@ class Worker_Table;
 class Progress;
 class Synchronizer;
 
+struct InputData;
+
 class Backend_Object : public QObject
 {
     Q_OBJECT
 
 public:
-  explicit Backend_Object(QObject *parent = nullptr);
+  explicit Backend_Object(const InputData& input_data, QObject *parent = nullptr);
   ~Backend_Object();
 
-  std::shared_ptr<System_Data> system_data();
   std::shared_ptr<Graphs_Data> graphs_data();
   std::shared_ptr<Table_Data>  table_data();
   std::shared_ptr<Progress>    getProgress();
@@ -39,8 +39,8 @@ signals:
   void signal_progress();
 
 private:
+  const InputData& r_input_data;
   //Data:
-  std::shared_ptr<System_Data>       p_sdata;
   std::shared_ptr<Graphs_Data>       p_gdata;
   std::shared_ptr<Table_Data>        p_tdata;
   //Threads:

@@ -18,7 +18,8 @@ constexpr auto stylesheet_reference = ":/style.qss";
 
 Main_Window::Main_Window(QWidget *parent)
   : QMainWindow(parent)
-  , p_backend(new Backend_Object(this))
+  , p_input(new Input_Widget)
+    , p_backend(new Backend_Object(p_input->data(), this))
 {
   setWindowTitle(tr("Prioritized system simulation"));
   adjustCentralWidget();
@@ -27,14 +28,13 @@ Main_Window::Main_Window(QWidget *parent)
   setStatusBar(p_status);
   p_status->setMaximum(Graphs_Data::POINTS_COUNT);
   connectComponents();
-  applyStylesheet(QString::fromLatin1(stylesheet_reference));
+//  applyStylesheet(QString::fromLatin1(stylesheet_reference));
 }
 
 void Main_Window::adjustCentralWidget()
 {
   auto* central_widget = new QWidget(this);
   auto* lo = new QHBoxLayout(central_widget);
-  p_input = new Input_Widget(p_backend->system_data());
   p_input->setFixedWidth(input_width);
   p_results = new Results_Widget(p_backend->table_data(), p_backend->graphs_data());
   lo->setContentsMargins({0, 0, 0, 0});

@@ -37,7 +37,7 @@ signals:
   void signal_update();
 
 private:
-  QList<Request> m_data;  
+  QVector<Request> m_data;
 
   enum
   {
@@ -87,7 +87,7 @@ signals:
   void signal_update();
 
 private:
-  QList<Event> m_data;
+  QVector<Event> m_data;
 
   enum
   {

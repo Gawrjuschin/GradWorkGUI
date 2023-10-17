@@ -46,7 +46,6 @@ set(PROJECT_SOURCES src/main.cpp
     src/status_bar.cpp
     src/synchronizer.h
     src/synchronizer.cpp
-    src/system_data.h
     src/table_data.h
     src/table_data.cpp
     src/table_widget.h

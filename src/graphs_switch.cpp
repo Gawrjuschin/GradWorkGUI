@@ -27,7 +27,7 @@ Graphs_Switch::Graphs_Switch(QWidget *parent)
   create_menus();
   adjust_widget();
 
-  connect(p_prior_cbox, &QComboBox::currentIndexChanged, this, &Graphs_Switch::slot_update);
+  connect(p_prior_cbox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Graphs_Switch::slot_update);
   connect(p_zoom_in, &QPushButton::clicked, this, &Graphs_Switch::signal_zoom_in);
   connect(p_zoom_out, &QPushButton::clicked, this, &Graphs_Switch::signal_zoom_out);
   connect(p_zoom_reset, &QPushButton::clicked, this, &Graphs_Switch::signal_zoom_reset);
