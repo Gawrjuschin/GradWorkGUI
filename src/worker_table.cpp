@@ -2,7 +2,7 @@
 #include "models.h"
 #include "synchronizer.h"
 #include "table_data.h"
-#include "input_widget.h"
+#include "input_data.h"
 
 #include <QueSys/queueing_system.h>
 
@@ -23,13 +23,13 @@ std::istream& operator >>(std::istream& is, Request& r)
     return is >> std::skipws >> r.first >> r.second;
 }
 
-Worker_Table::Worker_Table( const InputData& input_data,
-                           std::shared_ptr<Synchronizer> synchronizer,
+Worker_Table::Worker_Table(const Synchronizer& synchronizer,
+                           const InputData& input_data,
                            std::shared_ptr<Table_Data> table_data,
                            QObject *parent)
     : QObject(parent)
+    , r_synchronizer(synchronizer)
     , r_input_data(input_data)
-    , p_sync(synchronizer)
     , p_tdata(table_data)
 {
 
@@ -54,7 +54,7 @@ void Worker_Table::process()
     parce_reqs(reqs, reqs_generated, reqs_in_queue);
     parce_evs(evs, system.getMaxEvNum());
 
-    if(!p_sync->canceled())
+    if(!r_synchronizer.canceled())
     {
         emit signal_finished();
     }

@@ -218,5 +218,5 @@ void Input_Widget::slot_stop()
     p_stop_btn->setDisabled(true);
     p_pause_btn->setText(tr("Pause"));
     m_paused = false;
-    emit signal_stop();
+    emit sigStop();
 }

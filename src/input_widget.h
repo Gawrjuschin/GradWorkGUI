@@ -1,6 +1,8 @@
 #ifndef INPUT_WIDGET_H
 #define INPUT_WIDGET_H
 
+#include "input_data.h"
+
 #include <QWidget>
 
 class QGroupBox;
@@ -8,19 +10,6 @@ class QSpinBox;
 class QDoubleSpinBox;
 class QPushButton;
 class QLabel;
-struct System_Data;
-
-struct InputData
-{
-    double mu{};
-    double propability{};
-    int channels{};
-    int threads{};
-    int events{};
-    static constexpr double min_load = 0.35;
-    static constexpr double max_load = 0.95;
-};
-
 
 class Input_Widget : public QWidget
 {
@@ -48,7 +37,7 @@ signals:
     void signal_start();
     void signal_pause();
     void signal_resume();
-    void signal_stop();
+    void sigStop();
 
 private:
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

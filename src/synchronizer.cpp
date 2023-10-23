@@ -7,7 +7,6 @@
 Synchronizer::Synchronizer( )
   : p_mutex(new QMutex)
   , p_condVar(new QWaitCondition)
-  , p_progress(new Progress)
   , m_canceled ATOMIC_FLAG_INIT
   , m_barrier(0)
 {
@@ -88,7 +87,12 @@ void Synchronizer::setThreadNum(int thrnum)
   m_thr_num = thrnum;
 }
 
-std::shared_ptr<Progress>  Synchronizer::getProgress()
+Progress&  Synchronizer::getProgress() noexcept
 {
-  return p_progress;
+  return m_progress;
+}
+
+const Progress&  Synchronizer::getProgress() const noexcept
+{
+  return m_progress;
 }

@@ -30,6 +30,7 @@ set(PROJECT_SOURCES src/main.cpp
     src/graphs_view.h
     src/graphs_widget.h
     src/graphs_widget.cpp
+    src/input_data.h
     src/input_widget.h
     src/input_widget.cpp
     src/loading_widget.h

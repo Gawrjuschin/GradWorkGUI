@@ -1,6 +1,8 @@
 #ifndef SYNCHRONIZER_H
 #define SYNCHRONIZER_H
 
+#include "progress.h"
+
 #include <memory>
 #include <QAtomicInt>
 #include <atomic>
@@ -8,7 +10,6 @@
 class QMutex;
 class QWaitCondition;
 class QAtomicInt;
-class Progress;
 
 class Synchronizer
 {
@@ -34,14 +35,15 @@ public:
     int  getThreadNum() const;
     void setThreadNum(int thrnum);
 
-    std::shared_ptr<Progress>  getProgress();
+    Progress&  getProgress() noexcept;
+    const Progress&  getProgress() const noexcept;
 
 private:
     std::unique_ptr<QMutex>           p_mutex;
     std::unique_ptr<QWaitCondition>   p_condVar;
-    std::shared_ptr<Progress>         p_progress;
     std::atomic_bool                  m_canceled;
     QAtomicInt                        m_barrier;
+    Progress                          m_progress;
     bool                              m_pause{false};
     int                               m_thr_num{0};
 

@@ -53,14 +53,14 @@ void Main_Window::connectComponents()
   connect(p_input,   &Input_Widget::signal_pause,  p_backend,   &Backend_Object::slot_pause);
   connect(p_input,   &Input_Widget::signal_resume, p_results,   &Results_Widget::slot_resume);
   connect(p_input,   &Input_Widget::signal_resume, p_backend,   &Backend_Object::slot_resume);
-  connect(p_input,   &Input_Widget::signal_stop,   p_results,   &Results_Widget::slot_stop);
-  connect(p_input,   &Input_Widget::signal_stop,   p_backend,   &Backend_Object::slot_stop);
+  connect(p_input,   &Input_Widget::sigStop,   p_results,   &Results_Widget::slot_stop);
+  connect(p_input,   &Input_Widget::sigStop,   p_backend,   &Backend_Object::slot_stop);
   connect(p_backend, &Backend_Object::signal_done, p_results,   &Results_Widget::slot_done);
   connect(p_results, &Results_Widget::signal_ready,p_input,     &Input_Widget::slot_done);
 
   connect(p_input,   &Input_Widget::signal_start, p_status, &Status_Bar::slot_start);
-  connect(p_input,   &Input_Widget::signal_stop,  p_status, &Status_Bar::slot_reset);
-  connect(p_backend, &Backend_Object::signal_done,  p_status, &Status_Bar::slot_stop);
+  connect(p_input,   &Input_Widget::sigStop,  p_status, &Status_Bar::onStop);
+  connect(p_backend, &Backend_Object::signal_done,  p_status, &Status_Bar::onReady);
 
 }
 

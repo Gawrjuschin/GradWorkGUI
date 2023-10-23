@@ -14,22 +14,22 @@ class Status_Bar : public QStatusBar
   Q_OBJECT
 
 public:
-  explicit Status_Bar( std::shared_ptr<Progress> progress, QWidget* parent = nullptr );
+  explicit Status_Bar( const Progress& progress, QWidget* parent = nullptr );
   ~Status_Bar( );
 
   void setMaximum(int maximum);
   void setProgressBarWidth(int width);
 
 public slots:
-  void slot_reset();
+  void onStop();
   void slot_update();
   void slot_start();
-  void slot_stop();
+  void onReady();
 
 private:
+  const Progress&      r_progress;
   QProgressBar*  p_progressbar;
   QLabel*        p_text;
-  std::shared_ptr<Progress>      p_progress;
   QTimer*        p_timer;
 };
 

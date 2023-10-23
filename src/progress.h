@@ -3,23 +3,31 @@
 
 #include <memory>
 
-class QAtomicInt;
+#include <QAtomicInt>
 
 class Progress
 {
 
 public:
-  Progress( );
-  ~Progress( );
+    Progress( ) = default;
 
-  int  operator ++( );
-  int  operator ++(int);
+    Progress(const Progress&) = delete;
+    Progress& operator =(const Progress&) = delete;
 
-  int  getProgress();
-  void resetProgress();
+    Progress(Progress&&) = delete;
+    Progress& operator=(Progress&&) = delete;
+
+    ~Progress( );
+
+    int  operator ++( );
+    int  operator ++(int);
+
+    int  getProgress() const noexcept;
+
+    void resetProgress();
 
 private:
-  std::unique_ptr<QAtomicInt> p_progress;
+    QAtomicInt m_progress{};
 
 };
 

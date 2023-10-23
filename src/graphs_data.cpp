@@ -1,7 +1,13 @@
 #include "graphs_data.h"
 
 #include <QLineSeries>
-#include <math.h>
+
+#include <QVector>
+
+#include <array>
+#include <cmath>
+
+
 
 Graphs_Data::Graphs_Data()
   : m_exp_data(QVector<QVector<QPointF>>(GRAPHS_COUNT))

@@ -10,32 +10,31 @@ class  Graphs_Data;
 
 class Worker_Object : public QObject
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
 
-  explicit Worker_Object(const InputData& input_data,
-                         std::shared_ptr<Graphs_Data> gdata,
-                         int id,
-                         QObject *parent = nullptr);
-  ~Worker_Object( );
-
-  static std::shared_ptr<Synchronizer> getSynchronizer( );
+    explicit Worker_Object(
+        Synchronizer& synchronizer,
+        const InputData& input_data,
+        std::shared_ptr<Graphs_Data> gdata,
+        int id,
+        QObject *parent = nullptr);
+    ~Worker_Object( );
 
 public slots:
-  void process();
+    void process();
 
 signals:
-  void signal_finished();
-  void signal_done();
+    void signal_finished();
+    void signal_done();
 
 private:
-  const InputData& r_input_data;
-  std::shared_ptr<Graphs_Data>      p_gdata;
-  int                 m_thr_id;
-  int                 m_counter{0};
-
-  static std::shared_ptr<Synchronizer> p_sync;
+    Synchronizer& r_synchronizer;
+    const InputData& r_input_data;
+    std::shared_ptr<Graphs_Data>      p_gdata;
+    int                 m_thr_id;
+    int                 m_counter{0};
 };
 
 #endif // WORKER_OBJECT_H
