@@ -16,9 +16,9 @@ constexpr int button_height = 52;
 
 Graphs_Switch::Graphs_Switch(QWidget *parent)
   : QWidget(parent),
-    m_vector_buttons{new QPushButton(QString::fromLatin1("W_0(λ)"), this),//Тут лучше другой текст сделать, а ещё лучше картинку в CSS
-                     new QPushButton(QString::fromLatin1("U_0(λ)"), this),
-                     new QPushButton(QString::fromLatin1("Z_0(λ)"), this)},
+    m_vector_buttons{new QPushButton(tr("W_0(λ)"), this),//Тут лучше другой текст сделать, а ещё лучше картинку в CSS
+                     new QPushButton(tr("U_0(λ)"), this),
+                     new QPushButton(tr("Z_0(λ)"), this)},
     p_prior_cbox(new QComboBox( this )),
     p_zoom_in(new QPushButton(this)),
     p_zoom_out(new QPushButton(this)),
@@ -27,7 +27,12 @@ Graphs_Switch::Graphs_Switch(QWidget *parent)
   create_menus();
   adjust_widget();
 
-  connect(p_prior_cbox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Graphs_Switch::slot_update);
+  connect(p_prior_cbox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int priority)
+  {
+      m_button_state = m_button_state / 2 * 2 + priority;
+      emit signal_show(m_button_state);
+  });
+
   connect(p_zoom_in, &QPushButton::clicked, this, &Graphs_Switch::signal_zoom_in);
   connect(p_zoom_out, &QPushButton::clicked, this, &Graphs_Switch::signal_zoom_out);
   connect(p_zoom_reset, &QPushButton::clicked, this, &Graphs_Switch::signal_zoom_reset);
@@ -56,11 +61,14 @@ void Graphs_Switch::adjust_widget()
 
   auto* chart_zoom_lo = new QHBoxLayout(chart_zoom_gb);
   p_zoom_in->setFixedSize({button_height,button_height});
-  p_zoom_in->setObjectName(QString::fromLatin1("zoomInBtn"));
+  p_zoom_in->setObjectName("zoomInBtn");
+  p_zoom_in->setText(tr("+"));
   p_zoom_out->setFixedSize({button_height,button_height});
-  p_zoom_out->setObjectName(QString::fromLatin1("zoomOutBtn"));
+  p_zoom_out->setObjectName("zoomOutBtn");
+  p_zoom_out->setText(tr("-"));
   p_zoom_reset->setFixedSize({button_height,button_height});
-  p_zoom_reset->setObjectName(QString::fromLatin1("zoomResetBtn"));
+  p_zoom_reset->setObjectName("zoomResetBtn");
+  p_zoom_reset->setText(tr("X"));
   chart_zoom_lo->addWidget(p_zoom_in);
   chart_zoom_lo->addWidget(p_zoom_out);
   chart_zoom_lo->addWidget(p_zoom_reset);
@@ -87,6 +95,7 @@ void Graphs_Switch::create_menus()
               [=]
       {
           m_button_state = i;
+          p_prior_cbox->setCurrentIndex(0);
           emit signal_show(m_button_state);
         });
     }

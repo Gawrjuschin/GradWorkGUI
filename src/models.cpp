@@ -35,19 +35,19 @@ QVariant Request_Model::data(const QModelIndex& index, int role) const
   const Request& data = m_data[index.row()];
   switch(index.column())
     {
-    case NUMBER:  return qint32(data.first);
-    case TYPE:  return data.second.type;
-    case ARRIVE:  return data.second.arrive_time;
-    case Q_NUM:  return data.second.queue_number;
-    case CH_NUM:  return (data.second.ch_number == -1 ? QString::fromLatin1("N/A")
-                                                      : QString::fromLatin1("%1").arg(data.second.ch_number));
-    case START:  return (data.second.start_time == -1 ? QString::fromLatin1("N/A")
-                                                      : QString::fromLatin1("%1").arg(data.second.start_time));
-    case SERVE:  return data.second.serve_time;
-    case WAIT:  return (data.second.wait_time == -1 ? QString::fromLatin1("N/A")
-                                                    : QString::fromLatin1("%1").arg(data.second.wait_time));
-    case END:  return (data.second.serve_end == -1 ? QString::fromLatin1("N/A")
-                                                   : QString::fromLatin1("%1").arg(data.second.serve_end));
+    case NUMBER:  return qint32(data.number);
+    case TYPE:  return data.type;
+    case ARRIVE:  return data.arrive_time;
+    case Q_NUM:  return data.queue_number;
+    case CH_NUM:  return (data.ch_number == -1 ? QString(tr("N/A"))
+                                   : QString(tr("%1")).arg(data.ch_number));
+    case START:  return (data.start_time == -1 ? QString(tr("N/A"))
+                                    : QString(tr("%1")).arg(data.start_time));
+    case SERVE:  return data.serve_time;
+    case WAIT:  return (data.wait_time == -1 ? QString(tr("N/A"))
+                                   : QString(tr("%1")).arg(data.wait_time));
+    case END:  return (data.serve_end == -1 ? QString(tr("N/A"))
+                                   : QString(tr("%1")).arg(data.serve_end));
     default: return QVariant();
     }
 }
@@ -133,9 +133,9 @@ QVariant Event_Model::data(const QModelIndex& index, int role) const
     case EV_NUM:  return data.ev_num;
     case TIME:  return data.time;
     case TYPE:  return data.type;
-    case S_STATUS:  return QString::fromLatin1("(%1, %2)").arg(data.sys_status.first)
+    case S_STATUS:  return QString(tr("(%1, %2)")).arg(data.sys_status.first)
           .arg(data.sys_status.second);
-    case Q_STATUS:  return QString::fromLatin1("(%1, %2)").arg(data.q_status.first)
+    case Q_STATUS:  return QString(tr("(%1, %2)")).arg(data.q_status.first)
           .arg(data.q_status.second);
     case REQ_NUM:  return data.req_num;
     case NEXT:  return data.time_next;

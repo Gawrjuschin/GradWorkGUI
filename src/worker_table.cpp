@@ -13,16 +13,6 @@
 #include <sstream>
 #include <string>
 
-std::ostream& operator <<(std::ostream& os,  const Request& r)
-{
-    return os << r.first << '\t' << r.second;
-}
-
-std::istream& operator >>(std::istream& is, Request& r)
-{
-    return is >> std::skipws >> r.first >> r.second;
-}
-
 Worker_Table::Worker_Table(const Synchronizer& synchronizer,
                            const InputData& input_data,
                            std::shared_ptr<Table_Data> table_data,

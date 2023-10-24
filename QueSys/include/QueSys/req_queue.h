@@ -1,11 +1,11 @@
 #ifndef req_queue_H
 #define req_queue_H
 
-#include "request_info.h"
+#include "request.h"
 #include <queue>
 
-using ipair = std::pair<int, int>;
-using Request = std::pair<int, Request_info>;
+// TODO: заменить простой структурой
+using int_pair = std::pair<int, int>;
 
 class Req_queue//Класс приоритетной очереди с двумя приоритетами
 {
@@ -18,12 +18,12 @@ public:
   Request front(); // Аналог метода front() обычной очереди
   bool empty(); // Аналог метода empty() обычной очереди
 
-  ipair status() const;
+  int_pair status() const;
   void clear();
 
 private:
   std::queue<Request> Q[2]; // Массив очередей
-  ipair qstatus; // Cостояние очереди
+  int_pair qstatus; // Cостояние очереди
 
 };
 
@@ -42,10 +42,10 @@ void Req_queue::pop()//Перегрузка метода pop() обычной о
   ind ? --qstatus.second : --qstatus.first;
 }
 
-void Req_queue::push(const Request& ri)//Перегрузка метода push() обычной очереди
+void Req_queue::push(const Request& request)//Перегрузка метода push() обычной очереди
 {
-  int ind = (ri.second.type == 2);
-  Q[ind].push(ri);
+  int ind = (request.type == 2);
+  Q[ind].push(request);
   ind ? ++qstatus.second : ++qstatus.first;
 }
 
@@ -59,7 +59,7 @@ bool Req_queue::empty()//Перегрузка метода empty() обычно�
   return Q[0].empty() && Q[1].empty();
 }
 
-ipair Req_queue::status() const
+int_pair Req_queue::status() const
 {
   return qstatus;
 }

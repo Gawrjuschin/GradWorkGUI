@@ -18,7 +18,7 @@ set(LIBRARY_HEADERS_DIR
 
 set(LIBRARY_HEADERS
     ${LIBRARY_HEADERS_DIR}/queueing_system.h
-    ${LIBRARY_HEADERS_DIR}/request_info.h
+    ${LIBRARY_HEADERS_DIR}/request.h
     ${LIBRARY_HEADERS_DIR}/req_flow.h
     ${LIBRARY_HEADERS_DIR}/req_queue.h
     ${LIBRARY_HEADERS_DIR}/event.h
@@ -31,7 +31,7 @@ set(LIBRARY_SOURCE_DIR
 
 set(LIBRARY_SOURCE
     ${LIBRARY_SOURCE_DIR}/queueing_system.cpp
-    ${LIBRARY_SOURCE_DIR}/request_info.cpp
+    ${LIBRARY_SOURCE_DIR}/request.cpp
     ${LIBRARY_SOURCE_DIR}/event.cpp
     )
 

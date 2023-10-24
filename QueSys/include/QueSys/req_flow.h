@@ -4,7 +4,7 @@
 #include <random>
 #include <array>
 
-#include "request_info.h"
+#include "request.h"
 
 class Req_flow
 { //Класс потока заявок
@@ -14,7 +14,7 @@ public:
   Req_flow(double lambda, double mu, double prop);
   ~Req_flow( );
 
-  Request_info operator ()();
+  Request operator ()();
 
 private:
   //Три независимые С.В.
@@ -28,6 +28,7 @@ private:
   double time;//время в системе для расчёта времени прибытия
   std::array<double, 2> arrive_time;//Время до следующей заявки соответствующего типа
   int priority;//Приоритет заявки (0 или 1). НЕ ПУТАТЬ С ТИПОМ ЗАЯВКИ!!!
+  int request_counter{0}; // Номер последней заявки
 
 private:
   double get_arrive(int i);
@@ -48,13 +49,14 @@ Req_flow::Req_flow(double lambda, double mu, double prop)
 
 Req_flow::~Req_flow() = default;
 
-Request_info Req_flow::operator ()()
+Request Req_flow::operator ()()
 {
-  Request_info next_req;
+  Request next_req;
   priority = arrive_time[0] < arrive_time[1] ? 0 : 1;
   time += arrive_time[ priority ];
-  arrive_time[ (priority==0 ? 1 : 0) ] -= arrive_time[ priority ];
+  arrive_time[ (priority + 1) % 2 ] -= arrive_time[ priority ];
   arrive_time[ priority ] = get_arrive(priority);
+  next_req.number = request_counter++;
   next_req.type = priority + 1;
   //ЗАЯВКИ БЫВАЮТ ПЕРВОГО ИЛИ ВТОРОГО ТИПА, А ПРИОРИТЕТ - 0 или 1
   next_req.arrive_time = time;

@@ -100,9 +100,12 @@ void Graphs_Widget::adjust_graphs(int i)
 
   p_vector_charts[i]->setTitleFont(title_font);
   p_vector_charts[i]->setTitleBrush(title_brush);
-  p_vector_charts[i]->setTitle(QString::fromLatin1(("Graph of dependency %1_%2(λ)"))
+  p_vector_charts[i]->setTitle(QString((tr("Graph of dependency %1_%2(λ)")))
                                .arg( i >= 4 ? 'Z' : (i >= 2 ? 'U' : 'W') )
-                               .arg((i%2) == 1 ? '1' : '0'));
+                               .arg((i % 2) == 1 ? '1' : '0'));
+  qDebug() << QString((tr("Graph of dependency %1_%2(λ)")))
+                          .arg( i >= 4 ? 'Z' : (i >= 2 ? 'U' : 'W') )
+                  .arg((i % 2) == 1 ? '1' : '0');
 
   p_vector_charts[i]->setBackgroundVisible(false);
 

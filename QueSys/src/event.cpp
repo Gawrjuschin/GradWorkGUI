@@ -8,7 +8,7 @@ Event::Event( )
 
 }
 
-Event::Event(int _ev_num, double _time, int _type, ipair _sys_status, ipair _q_status,
+Event::Event(int _ev_num, double _time, int _type, int_pair _sys_status, int_pair _q_status,
              int  _req_num, double _time_next)
   : ev_num{_ev_num},  time{_time},  type{_type},  sys_status{_sys_status}
   , q_status{_q_status},  req_num{_req_num},  time_next{_time_next}
@@ -16,12 +16,12 @@ Event::Event(int _ev_num, double _time, int _type, ipair _sys_status, ipair _q_s
 
 }
 
-dpair   Event::get_sys_status() const
+double_pair   Event::get_sys_status() const
 {
   return sys_status;
 }
 
-dpair   Event::get_q_status() const
+double_pair   Event::get_q_status() const
 {
   return q_status;
 }
@@ -31,7 +31,7 @@ double  Event::get_time() const
   return time;
 }
 
-void Event::set(int  _ev_num, double _time, int _type, ipair _sys_status, ipair _q_status,
+void Event::set(int  _ev_num, double _time, int _type, int_pair _sys_status, int_pair _q_status,
                 int  _req_num, double _time_next) //Метод для определения всех полей
 {
   ev_num     = _ev_num;
@@ -58,7 +58,7 @@ std::istream& operator>>(std::istream& s, Event& E)
 {
   int    ev_num{0};int type{0}; int req_num{0};
   double time{0}; double time_next{0};
-  ipair  sys_status{0,0}; ipair q_status{0,0};
+  int_pair  sys_status{0,0}; int_pair q_status{0,0};
   char syntax{0};
   if(   s >> std::skipws >> ev_num >> time >> type >> syntax >> sys_status.first >> syntax
         >> sys_status.second >> syntax >> q_status.first >> syntax

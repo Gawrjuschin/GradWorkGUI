@@ -5,8 +5,8 @@
 #include <string>
 #include <sstream>
 
-using   ipair = std::pair<int,int>;
-using   dpair = std::pair<double,double>;
+using   int_pair = std::pair<int,int>;
+using   double_pair = std::pair<double,double>;
 
 class Th_values
 {
@@ -33,8 +33,8 @@ public:
   int    N() const {return ch_num;}
   double P() const {return prop;}
   double Load() const {return lambda / mu / ch_num;}
-  dpair  W() const {return w;}
-  dpair  U() const {return u;}
+  double_pair  W() const {return w;}
+  double_pair  U() const {return u;}
 
   std::string file_prefix()
   {//Префикс с параметрами для генерируемого файла формата l_m_n_p_
@@ -57,8 +57,8 @@ private:
     double mu;      //Интенсивность потока обслуживания
     int    ch_num;  //Число приборов
     double prop;    //Вероятность того, что заявка окажется первого типа
-    dpair  w;       //Оценка среднего времени ожидания в очереди заявок 2-х приоритетов
-    dpair  u;       //Оценка среднего времени пребывания в СМО заявок 2-х приоритетов
+    double_pair  w;       //Оценка среднего времени ожидания в очереди заявок 2-х приоритетов
+    double_pair  u;       //Оценка среднего времени пребывания в СМО заявок 2-х приоритетов
 };
 
 class Exp_values
@@ -101,39 +101,39 @@ public:
     z.second = temp_z.second / time;
   }
 
-  dpair   W() const {return w;}
-  dpair   U() const {return u;}
-  dpair   Z() const {return z;}
-  dpair   L() const {return lambda_pair;}
-  dpair   M() const {return mu_pair;}
-  dpair   P() const {return prop_pair;}
-  dpair&  Mu_sum()  {return temp_mu;}
-  dpair&  W_sum()   {return temp_w;}
-  ipair&  W_count() {return w_count;}
-  dpair&  Z_sum()   {return temp_z;}
+  double_pair   W() const {return w;}
+  double_pair   U() const {return u;}
+  double_pair   Z() const {return z;}
+  double_pair   L() const {return lambda_pair;}
+  double_pair   M() const {return mu_pair;}
+  double_pair   P() const {return prop_pair;}
+  double_pair&  Mu_sum()  {return temp_mu;}
+  double_pair&  W_sum()   {return temp_w;}
+  int_pair&  W_count() {return w_count;}
+  double_pair&  Z_sum()   {return temp_z;}
   //~~~~~~~~~~~~~~~~~~~~~~~~
   double& T() {return time;}
   int&    Ev_num() {return evnum;}
   int     Ev_num() const {return evnum;}
   int&    Req_num() {return reqnum;}
   int     Req_num() const {return reqnum;}
-  ipair&  Req_count() {return r_count;}
-  ipair   Req_count() const {return r_count;}
+  int_pair&  Req_count() {return r_count;}
+  int_pair   Req_count() const {return r_count;}
 
 
 private:
   //Экспериментальные зачения:
-    ipair   r_count{0,0};//Количество заявок обоих типов, обработанных в СМО
-    dpair   lambda_pair{0,0};//Экспериментальная интенсивность входного потока заявок 2-х приоритетов
-    dpair   mu_pair{0,0};//Экспериментальная интенсивность потока обслуживания заявок 2-х приоритетов
-    dpair   temp_mu{0,0};//mu для вычисления "на лету"
-    dpair   prop_pair{0,0};//Доля заявок первого типа
-    dpair   w{0,0};//Экспериментальное среднее время ожидания в очереди заявок 2-х приоритетов
-    dpair   temp_w{0,0};//W для вычисления "на лету"
-    ipair   w_count{0,0};//Количество заявок каждого приоритета, простоявших в очереди
-    dpair   u{0,0};//Экспериментальное среднее время пребывания в СМО заявок 2-х приоритетов
-    dpair   z{0,0}; //Экспериментальное значение среднего числа заявок в СМО.
-    dpair   temp_z{0,0}; //Z для вычисления "на лету".
+    int_pair   r_count{0,0};//Количество заявок обоих типов, обработанных в СМО
+    double_pair   lambda_pair{0,0};//Экспериментальная интенсивность входного потока заявок 2-х приоритетов
+    double_pair   mu_pair{0,0};//Экспериментальная интенсивность потока обслуживания заявок 2-х приоритетов
+    double_pair   temp_mu{0,0};//mu для вычисления "на лету"
+    double_pair   prop_pair{0,0};//Доля заявок первого типа
+    double_pair   w{0,0};//Экспериментальное среднее время ожидания в очереди заявок 2-х приоритетов
+    double_pair   temp_w{0,0};//W для вычисления "на лету"
+    int_pair   w_count{0,0};//Количество заявок каждого приоритета, простоявших в очереди
+    double_pair   u{0,0};//Экспериментальное среднее время пребывания в СМО заявок 2-х приоритетов
+    double_pair   z{0,0}; //Экспериментальное значение среднего числа заявок в СМО.
+    double_pair   temp_z{0,0}; //Z для вычисления "на лету".
     double  time{0};//Время события
     int     evnum{1};//Нормер события
     int     reqnum{1};//Номер сгенерированной заявки

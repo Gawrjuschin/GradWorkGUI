@@ -8,7 +8,7 @@
 #include <random>
 #include <unordered_map>
 
-using dpair = std::pair<double, double>;
+using double_pair = std::pair<double, double>;
 
 constexpr int max_ev = 1000;
 constexpr double eps = 0.001;
