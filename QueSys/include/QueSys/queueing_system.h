@@ -71,4 +71,32 @@ private:               // Поля класса
 
     auto free_min();
 };
+
+namespace queueing_system {
+
+struct SimulationResult
+{
+    std::pair<double, double> avg_period;
+    std::pair<double, double> avg_serve;
+    std::pair<double, double> propability;
+    std::pair<double, double> avg_wait;
+    std::pair<double, double> avg_utility;
+    std::pair<double, double> avg_requests;
+};
+
+SimulationResult Simulate(
+    double lambda_th, double mu_th, int channels_number, double prop, int max_events);
+
+// TODO: обобщить вывод
+SimulationResult Simulate(double lambda_th,
+                          double mu_th,
+                          int channels_number,
+                          double prop,
+                          int max_events,
+                          std::ostream& events_stream,
+                          std::ostream& requests_stream);
+// TODO: реализовать перегрузку с ограничением на eps
+
+} // namespace queueing_system
+
 #endif // queueing_system_H

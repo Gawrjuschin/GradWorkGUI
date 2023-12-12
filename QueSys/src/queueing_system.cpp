@@ -582,3 +582,439 @@ void Queueing_system::simulate(
     } //while
     exp_vs.experimental();
 }
+
+namespace queueing_system {
+
+auto FreeMin(std::vector<Request>& channels)
+{
+    auto free = channels.end();
+    auto min = channels.begin();
+    for (auto it = channels.begin(); it != channels.end(); ++it) {
+        min = (it->serve_end != -1) && (it->serve_end < min->serve_end || min->serve_end == -1)
+                  ? it
+                  : min;
+        free = (free == channels.end() && it->serve_end == -1) ? it : free;
+    }
+    return make_pair(free, min);
+}
+
+SimulationResult Simulate(
+    double lambda_th, double mu_th, int channels_number, double prop, int max_events)
+{
+    SimulationResult result{};
+
+    std::vector<Request> channels(channels_number);
+    Req_queue queue{};
+    std::pair<int, int> system_status{};
+
+    // В систему поступила первая заявка
+    int event_number{1};
+    int request_number{};
+    double time_total{};
+    std::pair<int, int> requests_served{};
+    std::pair<double, double> serve_total{};
+    std::pair<double, double> wait_total{};
+    std::pair<int, int> requests_waited{};
+    std::pair<int, int> requests_total{};
+    Req_flow req_generator(lambda_th, mu_th, prop);
+    Request next_request = req_generator(++request_number);
+    Event current_event;
+    //Время предыдущего события. Изначально равно времени первой заявки
+    double prev_time{next_request.arrive_time};
+    //Количество заявок до события для подсчёта среднего арифметического
+    std::pair<int, int> requests_before_event{0, 0};
+    while (event_number <= max_events) {
+        auto [free_it, min_it] = FreeMin(channels);
+        // TODO: заменить switch на if else
+        auto branch
+            = (next_request.arrive_time < min_it->serve_end || min_it->serve_end == -1)
+                  //Попытка встать на обслуживание
+                  ? ((free_it != channels.end()) ? ((!queue.empty()) ? 2 : 1) : 4)
+                  // Есть свободный прибор "?" на обслуживание( очередь пуста "?" пришедшую "1" ":" первую в очереди "2")
+                  // все заняты ":" в очередь "4"
+                  : (((free_it != channels.end()) && !queue.empty()) ? 2 : 3);
+
+        // Есть свободный прибор и заявка в очереди "?" на обслуживание первую в очереди "2" ":" освободить ближайшую заявку "3"
+        switch (branch) {
+        case 1: {
+            //Приборы простаивают, очередь пустая
+            //Пришедшая заявка встаёт на обслуживание
+            //Первый свободный прибор принимает заявку
+            *free_it = next_request;
+            next_request = req_generator(++request_number);
+            time_total = free_it->arrive_time;
+            free_it->queue_number = 0;
+            free_it->ch_number = std::distance(free_it, begin(channels)) + 1;
+            free_it->start_time = free_it->arrive_time;
+            free_it->serve_end = free_it->arrive_time + free_it->serve_time;
+            free_it->wait_time = 0;
+
+            // Изменение количества заявок в СМО
+            // TODO: Заменить тип на енам
+            (free_it->type == 1) ? ++system_status.first : ++system_status.second;
+
+            //Запись данных в новое событие
+            current_event.set(event_number,
+                              time_total,
+                              // TODO: Заменить тип на енам
+                              (free_it->type == 1) ? 1 : 2,
+                              system_status,
+                              queue.status(),
+                              free_it->number,
+                              next_request.arrive_time - free_it->arrive_time);
+            break;
+        } //case 1
+        case 2: {
+            //Приборы простаивают, очередь не пустая
+            //Первая в очереди заявка встаёт на обслуживание
+            //Нужно проверить случай, когда Next_Request.second.time == min->serve_end
+            (*free_it) = queue.front();
+
+            // Изменение количества заявок в СМО
+            // TODO: Заменить тип на енам
+            (free_it->type == 1) ? system_status.first++ : system_status.second++;
+            queue.pop();
+            free_it->ch_number = std::distance(free_it, begin(channels)) + 1;
+            free_it->start_time = time_total;
+            free_it->wait_time = time_total - free_it->arrive_time;
+            free_it->serve_end = time_total + free_it->serve_time;
+
+            //Запись данных в новое событие
+            current_event.set(event_number,
+                              time_total,
+                              // TODO: Заменить тип на енам
+                              (free_it->type == 1) ? 7 : 8,
+                              system_status,
+                              queue.status(),
+                              free_it->number,
+                              next_request.arrive_time - time_total);
+            break;
+        } //case 2
+        case 3: {
+            //Все приборы заняты, минимальное время окончания обслуживания меньше время прихода следующей заявки
+            //Освобождается прибор с минимальным оставшимся временем обслуживания
+            // Запоминается время выхода заявки.
+            time_total = min_it->serve_end;
+
+            // Изменение количества заявок в СМО
+            // TODO: Заменить тип на енам
+            (min_it->type == 1) ? system_status.first-- : system_status.second--;
+            //Запись данных в новое событие
+            current_event.set(event_number,
+                              time_total,
+                              // TODO: Заменить тип на енам
+                              (min_it->type == 1) ? 5 : 6,
+                              system_status,
+                              queue.status(),
+                              min_it->number,
+                              next_request.arrive_time - time_total);
+
+            //(*min_it) - освободившаяся заявка
+            //Только здесь изменяется число обработанных заявок
+            // TODO: Заменить тип на енам
+            if (min_it->type == 1) {
+                serve_total.first += min_it->serve_time;
+                requests_served.first++;
+                if (min_it->wait_time > 0) {
+                    wait_total.first += min_it->wait_time;
+                    requests_waited.first++;
+                }
+            } else {
+                serve_total.second += min_it->serve_time;
+                requests_served.second++;
+                if (min_it->wait_time > 0) {
+                    wait_total.second += min_it->wait_time;
+                    requests_waited.second++;
+                }
+            }
+
+            // Освобождение прибора с минимальным оставшимся временем обслуживания
+            (*min_it) = Request{};
+            break;
+        } //case 3
+        case 4: {
+            //Все приборы заняты, минимальное время окончания обслуживания меньше время прихода следующей заявки
+            //Следующая заявка встаёт в очередь. Место в очереди вычисляется перед отправкой в неё
+
+            double prev_arrive_time = next_request.arrive_time;
+            next_request.queue_number = queue.status().first
+                                        + (queue.status().second * (next_request.type - 1)) + 1;
+            queue.push(next_request);
+            time_total = next_request.arrive_time;
+            next_request = req_generator(++request_number);
+            //Запись данных в новое событие
+            current_event.set(event_number,
+                              time_total,
+                              // TODO: Заменить тип на енам
+                              (next_request.type == 1) ? 3 : 4,
+                              system_status,
+                              queue.status(),
+                              (next_request.number - 1),
+                              next_request.arrive_time - prev_arrive_time);
+            // Номер предыдущей заявки на 1 меньше
+            break;
+        } //case 4
+        } //switch
+
+        requests_total.first += (current_event.get_time() - prev_time)
+                                * requests_before_event.first;
+        requests_total.second += (current_event.get_time() - prev_time)
+                                 * requests_before_event.second;
+
+        //Запоминается время события
+        prev_time = current_event.get_time();
+
+        requests_before_event = {current_event.get_q_status().first
+                                     + current_event.get_sys_status().first,
+                                 current_event.get_q_status().second
+                                     + current_event.get_sys_status().second};
+        ++event_number;
+    } //while
+    //exp_vs.experimental();
+    // experimental
+    {
+        result.avg_period.first = time_total / requests_total.first;
+        result.avg_period.second = time_total / requests_total.second;
+
+        result.avg_serve.first = serve_total.first / requests_served.first;
+        result.avg_serve.second = serve_total.second / requests_served.second;
+
+        const auto request_recieved = requests_total.first + requests_total.second;
+        result.propability.first = requests_total.first / request_recieved;
+        result.propability.second = requests_total.second / request_recieved;
+
+        result.avg_wait.first = wait_total.first / requests_waited.first;
+        result.avg_wait.second = wait_total.second / requests_waited.second;
+
+        result.avg_utility.first = result.avg_wait.first + result.avg_serve.first;
+        result.avg_utility.second = result.avg_wait.second + result.avg_serve.second;
+
+        // Может быть requests_total???
+        result.avg_requests.first = requests_total.first / time_total;
+        result.avg_requests.second = requests_total.second / time_total;
+    }
+    return result;
+}
+
+SimulationResult Simulate(double lambda_th,
+                          double mu_th,
+                          int channels_number,
+                          double prop,
+                          int max_events,
+                          std::ostream& events_stream,
+                          std::ostream& requests_stream)
+{
+    requests_stream << std::setiosflags(std::ios::fixed);
+    requests_stream << std::setprecision(5);
+
+    SimulationResult result{};
+
+    std::vector<Request> channels(channels_number);
+    Req_queue queue{};
+    std::pair<int, int> system_status{};
+
+    // В систему поступила первая заявка
+    int event_number{1};
+    int request_number{};
+    double time_total{};
+    std::pair<int, int> requests_served{};
+    std::pair<double, double> serve_total{};
+    std::pair<double, double> wait_total{};
+    std::pair<int, int> requests_waited{};
+    std::pair<int, int> requests_total{};
+    Req_flow req_generator(lambda_th, mu_th, prop);
+    Request next_request = req_generator(++request_number);
+    Event current_event{};
+    //Время предыдущего события. Изначально равно времени первой заявки
+    double prev_time{next_request.arrive_time};
+    //Количество заявок до события для подсчёта среднего арифметического
+    std::pair<int, int> requests_before_event{0, 0};
+    while (event_number <= max_events) {
+        auto [free_it, min_it] = FreeMin(channels);
+        // TODO: заменить switch на if else
+        auto branch
+            = (next_request.arrive_time < min_it->serve_end || min_it->serve_end == -1)
+                  //Попытка встать на обслуживание
+                  ? ((free_it != channels.end()) ? ((!queue.empty()) ? 2 : 1) : 4)
+                  // Есть свободный прибор "?" на обслуживание( очередь пуста "?" пришедшую "1" ":" первую в очереди "2")
+                  // все заняты ":" в очередь "4"
+                  : (((free_it != channels.end()) && !queue.empty()) ? 2 : 3);
+        // Есть свободный прибор и заявка в очереди "?" на обслуживание первую в очереди "2" ":" освободить ближайшую заявку "3"
+        switch (branch) {
+        case 1: {
+            //Приборы простаивают, очередь пустая
+            //Пришедшая заявка встаёт на обслуживание
+            //Первый свободный прибор принимает заявку
+            *free_it = next_request;
+            next_request = req_generator(++request_number);
+            time_total = free_it->arrive_time;
+            free_it->queue_number = 0;
+            free_it->ch_number = std::distance(free_it, begin(channels)) + 1;
+            free_it->start_time = free_it->arrive_time;
+            free_it->serve_end = free_it->arrive_time + free_it->serve_time;
+            free_it->wait_time = 0;
+
+            // Изменение количества заявок в СМО
+            // Заменить тип на енам
+            (free_it->type == 1) ? ++system_status.first : ++system_status.second;
+
+            //Запись данных в новое событие
+            current_event.set(event_number,
+                              time_total,
+                              // Заменить тип на енам
+                              (free_it->type == 1) ? 1 : 2,
+                              system_status,
+                              queue.status(),
+                              free_it->number,
+                              next_request.arrive_time - free_it->arrive_time);
+            break;
+        } //case 1
+        case 2: {
+            //Приборы простаивают, очередь не пустая
+            //Первая в очереди заявка встаёт на обслуживание
+            //Нужно проверить случай, когда Next_Request.second.time == min->serve_end
+            (*free_it) = queue.front();
+
+            // Изменение количества заявок в СМО
+            // TODO: Заменить тип на енам
+            (free_it->type == 1) ? system_status.first++ : system_status.second++;
+            queue.pop();
+            free_it->ch_number = std::distance(free_it, begin(channels)) + 1;
+            free_it->start_time = time_total;
+            free_it->wait_time = time_total - free_it->arrive_time;
+            free_it->serve_end = time_total + free_it->serve_time;
+
+            //Запись данных в новое событие
+            current_event.set(event_number,
+                              time_total,
+                              // Заменить тип на енам
+                              (free_it->type == 1) ? 7 : 8,
+                              system_status,
+                              queue.status(),
+                              free_it->number,
+                              next_request.arrive_time - time_total); //Запись данных в новое событие
+            break;
+        } //case 2
+        case 3: {
+            //Все приборы заняты, минимальное время окончания обслуживания меньше время прихода следующей заявки
+            //Освобождается прибор с минимальным оставшимся временем обслуживания
+            // Запоминается время выхода заявки.
+            time_total = min_it->serve_end;
+
+            // Изменение количества заявок в СМО
+            // TODO: Заменить тип на енам
+            (min_it->type == 1) ? system_status.first-- : system_status.second--;
+            //Запись данных в новое событие
+            current_event.set(event_number,
+                              time_total,
+                              // TODO: Заменить тип на енам
+                              (min_it->type == 1) ? 5 : 6,
+                              system_status,
+                              queue.status(),
+                              min_it->number,
+                              next_request.arrive_time - time_total);
+
+            //(*min_it) - освободившаяся заявка
+            //Только здесь изменяется число обработанных заявок
+            // TODO: Заменить тип на енам
+            if (min_it->type == 1) {
+                serve_total.first += min_it->serve_time;
+                requests_served.first++;
+                if (min_it->wait_time > 0) {
+                    wait_total.first += min_it->wait_time;
+                    requests_waited.first++;
+                }
+            } else {
+                serve_total.second += min_it->serve_time;
+                requests_served.second++;
+                if (min_it->wait_time > 0) {
+                    wait_total.second += min_it->wait_time;
+                    requests_waited.second++;
+                }
+            }
+
+            // Обработанная заявка отправляется в поток вывода
+            requests_stream << *min_it;
+
+            // Освобождение прибора с минимальным оставшимся временем обслуживания
+            (*min_it) = Request{};
+            break;
+        } //case 3
+        case 4: {
+            //Все приборы заняты, минимальное время окончания обслуживания меньше время прихода следующей заявки
+            //Следующая заявка встаёт в очередь. Место в очереди вычисляется перед отправкой в неё
+
+            double prev_arrive_time = next_request.arrive_time;
+            next_request.queue_number = queue.status().first
+                                        + (queue.status().second * (next_request.type - 1)) + 1;
+            queue.push(next_request);
+            time_total = next_request.arrive_time;
+            next_request = req_generator(++request_number);
+            //Запись данных в новое событие
+            current_event.set(event_number,
+                              time_total,
+                              // TODO: Заменить тип на енам
+                              (next_request.type == 1) ? 3 : 4,
+                              system_status,
+                              queue.status(),
+                              (next_request.number - 1),
+                              next_request.arrive_time - prev_arrive_time);
+            // Номер предыдущей заявки на 1 меньше
+            break;
+        } //case 4
+        } //switch
+
+        requests_total.first += (current_event.get_time() - prev_time)
+                                * requests_before_event.first;
+        requests_total.second += (current_event.get_time() - prev_time)
+                                 * requests_before_event.second;
+
+        //Запоминается время события
+        prev_time = current_event.get_time();
+
+        requests_before_event = {current_event.get_q_status().first
+                                     + current_event.get_sys_status().first,
+                                 current_event.get_q_status().second
+                                     + current_event.get_sys_status().second};
+        // Каждое ветвление порождает событие
+        events_stream << current_event;
+        ++event_number;
+    } //while
+    for (auto& req : channels) {
+        if (req.number != 0) {
+            requests_stream << req;
+        }
+    }
+    // Записываем оставшиеся в очереди заявки. Очередь опустошается!
+    while (!queue.empty()) {
+        requests_stream << queue.front();
+        queue.pop();
+    }
+
+    //exp_vs.experimental();
+    // experimental
+    {
+        result.avg_period.first = time_total / requests_total.first;
+        result.avg_period.second = time_total / requests_total.second;
+
+        result.avg_serve.first = serve_total.first / requests_served.first;
+        result.avg_serve.second = serve_total.second / requests_served.second;
+
+        const auto request_recieved = requests_total.first + requests_total.second;
+        result.propability.first = requests_total.first / request_recieved;
+        result.propability.second = requests_total.second / request_recieved;
+
+        result.avg_wait.first = wait_total.first / requests_waited.first;
+        result.avg_wait.second = wait_total.second / requests_waited.second;
+
+        result.avg_utility.first = result.avg_wait.first + result.avg_serve.first;
+        result.avg_utility.second = result.avg_wait.second + result.avg_serve.second;
+
+        // Может быть requests_total???
+        result.avg_requests.first = requests_total.first / time_total;
+        result.avg_requests.second = requests_total.second / time_total;
+    }
+    return result;
+}
+
+} // namespace queueing_system
