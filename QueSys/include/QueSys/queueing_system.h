@@ -77,6 +77,8 @@ namespace queueing_system {
 
 struct SimulationResult
 {
+    int events{};
+    int requests{};
     std::pair<double, double> avg_period;
     std::pair<double, double> avg_serve;
     std::pair<double, double> propability;
