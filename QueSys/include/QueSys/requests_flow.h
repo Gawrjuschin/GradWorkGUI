@@ -6,13 +6,13 @@
 
 #include "request.h"
 
-class Req_flow
+class RequestsFlow
 { //Класс потока заявок
     //Генерирует информацию о следующей заявке
 public:
-    Req_flow() = delete;
-    Req_flow(double lambda, double mu, double prop);
-    ~Req_flow();
+    RequestsFlow() = delete;
+    RequestsFlow(double lambda, double mu, double prop);
+    ~RequestsFlow();
 
     Request operator()(int request_number);
 
@@ -36,7 +36,7 @@ private:
     double get_serve();
 };
 
-Req_flow::Req_flow(double lambda, double mu, double prop)
+RequestsFlow::RequestsFlow(double lambda, double mu, double prop)
     : engine_l1{}
     , engine_l2{}
     , engine_m{}
@@ -50,9 +50,9 @@ Req_flow::Req_flow(double lambda, double mu, double prop)
     arrive_time[1] = get_arrive(1);
 }
 
-Req_flow::~Req_flow() = default;
+RequestsFlow::~RequestsFlow() = default;
 
-Request Req_flow::operator()(int request_number)
+Request RequestsFlow::operator()(int request_number)
 {
     Request next_req{};
     // TODO: отрефакторить, чтобы не было индексов
@@ -61,20 +61,20 @@ Request Req_flow::operator()(int request_number)
     arrive_time[(priority + 1) % 2] -= arrive_time[priority];
     arrive_time[priority] = get_arrive(priority);
     next_req.number = request_number;
-    next_req.type = priority + 1;
+    next_req.type = RequestType{priority + 1};
     //ЗАЯВКИ БЫВАЮТ ПЕРВОГО ИЛИ ВТОРОГО ТИПА, А ПРИОРИТЕТ - 0 или 1
     next_req.arrive_time = time;
     next_req.serve_time = get_serve();
     return next_req;
 }
 
-double Req_flow::get_arrive(int i)
+double RequestsFlow::get_arrive(int i)
 //Метод для генерации семейства с. в.
 {
     return (i == 0) ? distr_l1(engine_l1) : distr_l2(engine_l2);
 }
 
-double Req_flow::get_serve()
+double RequestsFlow::get_serve()
 {
     return distr_m(engine_m);
 }

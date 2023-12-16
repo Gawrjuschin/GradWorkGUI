@@ -4,6 +4,7 @@
 #include "event.h"
 #include "request.h"
 #include "system_parameters_types.h"
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -11,8 +12,8 @@
 using int_pair = std::pair<int, int>;
 using double_pair = std::pair<double, double>;
 
-class Req_flow;
-class Req_queue;
+class RequestsFlow;
+class RequestsQueue;
 
 class Queueing_system
 {
@@ -63,10 +64,10 @@ public:
 private:               // Поля класса
     Th_values th_vs;   // Сохраняем значения параметров системы
     Exp_values exp_vs; // Результаты симуляции работы
-    std::unique_ptr<Req_flow> req_gen;
-    std::unique_ptr<Req_queue> queue;
+    std::unique_ptr<RequestsFlow> req_gen;
+    std::unique_ptr<RequestsQueue> queue;
     std::vector<Request> channels;
-    int_pair status; // Количество заявок каждого типа, находящихся на обслуживании
+    int_pair system_status; // Количество заявок каждого типа, находящихся на обслуживании
     int max_ev_num;  // Количество генерируемых событий
 
     auto free_min();
@@ -84,17 +85,13 @@ struct SimulationResult
     std::pair<double, double> avg_requests;
 };
 
-SimulationResult Simulate(
-    double lambda_th, double mu_th, int channels_number, double prop, int max_events);
-
-// TODO: обобщить вывод
 SimulationResult Simulate(double lambda_th,
                           double mu_th,
                           int channels_number,
                           double prop,
                           int max_events,
-                          std::ostream& events_stream,
-                          std::ostream& requests_stream);
+                          std::function<void(const Event&)> write_event,
+                          std::function<void(const Request&)> write_request);
 // TODO: реализовать перегрузку с ограничением на eps
 
 } // namespace queueing_system
