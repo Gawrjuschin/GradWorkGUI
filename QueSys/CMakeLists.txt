@@ -19,8 +19,8 @@ set(LIBRARY_HEADERS_DIR
 set(LIBRARY_HEADERS
     ${LIBRARY_HEADERS_DIR}/queueing_system.h
     ${LIBRARY_HEADERS_DIR}/request.h
-    ${LIBRARY_HEADERS_DIR}/req_flow.h
-    ${LIBRARY_HEADERS_DIR}/req_queue.h
+    ${LIBRARY_HEADERS_DIR}/requests_flow.h
+    ${LIBRARY_HEADERS_DIR}/requests_queue.h
     ${LIBRARY_HEADERS_DIR}/event.h
     ${LIBRARY_HEADERS_DIR}/system_parameters_types.h
     )

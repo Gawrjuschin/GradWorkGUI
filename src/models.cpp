@@ -36,7 +36,8 @@ QVariant Request_Model::data(const QModelIndex& index, int role) const
   switch(index.column())
     {
     case NUMBER:  return qint32(data.number);
-    case TYPE:  return data.type;
+    case TYPE:
+      return static_cast<qint32>(data.type);
     case ARRIVE:  return data.arrive_time;
     case Q_NUM:  return data.queue_number;
     case CH_NUM:  return (data.ch_number == -1 ? QString(tr("N/A"))
@@ -130,14 +131,14 @@ QVariant Event_Model::data(const QModelIndex& index, int role) const
   const Event& data = m_data[index.row()];
   switch(index.column())
     {
-    case EV_NUM:  return data.ev_num;
+    case EV_NUM:  return data.number;
     case TIME:  return data.time;
     case TYPE:  return data.type;
-    case S_STATUS:  return QString(tr("(%1, %2)")).arg(data.sys_status.first)
-          .arg(data.sys_status.second);
-    case Q_STATUS:  return QString(tr("(%1, %2)")).arg(data.q_status.first)
-          .arg(data.q_status.second);
-    case REQ_NUM:  return data.req_num;
+    case S_STATUS:  return QString(tr("(%1, %2)")).arg(data.system_status.first)
+          .arg(data.system_status.second);
+    case Q_STATUS:  return QString(tr("(%1, %2)")).arg(data.queue_status.first)
+          .arg(data.queue_status.second);
+    case REQ_NUM:  return data.request;
     case NEXT:  return data.time_next;
     default: return QVariant();
     }
