@@ -33,13 +33,12 @@ Graphs_Widget::Graphs_Widget(Graphs_Data* gdata,
   main_lo->addLayout(menu_lo);
   main_lo->addWidget(p_chart_view,1);
 
-  for(auto i = 0; i < p_vector_charts.size(); ++i)
-    {
+  for (std::size_t i = 0; i < p_vector_charts.size(); ++i) {
       adjust_graphs(i);
 
       connect(p_points_data->series(i), &QLineSeries::pointsReplaced,
               [=] { update_series(i); });
-    }
+  }
 
   connect(p_chart_switch, &Graphs_Switch::signal_show,          this, &Graphs_Widget::slot_show);
   connect(p_chart_switch, &Graphs_Switch::signal_approximate,   this, &Graphs_Widget::slot_approximate);

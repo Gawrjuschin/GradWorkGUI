@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <memory>
-#include <iosfwd>
 
 class Synchronizer;
 class Table_Data;
@@ -29,11 +28,7 @@ signals:
 private:
     const Synchronizer& r_synchronizer;
     const InputData& r_input_data;
-    std::shared_ptr<Table_Data>        p_tdata;
-
-private:
-    void parce_reqs(std::istream& reqs, int s_reqs, int q_reqs);
-    void parce_evs(std::istream& evs, int evs_count);
+    std::shared_ptr<Table_Data> p_tdata;
 };
 
 #endif // WORKER_TABLE_H

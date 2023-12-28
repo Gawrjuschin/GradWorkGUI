@@ -25,15 +25,14 @@ void Graphs_Data::construct_series()
   pen_exp.setWidth(2);
   pen_apr.setWidth(2);
   pen_apr.setStyle(Qt::PenStyle::DotLine);
-  for (auto i = 0; i < m_points_exp.size(); ++i)
-    {
+  for (std::size_t i = 0; i < m_points_exp.size(); ++i) {
       m_points_exp[i] = new QtCharts::QLineSeries;
       m_points_apr[i] = new QtCharts::QLineSeries;
       series(i)->setPen(pen_exp);
       series_apr(i)->setPen(pen_apr);
       m_exp_data[i].resize(POINTS_COUNT);
       m_apr_data[i].resize(POINTS_COUNT);
-    }
+  }
 }
 
 QtCharts::QLineSeries* Graphs_Data::series(int i)

@@ -17,6 +17,8 @@ public: //Публичные методы
     Event(Event&&) = default;
     Event& operator=(Event&&) = default;
 
+    ~Event() = default;
+
     double_pair get_sys_status() const;
     double_pair get_q_status() const;
     double get_time() const;

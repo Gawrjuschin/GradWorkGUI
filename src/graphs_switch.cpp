@@ -73,32 +73,28 @@ void Graphs_Switch::adjust_widget()
   chart_zoom_lo->addWidget(p_zoom_out);
   chart_zoom_lo->addWidget(p_zoom_reset);
 
-  for (auto i = 0; i < m_vector_buttons.size() ; ++i)
-    {
+  for (std::size_t i = 0; i < m_vector_buttons.size(); ++i) {
       chart_switch_lo->addWidget(m_vector_buttons[i], 0, i, 2, 1, Qt::AlignCenter);
       m_vector_buttons[i]->setMenu(m_vector_menus[i*2]);
-      m_vector_buttons[i]->setFixedSize({button_width,button_height});
-    }
+      m_vector_buttons[i]->setFixedSize({button_width, button_height});
+  }
 }
 
 void Graphs_Switch::create_menus()
 {
-  for(auto i = 0; i < m_vector_menus.size(); ++i)
-    {
+  for (std::size_t i = 0; i < m_vector_menus.size(); ++i) {
       m_vector_menus[i] = new QMenu;
       auto* act = m_vector_menus[i]->addAction(tr("Show approximation"));
       act->setCheckable(true);
       connect(act, &QAction::triggered, this, &Graphs_Switch::slot_approximation);
       act = m_vector_menus[i]->addAction(tr("Save"));
       connect(act, &QAction::triggered, this, &Graphs_Switch::slot_save);
-      connect(m_vector_menus[i], &QMenu::aboutToShow,
-              [=]
-      {
+      connect(m_vector_menus[i], &QMenu::aboutToShow, [=] {
           m_button_state = i;
           p_prior_cbox->setCurrentIndex(0);
           emit signal_show(m_button_state);
-        });
-    }
+      });
+  }
 }
 
 Graphs_Switch::~Graphs_Switch( ) = default;
@@ -117,7 +113,7 @@ void Graphs_Switch::slot_approximation( )
 
 void Graphs_Switch::slot_update(int chbox_state)
 {
-  for(auto i = 0; i < m_vector_buttons.size(); ++i) // Обновляем кнопки
+    for (std::size_t i = 0; i < m_vector_buttons.size(); ++i) // Обновляем кнопки
     {
       m_vector_buttons[i]->setMenu(m_vector_menus[i*2 + chbox_state]);
       m_vector_buttons[i]->setText(QString(tr("%1_%2(λ)"))

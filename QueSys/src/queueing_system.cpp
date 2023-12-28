@@ -187,7 +187,7 @@ void Queueing_system::simulate() //Нужно установить услови�
             next_request = req_generator(reqc++);
             time = free->arrive_time;
             free->queue_number = 0;
-            free->ch_number = free - channels.begin() + 1; //Лучше distance
+            free->ch_number = std::distance(free, begin(channels)) + 1; //Лучше distance
             free->start_time = free->arrive_time;
             free->serve_end = free->arrive_time + free->serve_time;
             free->wait_time = 0;
@@ -336,7 +336,7 @@ void Queueing_system::simulate(std::ostream& events_stream, std::ostream& reques
             next_request = gen(reqc++);
             time = free->arrive_time;
             free->queue_number = 0;
-            free->ch_number = free - channels.begin() + 1; //Лучше distance
+            free->ch_number = std::distance(free, begin(channels)) + 1; //Лучше distance
             free->start_time = free->arrive_time;
             free->serve_end = free->arrive_time + free->serve_time;
             free->wait_time = 0;
@@ -361,7 +361,7 @@ void Queueing_system::simulate(std::ostream& events_stream, std::ostream& reques
                 ? system_status.first++
                 : system_status.second++; // Изменение количества заявок в СМО
             queue->pop();
-            free->ch_number = free - channels.begin() + 1; //Лучше distance
+            free->ch_number = std::distance(free, begin(channels)) + 1; //Лучше distance
             free->start_time = time;
             free->wait_time = time - free->arrive_time;
             free->serve_end = time + free->serve_time;
@@ -502,7 +502,7 @@ void Queueing_system::simulate(
             next_request = gen(reqc++);
             time = free->arrive_time;
             free->queue_number = 0;
-            free->ch_number = free - channels.begin() + 1; //Лучше distance
+            free->ch_number = std::distance(free, begin(channels)) + 1; //Лучше distance
             free->start_time = free->arrive_time;
             free->serve_end = free->arrive_time + free->serve_time;
             free->wait_time = 0;
@@ -526,7 +526,7 @@ void Queueing_system::simulate(
                 ? system_status.first++
                 : system_status.second++; // Изменение количества заявок в СМО
             queue->pop();
-            free->ch_number = free - channels.begin() + 1; //Лучше distance
+            free->ch_number = std::distance(free, begin(channels)) + 1; //Лучше distance
             free->start_time = time;
             free->wait_time = time - free->arrive_time;
             free->serve_end = time + free->serve_time;
@@ -606,7 +606,7 @@ void Queueing_system::simulate(
 
 namespace queueing_system {
 
-auto FreeMin(std::vector<Request>& channels)
+static inline auto FreeMin(std::vector<Request>& channels) noexcept
 {
     auto free = end(channels);
     auto min = begin(channels);
@@ -624,29 +624,48 @@ auto FreeMin(std::vector<Request>& channels)
     return make_pair(free, min);
 }
 
-SimulationResult CalcResult(const int request_number,
-                            const int event_number,
-                            const double time_total,
-                            const std::pair<int, int> requests_total,
-                            const std::pair<double, double> serve_total,
-                            const std::pair<int, int> requests_served,
-                            const std::pair<double, double> wait_total,
-                            const std::pair<int, int> requests_waited)
+struct SimulationStatus
+{
+    // Номер очередной заявки. Фактически количество сгенерированных заявок
+    int request_number{1};
+    // В систему поступила первая заявка
+    // Номер последнего события
+    int event_number{1};
+    double time_total{};
+    std::pair<double, double> serve_total{};
+    std::pair<double, double> wait_total{};
+    std::pair<int, int> requests_total{};
+    std::pair<int, int> requests_served{};
+    std::pair<int, int> requests_waited{};
+};
+
+static inline auto CalcResult(const SimulationStatus& simulation_status) noexcept
 {
     SimulationResult result{};
 
-    result.requests = request_number, result.events = event_number,
-    result.avg_period = {time_total / requests_total.first, time_total / requests_total.second},
-    result.avg_serve = {serve_total.first / requests_served.first,
-                        serve_total.second / requests_served.second},
-    result.propability = {requests_total.first / (requests_total.first + requests_total.second),
-                          requests_total.second / (requests_total.first + requests_total.second)},
-    result.avg_wait = {wait_total.first / requests_waited.first,
-                       wait_total.second / requests_waited.second},
-    result.avg_requests = {requests_total.first / time_total, requests_total.second / time_total};
+    result.time_total = simulation_status.time_total;
+    result.requests = simulation_status.request_number;
+    result.events = simulation_status.event_number;
+    result.avg_period = {simulation_status.time_total / simulation_status.requests_total.first,
+                         simulation_status.time_total / simulation_status.requests_total.second};
+    result.avg_serve = {simulation_status.serve_total.first
+                            / simulation_status.requests_served.first,
+                        simulation_status.serve_total.second
+                            / simulation_status.requests_served.second};
+    result.propability = {simulation_status.requests_total.first
+                              / (simulation_status.requests_total.first
+                                 + simulation_status.requests_total.second),
+                          simulation_status.requests_total.second
+                              / (simulation_status.requests_total.first
+                                 + simulation_status.requests_total.second)};
+    result.avg_wait = {simulation_status.wait_total.first / simulation_status.requests_waited.first,
+                       simulation_status.wait_total.second
+                           / simulation_status.requests_waited.second};
+    result.avg_requests = {simulation_status.requests_total.first / simulation_status.time_total,
+                           simulation_status.requests_total.second / simulation_status.time_total};
 
-    result.avg_utility.first = result.avg_wait.first + result.avg_serve.first;
-    result.avg_utility.second = result.avg_wait.second + result.avg_serve.second;
+    result.avg_utility = {result.avg_wait.first + result.avg_serve.first,
+                          result.avg_wait.second + result.avg_serve.second};
 
     return result;
 }
@@ -656,31 +675,27 @@ SimulationResult Simulate(double lambda_th,
                           int channels_number,
                           double prop,
                           int max_events,
-                          std::function<void(const Event&)> write_event = nullptr,
-                          std::function<void(const Request&)> write_request = nullptr)
+                          std::function<void(const Event&)> write_event,
+                          std::function<void(const Request&)> write_request)
 {
     RequestsFlow req_generator(lambda_th, mu_th, prop);
 
     std::vector<Request> channels(channels_number);
     RequestsQueue queue{};
-
-    double time_total{};
-    std::pair<double, double> serve_total{};
-    std::pair<double, double> wait_total{};
-    std::pair<int, int> requests_total{};
-    std::pair<int, int> requests_served{};
-    std::pair<int, int> requests_waited{};
     std::pair<int, int> system_status{};
 
-    // Фактически количество сгенерированных заявок
-    int request_number{};
-    // Очередная заявка
-    Request next_request = req_generator(++request_number);
+    SimulationStatus simulation_status{};
 
-    // В систему поступила первая заявка
+    // Номер очередной заявки. Фактически количество сгенерированных заявок
+    simulation_status.request_number = 1;
+    // В систему поступила первая заявка. Фактически количество сгенерированных событий
     // Номер последнего события
-    int event_number{1};
-    for (; event_number <= max_events; ++event_number) {
+    simulation_status.event_number = 1;
+
+    // Очередная заявка
+    Request next_request = req_generator(simulation_status.request_number);
+
+    for (; simulation_status.event_number <= max_events; ++simulation_status.event_number) {
         Event current_event{};
         auto [free_it, min_it] = FreeMin(channels);
 
@@ -690,13 +705,15 @@ SimulationResult Simulate(double lambda_th,
             if (queue.empty()) {
                 // Очередная заявка встаёт на обслуживание
                 // Первый свободный прибор принимает заявку
-                time_total = next_request.arrive_time;
+                simulation_status.time_total = next_request.arrive_time;
 
                 *free_it = next_request;
-                (next_request.type == RequestType::kFirst) ? ++requests_total.first
-                                                           : ++requests_total.second;
+                // Новая заявка в системе
+                (next_request.type == RequestType::kFirst)
+                    ? ++simulation_status.requests_total.first
+                    : ++simulation_status.requests_total.second;
 
-                next_request = req_generator(++request_number);
+                next_request = req_generator(++simulation_status.request_number);
                 free_it->queue_number = 0;
                 free_it->ch_number = std::distance(free_it, begin(channels)) + 1;
                 free_it->start_time = free_it->arrive_time;
@@ -708,8 +725,8 @@ SimulationResult Simulate(double lambda_th,
                 (free_it->type == RequestType::kFirst) ? ++system_status.first
                                                        : ++system_status.second;
 
-                current_event = {.number = event_number,
-                                 .time = time_total,
+                current_event = {.number = simulation_status.event_number,
+                                 .time = simulation_status.time_total,
                                  .type = (free_it->type == RequestType::kFirst) ? 1 : 2,
                                  .system_status = system_status,
                                  .queue_status = queue.status(),
@@ -725,18 +742,19 @@ SimulationResult Simulate(double lambda_th,
                                                        : ++system_status.second;
                 queue.pop();
                 free_it->ch_number = std::distance(free_it, begin(channels)) + 1;
-                free_it->start_time = time_total;
-                free_it->wait_time = time_total - free_it->arrive_time;
-                free_it->serve_end = time_total + free_it->serve_time;
+                free_it->start_time = simulation_status.time_total;
+                free_it->wait_time = simulation_status.time_total - free_it->arrive_time;
+                free_it->serve_end = simulation_status.time_total + free_it->serve_time;
 
                 //Запись данных в новое событие
-                current_event = {.number = event_number,
-                                 .time = time_total,
+                current_event = {.number = simulation_status.event_number,
+                                 .time = simulation_status.time_total,
                                  .type = (free_it->type == RequestType::kFirst) ? 7 : 8,
                                  .system_status = system_status,
                                  .queue_status = queue.status(),
                                  .request = free_it->number,
-                                 .time_next = next_request.arrive_time - time_total};
+                                 .time_next = next_request.arrive_time
+                                              - simulation_status.time_total};
             }
         } else {
             // Все приборы заняты
@@ -744,35 +762,36 @@ SimulationResult Simulate(double lambda_th,
             if (min_it->serve_end <= next_request.arrive_time) {
                 //  Канал с минимальным оставшимся временем обслуживания освободится раньше прихода очередной заявки
                 //  Освобождается канал с минимальным оставшимся временем обслуживания.
-                time_total = min_it->serve_end;
+                simulation_status.time_total = min_it->serve_end;
 
                 // Изменение количества заявок в СМО
                 (min_it->type == RequestType::kFirst) ? --system_status.first
                                                       : --system_status.second;
                 //Запись данных в новое событие
-                current_event = {.number = event_number,
-                                 .time = time_total,
+                current_event = {.number = simulation_status.event_number,
+                                 .time = simulation_status.time_total,
                                  .type = (min_it->type == RequestType::kFirst) ? 5 : 6,
                                  .system_status = system_status,
                                  .queue_status = queue.status(),
                                  .request = min_it->number,
-                                 .time_next = next_request.arrive_time - time_total};
+                                 .time_next = next_request.arrive_time
+                                              - simulation_status.time_total};
 
                 //(*min_it) - освободившаяся заявка
                 //Только здесь изменяется число обработанных заявок
                 if (min_it->type == RequestType::kFirst) {
-                    serve_total.first += min_it->serve_time;
-                    requests_served.first++;
+                    simulation_status.serve_total.first += min_it->serve_time;
+                    simulation_status.requests_served.first++;
                     if (min_it->wait_time > 0) {
-                        wait_total.first += min_it->wait_time;
-                        requests_waited.first++;
+                        simulation_status.wait_total.first += min_it->wait_time;
+                        simulation_status.requests_waited.first++;
                     }
                 } else {
-                    serve_total.second += min_it->serve_time;
-                    requests_served.second++;
+                    simulation_status.serve_total.second += min_it->serve_time;
+                    simulation_status.requests_served.second++;
                     if (min_it->wait_time > 0) {
-                        wait_total.second += min_it->wait_time;
-                        requests_waited.second++;
+                        simulation_status.wait_total.second += min_it->wait_time;
+                        simulation_status.requests_waited.second++;
                     }
                 }
 
@@ -786,7 +805,7 @@ SimulationResult Simulate(double lambda_th,
             } else {
                 //  Очередная заявка прийдёт раньше, чем освободится канал с минимальным оставшимся временем обслуживания
                 //  Очередная заявка встаёт в очередь.
-                time_total = next_request.arrive_time;
+                simulation_status.time_total = next_request.arrive_time;
 
                 double prev_arrive_time = next_request.arrive_time;
                 next_request.queue_number = queue.status().first
@@ -794,13 +813,15 @@ SimulationResult Simulate(double lambda_th,
                                                * (next_request.type == RequestType::kSecond))
                                             + 1;
                 queue.push(next_request);
-                (next_request.type == RequestType::kFirst) ? ++requests_total.first
-                                                           : ++requests_total.second;
+                // Новая заявка в системе
+                (next_request.type == RequestType::kFirst)
+                    ? ++simulation_status.requests_total.first
+                    : ++simulation_status.requests_total.second;
 
-                next_request = req_generator(++request_number);
+                next_request = req_generator(++simulation_status.request_number);
                 //Запись данных в новое событие
-                current_event = {.number = event_number,
-                                 .time = time_total,
+                current_event = {.number = simulation_status.event_number,
+                                 .time = simulation_status.time_total,
                                  .type = (next_request.type == RequestType::kFirst) ? 3 : 4,
                                  .system_status = system_status,
                                  .queue_status = queue.status(),
@@ -816,6 +837,7 @@ SimulationResult Simulate(double lambda_th,
     } //for
 
     if (write_request) {
+        // Записываем оставшиеся в каналах заявки.
         for (auto& req : channels) {
             if (!IsEmpty(req)) {
                 write_request(req);
@@ -828,14 +850,7 @@ SimulationResult Simulate(double lambda_th,
         }
     }
 
-    return CalcResult(request_number,
-                      event_number,
-                      time_total,
-                      requests_total,
-                      serve_total,
-                      requests_served,
-                      wait_total,
-                      requests_waited);
+    return CalcResult(simulation_status);
 }
 
 } // namespace queueing_system

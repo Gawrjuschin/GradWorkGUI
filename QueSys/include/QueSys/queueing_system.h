@@ -24,6 +24,12 @@ public:
 
     Queueing_system(const Th_values& _th_vs, int _max_ev_num);
 
+    Queueing_system(const Queueing_system&) = delete;
+    Queueing_system& operator=(const Queueing_system&) = delete;
+
+    Queueing_system(Queueing_system&&) = delete;
+    Queueing_system& operator=(Queueing_system&&) = delete;
+
     ~Queueing_system();
 
     void simulate(); // Метод моделирования работы СМО c заданными параметрами
@@ -77,6 +83,7 @@ namespace queueing_system {
 
 struct SimulationResult
 {
+    double time_total{};
     int events{};
     int requests{};
     std::pair<double, double> avg_period;
@@ -92,8 +99,8 @@ SimulationResult Simulate(double lambda_th,
                           int channels_number,
                           double prop,
                           int max_events,
-                          std::function<void(const Event&)> write_event,
-                          std::function<void(const Request&)> write_request);
+                          std::function<void(const Event&)> write_event = nullptr,
+                          std::function<void(const Request&)> write_request = nullptr);
 // TODO: реализовать перегрузку с ограничением на eps
 
 } // namespace queueing_system

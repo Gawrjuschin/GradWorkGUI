@@ -12,6 +12,13 @@ class RequestsFlow
 public:
     RequestsFlow() = delete;
     RequestsFlow(double lambda, double mu, double prop);
+
+    RequestsFlow(const RequestsFlow&) = delete;
+    RequestsFlow& operator=(const RequestsFlow&) = delete;
+
+    RequestsFlow(RequestsFlow&&) = delete;
+    RequestsFlow& operator=(RequestsFlow&&) = delete;
+
     ~RequestsFlow();
 
     Request operator()(int request_number);
@@ -26,7 +33,7 @@ private:
     std::exponential_distribution<> distr_l2;
     std::exponential_distribution<> distr_m;
     double time; //время в системе для расчёта времени прибытия
-    std::array<double, 2> arrive_time; //Время до следующей заявки соответствующего типа
+    std::array<double, 2> arrive_time{}; //Время до следующей заявки соответствующего типа
     int priority; //Приоритет заявки (0 или 1). НЕ ПУТАТЬ С ТИПОМ ЗАЯВКИ!!!
 
 private:
