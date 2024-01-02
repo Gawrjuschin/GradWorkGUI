@@ -83,7 +83,7 @@ namespace queueing_system {
 
 struct SimulationResult
 {
-    double time_total{};
+    double time_passed{};
     int events{};
     int requests{};
     std::pair<double, double> avg_period;
