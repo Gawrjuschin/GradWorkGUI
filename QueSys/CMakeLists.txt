@@ -8,10 +8,6 @@ set(LIBRARY_NAME
     QueSys
     )
 
-set(EXAMPLE_NAME
-    gradwork_nogui
-    )
-
 set(LIBRARY_HEADERS_DIR
     include/${LIBRARY_NAME}
     )
@@ -22,7 +18,6 @@ set(LIBRARY_HEADERS
     ${LIBRARY_HEADERS_DIR}/requests_flow.h
     ${LIBRARY_HEADERS_DIR}/requests_queue.h
     ${LIBRARY_HEADERS_DIR}/event.h
-    ${LIBRARY_HEADERS_DIR}/system_parameters_types.h
     )
 
 set(LIBRARY_SOURCE_DIR
@@ -36,6 +31,7 @@ set(LIBRARY_SOURCE
     )
 
 project(${PROJECT_NAME})
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -52,7 +48,3 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
     )
-
-add_executable(${EXAMPLE_NAME} test/demonstration.cpp)
-
-target_link_libraries(${EXAMPLE_NAME} ${LIBRARY_NAME})

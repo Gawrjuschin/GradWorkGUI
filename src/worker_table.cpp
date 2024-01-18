@@ -36,7 +36,7 @@ void Worker_Table::process()
         r_input_data.mu,
         r_input_data.channels,
         r_input_data.propability,
-        r_input_data.events,
+        queueing_system::MaxEventsCondition(r_input_data.events),
         [&events](const Event& event) { events.push_back(event); },
         [&requests](const Request& request) { requests.push_back(request); });
 

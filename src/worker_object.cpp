@@ -60,7 +60,8 @@ void Worker_Object::process()
                                                     r_input_data.mu,
                                                     r_input_data.channels,
                                                     r_input_data.propability,
-                                                    r_input_data.events);
+                                                    queueing_system::MaxEventsCondition(
+                                                        r_input_data.events));
 
         w_0[m_counter] = {lambda, sim_result.avg_wait.first};
         w_1[m_counter] = {lambda, sim_result.avg_wait.second};
@@ -87,7 +88,8 @@ void Worker_Object::process()
                                                     r_input_data.mu,
                                                     r_input_data.channels,
                                                     r_input_data.propability,
-                                                    r_input_data.events);
+                                                    queueing_system::MaxEventsCondition(
+                                                        r_input_data.events));
 
         w_0[m_counter] = {lambda, sim_result.avg_wait.first};
         w_1[m_counter] = {lambda, sim_result.avg_wait.second};
