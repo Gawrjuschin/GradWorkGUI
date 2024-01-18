@@ -192,7 +192,7 @@ void Queueing_system::simulate() //Нужно установить услови�
             next_request = req_generator(reqc++);
             time = free->arrive_time;
             free->queue_number = 0;
-            free->ch_number = std::distance(free, begin(channels)) + 1; //Лучше distance
+            free->ch_number = std::distance(begin(channels), free) + 1;
             free->start_time = free->arrive_time;
             free->serve_end = free->arrive_time + free->serve_time;
             free->wait_time = 0;
@@ -217,7 +217,7 @@ void Queueing_system::simulate() //Нужно установить услови�
                 ? system_status.first++
                 : system_status.second++; // Изменение количества заявок в СМО
             queue->pop();
-            free->ch_number = std::distance(free, begin(channels)) + 1; //Лучше distance
+            free->ch_number = std::distance(begin(channels), free) + 1;
             free->start_time = time;
             free->wait_time = time - free->arrive_time;
             free->serve_end = time + free->serve_time;
@@ -344,7 +344,7 @@ void Queueing_system::simulate(std::ostream& events_stream, std::ostream& reques
             next_request = gen(reqc++);
             time = free->arrive_time;
             free->queue_number = 0;
-            free->ch_number = std::distance(free, begin(channels)) + 1; //Лучше distance
+            free->ch_number = std::distance(begin(channels), free) + 1;
             free->start_time = free->arrive_time;
             free->serve_end = free->arrive_time + free->serve_time;
             free->wait_time = 0;
@@ -369,7 +369,7 @@ void Queueing_system::simulate(std::ostream& events_stream, std::ostream& reques
                 ? system_status.first++
                 : system_status.second++; // Изменение количества заявок в СМО
             queue->pop();
-            free->ch_number = std::distance(free, begin(channels)) + 1; //Лучше distance
+            free->ch_number = std::distance(begin(channels), free) + 1;
             free->start_time = time;
             free->wait_time = time - free->arrive_time;
             free->serve_end = time + free->serve_time;
@@ -510,7 +510,7 @@ void Queueing_system::simulate(
             next_request = gen(reqc++);
             time = free->arrive_time;
             free->queue_number = 0;
-            free->ch_number = std::distance(free, begin(channels)) + 1; //Лучше distance
+            free->ch_number = std::distance(begin(channels), free) + 1;
             free->start_time = free->arrive_time;
             free->serve_end = free->arrive_time + free->serve_time;
             free->wait_time = 0;
@@ -534,7 +534,7 @@ void Queueing_system::simulate(
                 ? system_status.first++
                 : system_status.second++; // Изменение количества заявок в СМО
             queue->pop();
-            free->ch_number = std::distance(free, begin(channels)) + 1; //Лучше distance
+            free->ch_number = std::distance(begin(channels), free) + 1;
             free->start_time = time;
             free->wait_time = time - free->arrive_time;
             free->serve_end = time + free->serve_time;
@@ -703,7 +703,7 @@ static inline auto StartNext(RequestsFlow& req_generator,
 
     next_request = req_generator(++simulation_status.request_number);
     free_it->queue_number = 0;
-    free_it->ch_number = std::distance(free_it, begin(channels)) + 1;
+    free_it->ch_number = std::distance(begin(channels), free_it) + 1;
     free_it->start_time = free_it->arrive_time;
     free_it->serve_end = free_it->arrive_time + free_it->serve_time;
     free_it->wait_time = 0;
@@ -738,7 +738,7 @@ static inline auto StartQueued(RequestsFlow& req_generator,
     // Изменение количества заявок в СМО
     (free_it->type == RequestType::kFirst) ? ++system_status.first : ++system_status.second;
     queue.pop();
-    free_it->ch_number = std::distance(free_it, begin(channels)) + 1;
+    free_it->ch_number = std::distance(begin(channels), free_it) + 1;
     free_it->start_time = simulation_status.time_passed;
     free_it->wait_time = simulation_status.time_passed - free_it->arrive_time;
     free_it->serve_end = simulation_status.time_passed + free_it->serve_time;
