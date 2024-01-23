@@ -16,7 +16,7 @@ int Progress::operator++(int)
   return ++m_progress;
 }
 
-int Progress::getProgress() const noexcept
+int Progress::value() const noexcept
 {
   return m_progress.loadRelaxed();
 }

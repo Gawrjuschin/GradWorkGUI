@@ -52,9 +52,7 @@ set(PROJECT_SOURCES src/main.cpp
     src/table_widget.h
     src/table_widget.cpp
     src/worker_object.h
-    src/worker_object.cpp
     src/worker_table.h
-    src/worker_table.cpp
     src/resources.qrc
     )
 

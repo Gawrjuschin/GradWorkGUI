@@ -4,6 +4,9 @@
 #include <QMutex>
 #include <QWaitCondition>
 
+#include <iostream>
+#include <thread>
+
 Synchronizer::Synchronizer()
     : p_mutex(new QMutex)
     , p_condVar(new QWaitCondition)
@@ -16,9 +19,13 @@ Synchronizer::~Synchronizer() = default;
 void Synchronizer::sleep()
 {
   p_mutex->lock();
+  std::clog << "thread #" << std::this_thread::get_id() << " enters sleep" << std::endl;
   if (m_pause) {
+    std::clog << "thread #" << std::this_thread::get_id() << " sleep" << std::endl;
     p_condVar->wait(p_mutex.get());
+    std::clog << "thread #" << std::this_thread::get_id() << " awakened" << std::endl;
   }
+  std::clog << "thread #" << std::this_thread::get_id() << " exit sleep" << std::endl;
   p_mutex->unlock();
 }
 

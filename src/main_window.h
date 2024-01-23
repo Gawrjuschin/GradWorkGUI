@@ -19,6 +19,7 @@ public:
 private:
   Input_Widget* p_input;
   Backend_Object* p_backend;
+  QThread* p_backend_thread;
   Results_Widget* p_results;
   Status_Bar* p_status;
 

@@ -1,7 +1,6 @@
 #include "backend_object.h"
 #include "graphs_data.h"
 #include "input_data.h"
-#include "models.h"
 #include "synchronizer.h"
 #include "table_data.h"
 #include "worker_object.h"
@@ -12,41 +11,19 @@
 #include <QLabel>
 #include <QTabWidget>
 #include <QTableView>
+
 #include <QThread>
+#include <QThreadPool>
 
 Backend_Object::Backend_Object(const InputData& input_data, QObject* parent)
     : QObject(parent)
     , r_input_data(input_data)
-    , p_gdata(new Graphs_Data)
-    , p_tdata(new Table_Data)
-    , m_workers(QThread::idealThreadCount())
-    , m_threads(QThread::idealThreadCount())
-{
-  for (auto i = 0; i < m_threads.size(); ++i) {
-    m_threads[i] = new QThread(this);
-    m_workers[i] = new Worker_Object(m_synchronizer, input_data, p_gdata, i);
-    m_workers[i]->moveToThread(m_threads[i]);
-    connect(m_threads[i], &QThread::started, m_workers[i], &Worker_Object::process);
-    connect(m_workers[i], &Worker_Object::signal_finished, m_threads[i], &QThread::terminate);
-    connect(m_workers[i], &Worker_Object::signal_done, this, &Backend_Object::slot_generate);
-  }
+    , p_gdata(std::make_shared<Graphs_Data>())
+    , p_tdata(std::make_shared<Table_Data>())
+    , p_threadPool(std::make_unique<QThreadPool>())
+{}
 
-  p_tthread = new QThread(this);
-  p_tworker = new Worker_Table(m_synchronizer, input_data, p_tdata);
-  p_tworker->moveToThread(p_tthread);
-
-  connect(p_tthread, &QThread::started, p_tworker, &Worker_Table::process);
-  connect(p_tworker, &Worker_Table::signal_finished, p_tthread, &QThread::terminate);
-  connect(p_tworker, &Worker_Table::signal_finished, this, &Backend_Object::signal_done);
-}
-
-Backend_Object::~Backend_Object()
-{
-  for (auto& worker : m_workers) {
-    delete worker;
-  }
-  delete p_tworker;
-}
+Backend_Object::~Backend_Object() = default;
 
 const Progress& Backend_Object::getProgress() const noexcept
 {
@@ -66,9 +43,23 @@ std::shared_ptr<Table_Data> Backend_Object::table_data()
 void Backend_Object::slot_start()
 {
   m_synchronizer.setThreadNum(r_input_data.threads);
+  p_threadPool->setMaxThreadCount(r_input_data.threads);
 
-  for (auto i = 0; i < m_synchronizer.getThreadNum(); ++i) {
-    m_threads[i]->start();
+  for (int thread_num = 0; thread_num < r_input_data.threads; ++thread_num) {
+    p_threadPool->start(GetWorkerObjectFunction(m_synchronizer, r_input_data, p_gdata, thread_num));
+  }
+
+  p_threadPool->waitForDone();
+
+  if (!m_synchronizer.canceled()) {
+    p_gdata->update();
+    GetWorkerTableFunction(m_synchronizer, r_input_data, table_data())();
+  }
+  m_synchronizer.resetBarrier();
+  m_synchronizer.resetCancel();
+
+  if (!m_synchronizer.canceled()) {
+    emit signal_done();
   }
 }
 
@@ -86,14 +77,4 @@ void Backend_Object::slot_stop()
 {
   m_synchronizer.cancel();
   m_synchronizer.getProgress().resetProgress();
-}
-
-void Backend_Object::slot_generate()
-{
-  if (!m_synchronizer.canceled()) {
-    p_gdata->update();
-    p_tthread->start();
-  }
-  m_synchronizer.resetBarrier();
-  m_synchronizer.resetCancel();
 }

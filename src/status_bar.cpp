@@ -48,7 +48,7 @@ void Status_Bar::onStop()
 
 void Status_Bar::slot_update()
 {
-  auto temp = r_progress.getProgress();
+  auto temp = r_progress.value();
   if (temp < p_progressbar->maximum()) {
     p_text->setText(tr("(%1/%2) simulations completed.").arg(temp).arg(p_progressbar->maximum()));
     p_progressbar->setValue(temp);

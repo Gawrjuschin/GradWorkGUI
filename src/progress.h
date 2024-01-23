@@ -21,7 +21,7 @@ public:
   int operator++();
   int operator++(int);
 
-  int getProgress() const noexcept;
+  int value() const noexcept;
 
   void resetProgress();
 

@@ -4,8 +4,9 @@
 #include "synchronizer.h"
 
 #include <QObject>
-#include <array>
 #include <memory>
+
+class QThreadPool;
 
 class Graphs_Data;
 class Table_Data;
@@ -33,24 +34,16 @@ public slots:
   void slot_pause();
   void slot_resume();
   void slot_stop();
-  void slot_generate();
 
 signals:
-  void signal_start();
-  void signal_table_fill();
   void signal_done();
-  void signal_progress();
 
 private:
   const InputData &r_input_data;
   // Data:
   std::shared_ptr<Graphs_Data> p_gdata;
   std::shared_ptr<Table_Data> p_tdata;
-  // Threads:
-  QVector<Worker_Object *> m_workers;
-  QVector<QThread *> m_threads;
-  Worker_Table *p_tworker;
-  QThread *p_tthread;
+  std::unique_ptr<QThreadPool> p_threadPool;
   Synchronizer m_synchronizer{};
 };
 

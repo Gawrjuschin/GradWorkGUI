@@ -12,6 +12,8 @@
 #include <QMessageBox>
 #include <QStatusBar>
 
+#include <QThread>
+
 constexpr int input_width = 280;
 constexpr int progressbar_margins = 4; // Где-то зашиты отступы в 2px
 constexpr auto stylesheet_reference = ":/style.qss";
@@ -19,7 +21,8 @@ constexpr auto stylesheet_reference = ":/style.qss";
 Main_Window::Main_Window(QWidget* parent)
     : QMainWindow(parent)
     , p_input(new Input_Widget)
-    , p_backend(new Backend_Object(p_input->data(), this))
+    , p_backend(new Backend_Object(p_input->data()))
+    , p_backend_thread(new QThread(this))
 {
   setWindowTitle(tr("Prioritized system simulation"));
   adjustCentralWidget();
@@ -28,7 +31,19 @@ Main_Window::Main_Window(QWidget* parent)
   setStatusBar(p_status);
   p_status->setMaximum(Graphs_Data::POINTS_COUNT);
   connectComponents();
+
+  p_backend->moveToThread(p_backend_thread);
+  p_backend_thread->start();
   //  applyStylesheet(QString::fromLatin1(stylesheet_reference));
+}
+Main_Window::~Main_Window()
+{
+  p_backend->slot_stop();
+  while (p_backend->getProgress().value()) {
+    QApplication::processEvents();
+  }
+  p_backend_thread->exit();
+  p_backend_thread->wait();
 }
 
 void Main_Window::adjustCentralWidget()
@@ -62,8 +77,6 @@ void Main_Window::connectComponents()
   connect(p_input, &Input_Widget::sigStop, p_status, &Status_Bar::onStop);
   connect(p_backend, &Backend_Object::signal_done, p_status, &Status_Bar::onReady);
 }
-
-Main_Window::~Main_Window() = default;
 
 void Main_Window::closeEvent(QCloseEvent* event)
 {
