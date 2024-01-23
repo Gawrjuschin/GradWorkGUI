@@ -18,9 +18,9 @@ class Results_Widget : public QWidget
 
 public:
   Results_Widget(std::shared_ptr<Table_Data> tdata,
-                 std::shared_ptr<Graphs_Data> gdata,
-                 QWidget *parent = nullptr);
-  ~Results_Widget( );
+		 std::shared_ptr<Graphs_Data> gdata,
+		 QWidget* parent = nullptr);
+  ~Results_Widget();
 
 protected:
   void paintEvent(QPaintEvent* event) override;
@@ -38,18 +38,12 @@ signals:
 
 private:
   QStackedWidget* p_widget_host;
-  QTabWidget*     p_tabs_tables_graphs;
-  Table_Widget*   p_tables_evs_reqs;
-  Graphs_Widget*  p_widget_graphs;
+  QTabWidget* p_tabs_tables_graphs;
+  Table_Widget* p_tables_evs_reqs;
+  Graphs_Widget* p_widget_graphs;
   Loading_Widget* p_widget_loading;
 
-  enum
-  {
-    WAITING      = 0,
-    PROCESSING   = 1,
-    PAUSED       = 2,
-    READY        = 3
-  };
+  enum { WAITING = 0, PROCESSING = 1, PAUSED = 2, READY = 3 };
 };
 
 #endif // RESULTS_WIDGET_H

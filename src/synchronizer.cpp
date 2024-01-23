@@ -4,24 +4,21 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-Synchronizer::Synchronizer( )
-  : p_mutex(new QMutex)
-  , p_condVar(new QWaitCondition)
-  , m_canceled ATOMIC_FLAG_INIT
-  , m_barrier(0)
-{
+Synchronizer::Synchronizer()
+    : p_mutex(new QMutex)
+    , p_condVar(new QWaitCondition)
+    , m_canceled ATOMIC_FLAG_INIT
+    , m_barrier(0)
+{}
 
-}
-
-Synchronizer::~Synchronizer( ) = default;
+Synchronizer::~Synchronizer() = default;
 
 void Synchronizer::sleep()
 {
   p_mutex->lock();
-  if(m_pause)
-    {
-      p_condVar->wait(p_mutex.get());
-    }
+  if (m_pause) {
+    p_condVar->wait(p_mutex.get());
+  }
   p_mutex->unlock();
 }
 
@@ -47,7 +44,8 @@ void Synchronizer::resume()
 
 void Synchronizer::cancel()
 {
-  while(!m_canceled.exchange(true)) { }
+  while (!m_canceled.exchange(true)) {
+  }
   m_pause = false;
   p_condVar->wakeAll();
 }
@@ -67,12 +65,12 @@ void Synchronizer::resetBarrier()
   m_barrier = 0;
 }
 
-int Synchronizer::operator ++()
+int Synchronizer::operator++()
 {
   return ++m_barrier;
 }
 
-int Synchronizer::operator ++(int)
+int Synchronizer::operator++(int)
 {
   return m_barrier++;
 }
@@ -87,12 +85,12 @@ void Synchronizer::setThreadNum(int thrnum)
   m_thr_num = thrnum;
 }
 
-Progress&  Synchronizer::getProgress() noexcept
+Progress& Synchronizer::getProgress() noexcept
 {
   return m_progress;
 }
 
-const Progress&  Synchronizer::getProgress() const noexcept
+const Progress& Synchronizer::getProgress() const noexcept
 {
   return m_progress;
 }

@@ -1,8 +1,8 @@
 #include "results_widget.h"
 #include "graphs_data.h"
-#include "models.h"
 #include "graphs_widget.h"
 #include "loading_widget.h"
+#include "models.h"
 #include "table_widget.h"
 
 #include <QLabel>
@@ -13,17 +13,16 @@
 constexpr int pix_size = 200;
 
 Results_Widget::Results_Widget(std::shared_ptr<Table_Data> tdata,
-                               std::shared_ptr<Graphs_Data> gdata,
-                               QWidget *parent)
-  : QWidget(parent)
-  , p_widget_host(new QStackedWidget(this))
-  , p_tabs_tables_graphs(new QTabWidget(this))
-  , p_tables_evs_reqs(new Table_Widget(tdata.get(), this))
-  , p_widget_graphs(new Graphs_Widget(gdata.get(), this))
-  , p_widget_loading(new Loading_Widget(pix_size, this))
+			       std::shared_ptr<Graphs_Data> gdata,
+			       QWidget *parent)
+    : QWidget(parent)
+    , p_widget_host(new QStackedWidget(this))
+    , p_tabs_tables_graphs(new QTabWidget(this))
+    , p_tables_evs_reqs(new Table_Widget(tdata.get(), this))
+    , p_widget_graphs(new Graphs_Widget(gdata.get(), this))
+    , p_widget_loading(new Loading_Widget(pix_size, this))
 {
-
-  auto* main_lo = new QVBoxLayout(this);
+  auto *main_lo = new QVBoxLayout(this);
   main_lo->addWidget(p_widget_host);
 
   p_widget_host->addWidget(new QLabel(tr("Waiting for input parameters"), this));
@@ -36,11 +35,12 @@ Results_Widget::Results_Widget(std::shared_ptr<Table_Data> tdata,
   p_tabs_tables_graphs->addTab(p_widget_graphs, tr("Graphs"));
 
   connect(this, &Results_Widget::signal_ready, p_widget_graphs, &Graphs_Widget::slot_end);
-  connect(p_widget_graphs, &Graphs_Widget::signal_end, [&] { p_widget_host->setCurrentIndex(READY); });
-
+  connect(p_widget_graphs, &Graphs_Widget::signal_end, [&] {
+    p_widget_host->setCurrentIndex(READY);
+  });
 }
 
-Results_Widget::~Results_Widget( ) = default;
+Results_Widget::~Results_Widget() = default;
 
 void Results_Widget::paintEvent(QPaintEvent *event)
 {

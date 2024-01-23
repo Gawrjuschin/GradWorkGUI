@@ -12,7 +12,7 @@ class Loading_Widget : public QWidget
   Q_PROPERTY(QPixmap pixmap READ pixmap WRITE setPixmap NOTIFY pixmapChanged)
 
 public:
-  explicit Loading_Widget(const int pix_size, QWidget *parent = nullptr);
+  explicit Loading_Widget(const int pix_size, QWidget* parent = nullptr);
   ~Loading_Widget();
 
   QPixmap pixmap() const;

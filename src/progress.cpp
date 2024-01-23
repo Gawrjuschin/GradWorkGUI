@@ -4,14 +4,14 @@
 
 #include <QDebug>
 
-Progress::~Progress( ) = default;
+Progress::~Progress() = default;
 
-int Progress::operator ++( )
+int Progress::operator++()
 {
   return m_progress++;
 }
 
-int Progress::operator ++( int )
+int Progress::operator++(int)
 {
   return ++m_progress;
 }

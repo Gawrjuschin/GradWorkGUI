@@ -7,11 +7,9 @@
 #include <array>
 #include <cmath>
 
-
-
 Graphs_Data::Graphs_Data()
-  : m_exp_data(QVector<QVector<QPointF>>(GRAPHS_COUNT))
-  , m_apr_data(QVector<QVector<QPointF>>(GRAPHS_COUNT))
+    : m_exp_data(QVector<QVector<QPointF>>(GRAPHS_COUNT))
+    , m_apr_data(QVector<QVector<QPointF>>(GRAPHS_COUNT))
 {
   construct_series();
 }
@@ -26,12 +24,12 @@ void Graphs_Data::construct_series()
   pen_apr.setWidth(2);
   pen_apr.setStyle(Qt::PenStyle::DotLine);
   for (std::size_t i = 0; i < m_points_exp.size(); ++i) {
-      m_points_exp[i] = new QtCharts::QLineSeries;
-      m_points_apr[i] = new QtCharts::QLineSeries;
-      series(i)->setPen(pen_exp);
-      series_apr(i)->setPen(pen_apr);
-      m_exp_data[i].resize(POINTS_COUNT);
-      m_apr_data[i].resize(POINTS_COUNT);
+    m_points_exp[i] = new QtCharts::QLineSeries;
+    m_points_apr[i] = new QtCharts::QLineSeries;
+    series(i)->setPen(pen_exp);
+    series_apr(i)->setPen(pen_apr);
+    m_exp_data[i].resize(POINTS_COUNT);
+    m_apr_data[i].resize(POINTS_COUNT);
   }
 }
 
@@ -62,10 +60,9 @@ QPointF& Graphs_Data::range(int i)
 
 void Graphs_Data::update()
 {
-  for(auto i = 0; i < m_exp_data.size(); ++i)
-    {
-      m_points_exp[i]->replace(m_exp_data[i]);
-    }
+  for (auto i = 0; i < m_exp_data.size(); ++i) {
+    m_points_exp[i]->replace(m_exp_data[i]);
+  }
 }
 
 void Graphs_Data::update_apr(int i)
@@ -81,19 +78,17 @@ void Graphs_Data::approximate(int index)
   double sy = 0;
   double sxy = 0;
   auto& points = data(index);
-  auto& apr    = data_apr(index);
-  for(auto& pnt : points)
-    {
-      sx += pnt.x();
-      sx2 += pnt.x() * pnt.x();
-      sy += log(pnt.y());
-      sxy += pnt.x() * log(pnt.y());
-    }
+  auto& apr = data_apr(index);
+  for (auto& pnt : points) {
+    sx += pnt.x();
+    sx2 += pnt.x() * pnt.x();
+    sy += log(pnt.y());
+    sxy += pnt.x() * log(pnt.y());
+  }
   auto b = (N * sxy - sx * sy) / (N * sx2 - sx * sx);
   auto a = exp((sy - b * sx) / N);
-  for(auto i = 0; i < N; ++i)
-    {
-      apr[i] = QPointF{ points[i].x(), a*exp(b*points[i].x()) };
-    }
+  for (auto i = 0; i < N; ++i) {
+    apr[i] = QPointF{points[i].x(), a * exp(b * points[i].x())};
+  }
   update_apr(index);
 }

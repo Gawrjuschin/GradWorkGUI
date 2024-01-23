@@ -10,25 +10,25 @@ class Backend_Object;
 
 class Main_Window : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    Main_Window(QWidget *parent = nullptr);
-    ~Main_Window();
+  Main_Window(QWidget* parent = nullptr);
+  ~Main_Window();
 
 private:
-    Input_Widget*   p_input;
-    Backend_Object* p_backend;
-    Results_Widget* p_results;
-    Status_Bar*     p_status;
+  Input_Widget* p_input;
+  Backend_Object* p_backend;
+  Results_Widget* p_results;
+  Status_Bar* p_status;
 
 protected:
-    void closeEvent(QCloseEvent *event) override;
+  void closeEvent(QCloseEvent* event) override;
 
 private:
-    void adjustCentralWidget();
-    void connectComponents();
-    void applyStylesheet(QString filename);
+  void adjustCentralWidget();
+  void connectComponents();
+  void applyStylesheet(QString filename);
 };
 
 #endif // MAIN_WINDOW_H

@@ -7,28 +7,26 @@
 
 class Progress
 {
-
 public:
-    Progress( ) = default;
+  Progress() = default;
 
-    Progress(const Progress&) = delete;
-    Progress& operator =(const Progress&) = delete;
+  Progress(const Progress&) = delete;
+  Progress& operator=(const Progress&) = delete;
 
-    Progress(Progress&&) = delete;
-    Progress& operator=(Progress&&) = delete;
+  Progress(Progress&&) = delete;
+  Progress& operator=(Progress&&) = delete;
 
-    ~Progress( );
+  ~Progress();
 
-    int  operator ++( );
-    int  operator ++(int);
+  int operator++();
+  int operator++(int);
 
-    int  getProgress() const noexcept;
+  int getProgress() const noexcept;
 
-    void resetProgress();
+  void resetProgress();
 
 private:
-    QAtomicInt m_progress{};
-
+  QAtomicInt m_progress{};
 };
 
 #endif // PROGRESS_H

@@ -12,14 +12,10 @@ class Graphs_Switch : public QWidget
 {
   Q_OBJECT
 
-  enum
-  {
-    MENU_BUTTONS = 3,
-    MENUS = 6
-  };
+  enum { MENU_BUTTONS = 3, MENUS = 6 };
 
 public:
-  explicit Graphs_Switch(QWidget *parent = nullptr);
+  explicit Graphs_Switch(QWidget* parent = nullptr);
   ~Graphs_Switch();
 
 protected slots:
@@ -38,17 +34,16 @@ signals:
 
 private:
   std::array<QPushButton*, MENU_BUTTONS> m_vector_buttons;
-  std::array<QMenu*, MENUS>      m_vector_menus;
-  QComboBox*            p_prior_cbox;
-  QPushButton*          p_zoom_in;
-  QPushButton*          p_zoom_out;
-  QPushButton*          p_zoom_reset;
-  int                   m_button_state{0};
+  std::array<QMenu*, MENUS> m_vector_menus;
+  QComboBox* p_prior_cbox;
+  QPushButton* p_zoom_in;
+  QPushButton* p_zoom_out;
+  QPushButton* p_zoom_reset;
+  int m_button_state{0};
 
 private:
   void create_menus();
   void adjust_widget();
-
 };
 
 #endif // GRAPHS_SWITCH_H

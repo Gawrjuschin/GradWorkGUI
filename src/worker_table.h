@@ -10,25 +10,25 @@ struct InputData;
 
 class Worker_Table : public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    explicit Worker_Table(const Synchronizer& synchronizer,
-                          const InputData& input_data,
-                          std::shared_ptr<Table_Data> table_data,
-                          QObject *parent = nullptr);
-    ~Worker_Table();
+  explicit Worker_Table(const Synchronizer& synchronizer,
+			const InputData& input_data,
+			std::shared_ptr<Table_Data> table_data,
+			QObject* parent = nullptr);
+  ~Worker_Table();
 
 public slots:
-    void process();
+  void process();
 
 signals:
-    void signal_finished();
+  void signal_finished();
 
 private:
-    const Synchronizer& r_synchronizer;
-    const InputData& r_input_data;
-    std::shared_ptr<Table_Data> p_tdata;
+  const Synchronizer& r_synchronizer;
+  const InputData& r_input_data;
+  std::shared_ptr<Table_Data> p_tdata;
 };
 
 #endif // WORKER_TABLE_H

@@ -10,7 +10,7 @@ class Graphs_View : public QChartView
 public:
   Graphs_View(QWidget* parent = nullptr);
   Graphs_View(QChart* chart, QWidget* parent = nullptr);
-  ~Graphs_View( );
+  ~Graphs_View();
 
 public slots:
   void slot_zoom_in();
@@ -25,8 +25,7 @@ protected:
   virtual void mouseReleaseEvent(QMouseEvent* event) override;
 
 private:
-  QPoint m_drag_pos{0,0};
-
+  QPoint m_drag_pos{0, 0};
 };
 
 #endif // GRAPHS_VIEW_H

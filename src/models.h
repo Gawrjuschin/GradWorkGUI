@@ -39,19 +39,7 @@ signals:
 private:
   QVector<Request> m_data;
 
-  enum
-  {
-    NUMBER = 0,
-    TYPE,
-    ARRIVE,
-    Q_NUM,
-    CH_NUM,
-    START,
-    SERVE,
-    WAIT,
-    END
-  };
-
+  enum { NUMBER = 0, TYPE, ARRIVE, Q_NUM, CH_NUM, START, SERVE, WAIT, END };
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -89,17 +77,7 @@ signals:
 private:
   QVector<Event> m_data;
 
-  enum
-  {
-    EV_NUM = 0,
-    TIME,
-    TYPE,
-    S_STATUS,
-    Q_STATUS,
-    REQ_NUM,
-    NEXT
-  };
-
+  enum { EV_NUM = 0, TIME, TYPE, S_STATUS, Q_STATUS, REQ_NUM, NEXT };
 };
 
 #endif // MODELS_H

@@ -14,17 +14,14 @@ class Graphs_Widget : public QWidget
 {
   Q_OBJECT
 
-  enum
-  {
-    GRAPHS_COUNT = 6
-  };
+  enum { GRAPHS_COUNT = 6 };
 
 public:
-  explicit Graphs_Widget(Graphs_Data* gdata, QWidget *parent = nullptr);
-  ~Graphs_Widget( );
+  explicit Graphs_Widget(Graphs_Data* gdata, QWidget* parent = nullptr);
+  ~Graphs_Widget();
 
 protected:
-  virtual void paintEvent(QPaintEvent *event) override;
+  virtual void paintEvent(QPaintEvent* event) override;
 
 public slots:
   void slot_end();
@@ -39,15 +36,14 @@ signals:
   void signal_end();
 
 private:
-  Graphs_Switch*    p_chart_switch;
-  Graphs_View*      p_chart_view;
-  std::array<std::unique_ptr<QChart>, GRAPHS_COUNT>  p_vector_charts;
-  Graphs_Data*      p_points_data;
+  Graphs_Switch* p_chart_switch;
+  Graphs_View* p_chart_view;
+  std::array<std::unique_ptr<QChart>, GRAPHS_COUNT> p_vector_charts;
+  Graphs_Data* p_points_data;
 
 private:
   void adjust_graphs(int index);
   void update_series(int index);
-
 };
 
 #endif // GRAPHS_WIDGET_H

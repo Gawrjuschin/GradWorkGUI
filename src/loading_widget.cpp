@@ -9,19 +9,19 @@
 #include <QVBoxLayout>
 
 constexpr int interval_p_text = 1000;
-constexpr int interval_pic = 1000/33;
+constexpr int interval_pic = 1000 / 33;
 constexpr int angle = 10;
 
 Loading_Widget::Loading_Widget(const int pix_size, QWidget* parent)
-  : QWidget(parent)
-  , p_text(new QLabel(tr("Loading")))
-  , p_pic_lbl(new QLabel)
-  , m_pix_size(pix_size)
-  , p_timer_text(new QTimer(this))
-  , p_timer_pic(new QTimer(this))
+    : QWidget(parent)
+    , p_text(new QLabel(tr("Loading")))
+    , p_pic_lbl(new QLabel)
+    , m_pix_size(pix_size)
+    , p_timer_text(new QTimer(this))
+    , p_timer_pic(new QTimer(this))
 {
   auto* main_lo = new QVBoxLayout(this);
-  main_lo->setContentsMargins( {0,0,0,0} );
+  main_lo->setContentsMargins({0, 0, 0, 0});
   main_lo->setAlignment(Qt::AlignCenter);
 
   auto* subwidget = new QWidget(this);
@@ -33,7 +33,7 @@ Loading_Widget::Loading_Widget(const int pix_size, QWidget* parent)
 
   auto* sub_lo = new QVBoxLayout(subwidget);
   sub_lo->setAlignment(Qt::AlignCenter);
-  sub_lo->setContentsMargins( {0,0,0,0} );
+  sub_lo->setContentsMargins({0, 0, 0, 0});
   sub_lo->addWidget(p_text);
 
   p_pic_lbl->setObjectName(QString::fromLatin1("PicLabel"));
@@ -48,7 +48,6 @@ Loading_Widget::Loading_Widget(const int pix_size, QWidget* parent)
 
   connect(p_timer_text, &QTimer::timeout, this, &Loading_Widget::next_text);
   connect(p_timer_pic, &QTimer::timeout, this, &Loading_Widget::next_pic);
-
 }
 
 Loading_Widget::~Loading_Widget() = default;
@@ -58,9 +57,9 @@ void Loading_Widget::rotate_pic(double angle)
   static auto dx = p_proxy->scene()->sceneRect().width() / 2;
   static auto dy = p_proxy->scene()->sceneRect().height() / 2;
   QTransform transform = p_proxy->transform();
-  transform.translate(dx,dx);
-  transform.rotate(angle,Qt::ZAxis);
-  transform.translate(-dx,-dy);
+  transform.translate(dx, dx);
+  transform.rotate(angle, Qt::ZAxis);
+  transform.translate(-dx, -dy);
   p_proxy->setTransform(transform);
 }
 
@@ -93,8 +92,7 @@ void Loading_Widget::slot_start()
 
 void Loading_Widget::next_text()
 {
-  switch(m_stage)
-    {
+  switch (m_stage) {
     case 0:
       p_text->setText(tr("Loading"));
       break;
@@ -107,7 +105,7 @@ void Loading_Widget::next_text()
     case 3:
       p_text->setText(tr("Loading..."));
       break;
-    }
+  }
   ++m_stage;
   m_stage %= 4;
   p_timer_text->start(interval_p_text);
