@@ -93,22 +93,37 @@ private:
 namespace QtCharts {
 class QLineSeries;
 }
+namespace queueing_system {
+struct SimulationResult;
+};
 
 class Graphs_Data
 {
 public:
-  enum { W_0 = 0, W_1, U_0, U_1, Z_0, Z_1, GRAPHS_COUNT = 6, POINTS_COUNT = 1000 };
+  static constexpr double min_load = 0.35;
+  static constexpr double max_load = 0.95;
+  static constexpr long W_0 = 0;
+  static constexpr long W_1 = 0;
+  static constexpr long U_0 = 0;
+  static constexpr long U_1 = 0;
+  static constexpr long Z_0 = 0;
+  static constexpr long Z_1 = 0;
+  static constexpr long GRAPHS_COUNT = 6;
+  static constexpr long POINTS_COUNT = 1000;
 
   Graphs_Data();
   ~Graphs_Data();
 
-  QtCharts::QLineSeries* series(int i);
-  QtCharts::QLineSeries* series_apr(int i);
+  QtCharts::QLineSeries* series(const int i) noexcept;
+  QtCharts::QLineSeries* series_apr(int i) noexcept;
 
-  QVector<QPointF>& data(int i);
-  QVector<QPointF>& data_apr(int i);
+  void load(int point, const queueing_system::SimulationResult& result) noexcept;
+  void calc_Yranges() noexcept;
 
-  QPointF& range(int i);
+  QVector<QPointF>& data(int i) noexcept;
+  QVector<QPointF>& data_apr(int i) noexcept;
+
+  QPointF& range(int i) noexcept;
 
   void update();
   void update_apr(int i);
@@ -116,12 +131,14 @@ public:
   void approximate(int index);
 
 private:
-  std::array<QtCharts::QLineSeries*, GRAPHS_COUNT> m_points_exp;
-  std::array<QtCharts::QLineSeries*, GRAPHS_COUNT> m_points_apr;
+  std::array<QtCharts::QLineSeries*, GRAPHS_COUNT> m_points_exp{};
+  std::array<QtCharts::QLineSeries*, GRAPHS_COUNT> m_points_apr{};
 
-  QVector<QVector<QPointF>> m_exp_data;
-  QVector<QVector<QPointF>> m_apr_data;
-  std::array<QPointF, GRAPHS_COUNT> m_ranges;
+  std::array<QVector<QPointF>, GRAPHS_COUNT> m_exp_data{};
+  std::array<QVector<QPointF>, GRAPHS_COUNT> m_apr_data{};
+
+  // Это по оси Y. Ось X известна
+  std::array<QPointF, GRAPHS_COUNT> m_Yranges{};
 
 private:
   void construct_series();

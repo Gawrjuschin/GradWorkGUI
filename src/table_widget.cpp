@@ -51,11 +51,11 @@ Table_Widget::Table_Widget(Table_Data* tdata, QWidget* parent)
 
 Table_Widget::~Table_Widget() = default;
 
-void Table_Widget::paintEvent(QPaintEvent* event)
-{
-  QStyleOption opt;
-  opt.initFrom(this);
-  QPainter p(this);
-  style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-  QWidget::paintEvent(event);
-}
+// void Table_Widget::paintEvent(QPaintEvent* event)
+// {
+//   QStyleOption opt;
+//   opt.initFrom(this);
+//   QPainter p(this);
+//   style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+//   QWidget::paintEvent(event);
+// }

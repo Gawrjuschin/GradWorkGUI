@@ -17,8 +17,10 @@ constexpr int min_evnum = 1'000;
 constexpr int max_evnum = 1'000'000;
 constexpr int max_channels = 16;
 
-Input_Widget::Input_Widget(QWidget* parent)
+Input_Widget::Input_Widget(double min_load, double max_load, QWidget* parent)
     : QWidget(parent)
+    , m_min_load(min_load)
+    , m_max_load(max_load)
     , p_parameter_desc(new QLabel(tr("empty"), this))
     , p_requests_desc(new QLabel(tr("empty"), this))
     , p_mu_input(new QDoubleSpinBox(this))
@@ -58,9 +60,7 @@ Input_Widget::Input_Widget(QWidget* parent)
   // Настройка виджетов параметров системы
   {
     auto* load_lbl = new QLabel(tr("Load range:"), this);
-    auto* load_desc
-	= new QLabel(QString(tr("[%1;  %2]")).arg(InputData::min_load).arg(InputData::max_load),
-		     this);
+    auto* load_desc = new QLabel(QString(tr("[%1;  %2]")).arg(m_min_load).arg(m_max_load), this);
     auto* par_lbl = new QLabel(tr("Lambda range:"), this);
 
     auto* requests_lbl = new QLabel(tr("AVG requests:"), this);
@@ -82,18 +82,16 @@ Input_Widget::Input_Widget(QWidget* parent)
     p_pr_input->setSingleStep(single_step);
     p_parameter_desc->setText(
 	QString(tr("[%1;  %2]"))
-	    .arg(QString().setNum(p_mu_input->value() * p_ch_input->value() * InputData::min_load,
-				  'g',
-				  4))
-	    .arg(QString().setNum(p_mu_input->value() * p_ch_input->value() * InputData::max_load,
-				  'g',
-				  4)));
+	    .arg(QString().setNum(p_mu_input->value() * p_ch_input->value() * m_min_load, 'g', 4))
+	    .arg(QString().setNum(p_mu_input->value() * p_ch_input->value() * m_max_load, 'g', 4)));
     p_requests_desc->setText(
 	QString(tr("[%1;  %2]"))
-	    .arg(QString().setNum(
-		1 / (p_mu_input->value() * p_ch_input->value() * InputData::max_load), 'g', 4))
-	    .arg(QString().setNum(
-		1 / (p_mu_input->value() * p_ch_input->value() * InputData::min_load), 'g', 4)));
+	    .arg(QString().setNum(1 / (p_mu_input->value() * p_ch_input->value() * m_max_load),
+				  'g',
+				  4))
+	    .arg(QString().setNum(1 / (p_mu_input->value() * p_ch_input->value() * m_min_load),
+				  'g',
+				  4)));
 
     system_lo->addWidget(load_lbl, 0, 0);
     system_lo->addWidget(load_desc, 0, 1);
@@ -171,22 +169,15 @@ void Input_Widget::update()
 {
   p_parameter_desc->setText(
       QString(tr("[%1;  %2]"))
-	  .arg(QString().setNum(p_mu_input->value() * p_ch_input->value() * InputData::min_load,
-				'g',
-				4))
-	  .arg(QString().setNum(p_mu_input->value() * p_ch_input->value() * InputData::max_load,
-				'g',
-				4)));
+	  .arg(QString().setNum(p_mu_input->value() * p_ch_input->value() * m_min_load, 'g', 4))
+	  .arg(QString().setNum(p_mu_input->value() * p_ch_input->value() * m_max_load, 'g', 4)));
   p_requests_desc->setText(
       QString(tr("[%1;  %2]"))
 	  .arg(
-	      QString().setNum(1 / (p_mu_input->value() * p_ch_input->value() * InputData::max_load),
-			       'g',
-			       4))
-	  .arg(
-	      QString().setNum(1 / (p_mu_input->value() * p_ch_input->value() * InputData::min_load),
-			       'g',
-			       4)));
+	      QString().setNum(1 / (p_mu_input->value() * p_ch_input->value() * m_max_load), 'g', 4))
+	  .arg(QString().setNum(1 / (p_mu_input->value() * p_ch_input->value() * m_min_load),
+				'g',
+				4)));
 }
 
 void Input_Widget::load_data()

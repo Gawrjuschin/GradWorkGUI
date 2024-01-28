@@ -1,80 +1,92 @@
 #include "backend_object.h"
-#include "graphs_data.h"
-#include "input_data.h"
-#include "synchronizer.h"
-#include "table_data.h"
-#include "worker_object.h"
-#include "worker_table.h"
+// #include "graphs_data.h"
+// #include "input_data.h"
+// // #include "synchronizer.h"
+// #include "table_data.h"
+// #include "threadscontrol.h"
+// #include "worker_object.h"
+// #include "worker_table.h"
 
-#include <QHBoxLayout>
-#include <QHeaderView>
-#include <QLabel>
-#include <QTabWidget>
-#include <QTableView>
+// #include <QHBoxLayout>
+// #include <QHeaderView>
+// #include <QLabel>
+// #include <QTabWidget>
+// #include <QTableView>
 
-#include <QThread>
-#include <QThreadPool>
+// #include <QThread>
+// #include <QThreadPool>
 
-Backend_Object::Backend_Object(const InputData& input_data, QObject* parent)
-    : QObject(parent)
-    , r_input_data(input_data)
-    , p_gdata(std::make_shared<Graphs_Data>())
-    , p_tdata(std::make_shared<Table_Data>())
-    , p_threadPool(std::make_unique<QThreadPool>())
-{}
+// struct BackendDataImpl
+// {
+//   Graphs_Data gdata{};
+//   Table_Data tdata{};
+// };
 
-Backend_Object::~Backend_Object() = default;
+// Backend_Object::Backend_Object(const InputData& input_data, QObject* parent)
+//     : QObject(parent)
+//     , r_input_data(input_data)
+//     , p_data(std::make_unique<BackendDataImpl>())
+//     , p_threadPool(new QThreadPool(this))
+// {}
 
-const Progress& Backend_Object::getProgress() const noexcept
-{
-  return m_synchronizer.getProgress();
-}
+// Backend_Object::~Backend_Object() = default;
 
-std::shared_ptr<Graphs_Data> Backend_Object::graphs_data()
-{
-  return p_gdata;
-}
+// const Progress& Backend_Object::getProgress() const noexcept
+// {
+//   return m_synchronizer.getProgress();
+// }
 
-std::shared_ptr<Table_Data> Backend_Object::table_data()
-{
-  return p_tdata;
-}
+// const Graphs_Data& Backend_Object::graphs_data()
+// {
+//   return p_data->gdata;
+// }
 
-void Backend_Object::slot_start()
-{
-  m_synchronizer.setThreadNum(r_input_data.threads);
-  p_threadPool->setMaxThreadCount(r_input_data.threads);
+// const Table_Data& Backend_Object::table_data()
+// {
+//   return p_data->tdata;
+// }
 
-  for (int thread_num = 0; thread_num < r_input_data.threads; ++thread_num) {
-    p_threadPool->start(GetWorkerObjectFunction(m_synchronizer, r_input_data, p_gdata, thread_num));
-  }
+// void Backend_Object::slot_start()
+// {
+//   m_synchronizer.setThreadNum(r_input_data.threads);
+//   p_threadPool->setMaxThreadCount(r_input_data.threads);
 
-  p_threadPool->waitForDone();
+//   for (int thread_num = 0; thread_num < r_input_data.threads; ++thread_num) {
+//     p_threadPool->start(MakeWorkPartObject(m_synchronizer,
+// 					   r_input_data,
+// 					   p_data->gdata,
+// 					   {thread_num * Graphs_Data::POINTS_COUNT,
+// 					    (thread_num + 1) * Graphs_Data::POINTS_COUNT}));
+//   }
 
-  if (!m_synchronizer.canceled()) {
-    p_gdata->update();
-    GetWorkerTableFunction(m_synchronizer, r_input_data, table_data())();
-  }
-  m_synchronizer.resetBarrier();
-  m_synchronizer.resetCancel();
+//   p_threadPool->waitForDone();
 
-  if (!m_synchronizer.canceled()) {
-    emit signal_done();
-  }
-}
+//   // TODO: расчитать пределы графов
 
-void Backend_Object::slot_pause()
-{
-  m_synchronizer.pause();
-}
+//   if (!m_synchronizer.canceled()) {
+//     p_data->gdata.update();
+//     GetWorkerTableFunction(m_synchronizer, r_input_data, p_data->tdata)();
+//   }
+//   m_synchronizer.resetBarrier();
+//   m_synchronizer.resetCancel();
 
-void Backend_Object::slot_resume()
-{
-  m_synchronizer.resume();
-}
+//   if (!m_synchronizer.canceled()) {
+//     emit signal_done();
+//   }
+// }
 
-void Backend_Object::slot_stop()
-{
-  m_synchronizer.cancel();
-  m_synchronizer.getProgress().resetProgress();
-}
+// void Backend_Object::slot_pause()
+// {
+//   m_synchronizer.pause();
+// }
+
+// void Backend_Object::slot_resume()
+// {
+//   m_synchronizer.resume();
+// }
+
+// void Backend_Object::slot_stop()
+// {
+//   m_synchronizer.cancel();
+//   m_synchronizer.getProgress().resetProgress();
+// }

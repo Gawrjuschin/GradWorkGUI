@@ -16,7 +16,7 @@ class Input_Widget : public QWidget
   Q_OBJECT
 
 public:
-  explicit Input_Widget(QWidget* parent = nullptr);
+  explicit Input_Widget(double min_load, double max_load, QWidget* parent = nullptr);
   ~Input_Widget();
 
   const InputData& data() const noexcept;
@@ -40,6 +40,8 @@ signals:
   void sigStop();
 
 private:
+  double m_min_load;
+  double m_max_load;
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   QLabel* p_parameter_desc;
   QLabel* p_requests_desc;

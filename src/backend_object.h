@@ -1,50 +1,50 @@
 #ifndef BACKEND_OBJECT_H
 #define BACKEND_OBJECT_H
 
-#include "synchronizer.h"
+// #include "synchronizer.h"
 
-#include <QObject>
-#include <memory>
+// #include <QObject>
+// #include <memory>
 
-class QThreadPool;
+// class QThreadPool;
 
-class Graphs_Data;
-class Table_Data;
-class Worker_Object;
-class Worker_Table;
-class Progress;
+// class Graphs_Data;
+// class Table_Data;
+// class Worker_Object;
+// class Worker_Table;
+// class Progress;
 
-struct InputData;
-struct TableData;
+// struct InputData;
 
-class Backend_Object : public QObject
-{
-  Q_OBJECT
+// struct BackendDataImpl;
 
-public:
-  explicit Backend_Object(const InputData &input_data, QObject *parent = nullptr);
-  ~Backend_Object();
+// class Backend_Object : public QObject
+// {
+//   Q_OBJECT
 
-  std::shared_ptr<Graphs_Data> graphs_data();
-  std::shared_ptr<Table_Data> table_data();
-  const Progress &getProgress() const noexcept;
+// public:
+//   explicit Backend_Object(const InputData &input_data, QObject *parent = nullptr);
+//   ~Backend_Object() override;
 
-public slots:
-  void slot_start();
-  void slot_pause();
-  void slot_resume();
-  void slot_stop();
+//   const Graphs_Data &graphs_data();
+//   const Table_Data &table_data();
+//   const Progress &getProgress() const noexcept;
 
-signals:
-  void signal_done();
+// public slots:
+//   void slot_start();
+//   void slot_pause();
+//   void slot_resume();
+//   void slot_stop();
 
-private:
-  const InputData &r_input_data;
-  // Data:
-  std::shared_ptr<Graphs_Data> p_gdata;
-  std::shared_ptr<Table_Data> p_tdata;
-  std::unique_ptr<QThreadPool> p_threadPool;
-  Synchronizer m_synchronizer{};
-};
+// signals:
+//   void signal_done();
+
+// private:
+//   const InputData &r_input_data;
+//   // Data:
+//   std::unique_ptr<BackendDataImpl> p_data;
+//   QThreadPool *p_threadPool;
+//   Synchronizer m_synchronizer{};
+// };
 
 #endif // BACKEND_OBJECT_H

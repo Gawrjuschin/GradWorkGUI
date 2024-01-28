@@ -35,7 +35,7 @@ Graphs_Widget::Graphs_Widget(Graphs_Data* gdata, QWidget* parent)
   for (std::size_t i = 0; i < p_vector_charts.size(); ++i) {
     adjust_graphs(i);
 
-    connect(p_points_data->series(i), &QLineSeries::pointsReplaced, [=] { update_series(i); });
+    // connect(p_points_data->series(i), &QLineSeries::pointsReplaced, [=] { update_series(i); });
   }
 
   connect(p_chart_switch, &Graphs_Switch::signal_show, this, &Graphs_Widget::slot_show);
@@ -112,9 +112,6 @@ void Graphs_Widget::adjust_graphs(int i)
   p_vector_charts[i]->setTitle(QString((tr("Graph of dependency %1_%2(λ)")))
 				   .arg(i >= 4 ? 'Z' : (i >= 2 ? 'U' : 'W'))
 				   .arg((i % 2) == 1 ? '1' : '0'));
-  qDebug() << QString((tr("Graph of dependency %1_%2(λ)")))
-		  .arg(i >= 4 ? 'Z' : (i >= 2 ? 'U' : 'W'))
-		  .arg((i % 2) == 1 ? '1' : '0');
 
   p_vector_charts[i]->setBackgroundVisible(false);
 
@@ -150,6 +147,7 @@ void Graphs_Widget::update_series(int index)
 
   QPointF x_range(points.front().x(), points.back().x());
   QPointF y_range = p_points_data->range(index);
+  qDebug() << "Y range: " << y_range;
 
   auto* x_axis = static_cast<QValueAxis*>(p_vector_charts[index]->axes().front());
   auto* y_axis = static_cast<QValueAxis*>(p_vector_charts[index]->axes().back());
@@ -187,6 +185,12 @@ void Graphs_Widget::slot_deapproximate(int index)
 
 void Graphs_Widget::slot_end()
 {
+  for (std::size_t graph_number{}; graph_number < Graphs_Data::GRAPHS_COUNT; ++graph_number) {
+    update_series(graph_number);
+  }
+  for (const auto& point : p_points_data->data(0)) {
+    qDebug() << point;
+  }
   slot_show(0);
   emit signal_end();
 }

@@ -12,14 +12,12 @@
 
 constexpr int pix_size = 200;
 
-Results_Widget::Results_Widget(std::shared_ptr<Table_Data> tdata,
-			       std::shared_ptr<Graphs_Data> gdata,
-			       QWidget *parent)
+Results_Widget::Results_Widget(Table_Data *tdata, Graphs_Data *gdata, QWidget *parent)
     : QWidget(parent)
     , p_widget_host(new QStackedWidget(this))
     , p_tabs_tables_graphs(new QTabWidget(this))
-    , p_tables_evs_reqs(new Table_Widget(tdata.get(), this))
-    , p_widget_graphs(new Graphs_Widget(gdata.get(), this))
+    , p_tables_evs_reqs(new Table_Widget(tdata, this))
+    , p_widget_graphs(new Graphs_Widget(gdata, this))
     , p_widget_loading(new Loading_Widget(pix_size, this))
 {
   auto *main_lo = new QVBoxLayout(this);

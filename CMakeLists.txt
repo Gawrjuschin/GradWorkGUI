@@ -10,7 +10,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
@@ -19,41 +19,45 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
 find_package(QT NAMES Qt5 COMPONENTS Core Widgets Charts REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets Charts REQUIRED)
 
-set(PROJECT_SOURCES src/main.cpp
-    src/backend_object.h
-    src/backend_object.cpp
-    src/graphs_data.h
-    src/graphs_data.cpp
-    src/graphs_switch.cpp
-    src/graphs_switch.h
-    src/graphs_view.cpp
-    src/graphs_view.h
-    src/graphs_widget.h
-    src/graphs_widget.cpp
-    src/input_data.h
-    src/input_widget.h
-    src/input_widget.cpp
-    src/loading_widget.h
-    src/loading_widget.cpp
-    src/main_window.h
-    src/main_window.cpp
-    src/models.h
-    src/models.cpp
-    src/progress.h
-    src/progress.cpp
-    src/results_widget.h
-    src/results_widget.cpp
-    src/status_bar.h
-    src/status_bar.cpp
-    src/synchronizer.h
-    src/synchronizer.cpp
-    src/table_data.h
-    src/table_data.cpp
-    src/table_widget.h
-    src/table_widget.cpp
-    src/worker_object.h
-    src/worker_table.h
-    src/resources.qrc
+set(PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/backend_object.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/backend_object.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_data.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_switch.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_switch.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_view.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_view.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/input_data.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/input_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/input_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/loading_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/loading_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/models.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/models.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/progress.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/progress.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/results_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/results_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/status_bar.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/status_bar.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/synchronizer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/synchronizer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/table_data.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/table_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/worker_object.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/worker_table.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/resources.qrc
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.cpp
     )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

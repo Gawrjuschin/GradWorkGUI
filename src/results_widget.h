@@ -17,9 +17,7 @@ class Results_Widget : public QWidget
   Q_OBJECT
 
 public:
-  Results_Widget(std::shared_ptr<Table_Data> tdata,
-		 std::shared_ptr<Graphs_Data> gdata,
-		 QWidget* parent = nullptr);
+  Results_Widget(Table_Data* tdata, Graphs_Data* gdata, QWidget* parent = nullptr);
   ~Results_Widget();
 
 protected:

@@ -15,7 +15,7 @@ public:
   ~Table_Widget();
 
 protected:
-  void paintEvent(QPaintEvent* event) override;
+  // void paintEvent(QPaintEvent* event) override;
 
 private:
   QTableView* p_tab_reqs;
