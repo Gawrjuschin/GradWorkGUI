@@ -5,6 +5,9 @@
 #include <QVector>
 #include <array>
 
+#include <QueSys/queueing_system.h>
+#include <cmath>
+
 class PointsData
 {
 public:
@@ -16,86 +19,111 @@ public:
     kWaitFirst,
     kWaitSecond,
     kUtilityFirst,
-    kUtilitySecont,
-    kAVGFirst, // number of requests (L from Little)
+    kUtilitySecond,
+    kAVGFirst,
     kAVGSecond
   };
 
   PointsData()
-      : m_points_experimantal{QVector<QPointF>(kPointsCount),
-			      QVector<QPointF>(kPointsCount),
-			      QVector<QPointF>(kPointsCount),
-			      QVector<QPointF>(kPointsCount),
-			      QVector<QPointF>(kPointsCount),
-			      QVector<QPointF>(kPointsCount)}
-      , m_points_approximation{QVector<QPointF>(kPointsCount),
-			       QVector<QPointF>(kPointsCount),
-			       QVector<QPointF>(kPointsCount),
-			       QVector<QPointF>(kPointsCount),
-			       QVector<QPointF>(kPointsCount),
-			       QVector<QPointF>(kPointsCount)}
-  {}
+      : m_experimantal{QVector<QPointF>(kPointsCount),
+                       QVector<QPointF>(kPointsCount),
+                       QVector<QPointF>(kPointsCount),
+                       QVector<QPointF>(kPointsCount),
+                       QVector<QPointF>(kPointsCount),
+                       QVector<QPointF>(kPointsCount)},
+        m_approximation{
+            QVector<QPointF>(kPointsCount), QVector<QPointF>(kPointsCount),
+            QVector<QPointF>(kPointsCount), QVector<QPointF>(kPointsCount),
+            QVector<QPointF>(kPointsCount), QVector<QPointF>(kPointsCount)} {
+    // Выделяю память для точек
+    std::for_each(
+        begin(m_experimantal), end(m_experimantal),
+        [](QVector<QPointF>& points) { points.resize(kPointsCount); });
+    std::for_each(
+        begin(m_approximation), end(m_approximation),
+        [](QVector<QPointF>& points) { points.resize(kPointsCount); });
+  }
 
-  void ReplacePoints(int graph, QVector<QPointF>&& points)
-  {
-    Q_ASSERT(Graph::kWaitFirst <= graph && graph <= Graph::kAVGSecond);
-    m_points_experimantal.at(graph).swap(points);
+  void load_result(int index,
+                   const queueing_system::SimulationResult& result) noexcept {
+    m_experimantal[kWaitFirst][index].setY(result.avg_wait.first);
+    m_experimantal[kWaitSecond][index].setY(result.avg_wait.second);
+    m_experimantal[kUtilityFirst][index].setY(result.avg_utility.first);
+    m_experimantal[kUtilitySecond][index].setY(result.avg_utility.second);
+    m_experimantal[kAVGFirst][index].setY(result.avg_requests.first);
+    m_experimantal[kAVGSecond][index].setY(result.avg_requests.second);
+  }
 
-    // TODO: расчёт аппроксимации
-    {
-      std::copy(std::begin(m_points_experimantal.at(graph)),
-		std::end(m_points_experimantal.at(graph)),
-		std::begin(m_points_approximation.at(graph)));
-    }
-
-    // Расчёт границ
-    {
-      const auto [max, min] = std::minmax_element(std::cbegin(m_points_experimantal.at(graph)),
-						  std::cend(m_points_experimantal.at(graph)),
-						  [](const QPointF& lhs, const QPointF& rhs) {
-						    return lhs.x() < rhs.x();
-						  });
-      m_y_ranges.at(graph) = QPointF{min->x(), max->x()};
+  void process_results() {
+    for (int graph = 0; graph < kGraphsCount; ++graph) {
+      calc_ranges(graph);
+      approximate(graph);
     }
   }
 
-  const QVector<QPointF>& PointsExperimental(int graph) const noexcept
-  {
+  const QVector<QPointF>& pointsExperimental(int graph) const noexcept {
     Q_ASSERT(Graph::kWaitFirst <= graph && graph <= Graph::kAVGSecond);
-    return m_points_experimantal.at(graph);
+    return m_experimantal.at(graph);
   }
 
-  const QVector<QPointF>& PointsApproximation(int graph) const noexcept
-  {
+  const QVector<QPointF>& pointsApproximation(int graph) const noexcept {
     Q_ASSERT(Graph::kWaitFirst <= graph && graph <= Graph::kAVGSecond);
-    return m_points_approximation.at(graph);
+    return m_approximation.at(graph);
   }
 
   QPointF RangeX(int graph) const noexcept
   {
     Q_ASSERT(Graph::kWaitFirst <= graph && graph <= Graph::kAVGSecond);
-    const auto& points = m_points_experimantal.at(graph / 2);
+    const auto& points = m_experimantal[graph];
     return {points.front().x(), points.back().x()};
   }
   QPointF RangeY(int graph) const noexcept
   {
     Q_ASSERT(Graph::kWaitFirst <= graph && graph <= Graph::kAVGSecond);
-    return m_y_ranges.at(graph / 2);
+    return m_y_ranges[graph];
   }
 
 private:
-  std::array<QVector<QPointF>, kGraphsCount> m_points_experimantal;
-  std::array<QVector<QPointF>, kPointsCount> m_points_approximation;
+  void calc_ranges(int graph) {
+    const auto [max, min] = std::minmax_element(
+        std::cbegin(m_experimantal[graph]), std::cend(m_experimantal[graph]),
+        [](const QPointF& lhs, const QPointF& rhs) {
+          return lhs.x() < rhs.x();
+        });
+    m_y_ranges.at(graph) = QPointF{min->x(), max->x()};
+  }
 
-  std::array<QPointF, kPointsCount / 2> m_y_ranges{};
+  void approximate(const int graph) { // Применяется МНК к указанному графику
+    constexpr int N = kPointsCount;
+    double sx = 0;
+    double sx2 = 0;
+    double sy = 0;
+    double sxy = 0;
+    for (auto& point : m_experimantal[graph]) {
+      sx += point.x();
+      sx2 += point.x() * point.x();
+      sy += std::log(point.y());
+      sxy += point.x() * std::log(point.y());
+    }
+    auto b = (N * sxy - sx * sy) / (N * sx2 - sx * sx);
+    auto a = std::exp((sy - b * sx) / N);
+    for (auto index = 0; index < N; ++index) {
+      m_approximation[graph][index] =
+          QPointF{m_experimantal[graph][index].x(),
+                  a * exp(b * m_experimantal[graph][index].x())};
+    }
+  }
+
+private:
+  std::array<QVector<QPointF>, kPointsCount> m_experimantal;
+  std::array<QVector<QPointF>, kPointsCount> m_approximation;
+
+  std::array<QPointF, kGraphsCount> m_y_ranges{};
 };
 
 namespace QtCharts {
 class QLineSeries;
 }
-namespace queueing_system {
-struct SimulationResult;
-};
 
 class Graphs_Data
 {
@@ -117,7 +145,16 @@ public:
   QtCharts::QLineSeries* series(const int i) noexcept;
   QtCharts::QLineSeries* series_apr(int i) noexcept;
 
-  void load(int point, const queueing_system::SimulationResult& result) noexcept;
+  void load(int point,
+            const queueing_system::SimulationResult& result) noexcept {
+    m_exp_data[W_0][point].setY(result.avg_wait.first);
+    m_exp_data[W_1][point].setY(result.avg_wait.second);
+    m_exp_data[U_0][point].setY(result.avg_utility.first);
+    m_exp_data[U_1][point].setY(result.avg_utility.second);
+    m_exp_data[Z_0][point].setY(result.avg_requests.first);
+    m_exp_data[Z_1][point].setY(result.avg_requests.second);
+  }
+
   void calc_Yranges() noexcept;
 
   QVector<QPointF>& data(int i) noexcept;

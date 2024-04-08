@@ -91,7 +91,7 @@ void Graphs_Switch::create_menus()
     connect(act, &QAction::triggered, this, &Graphs_Switch::slot_approximation);
     act = m_vector_menus[i]->addAction(tr("Save"));
     connect(act, &QAction::triggered, this, &Graphs_Switch::slot_save);
-    connect(m_vector_menus[i], &QMenu::aboutToShow, [=] {
+    connect(m_vector_menus[i], &QMenu::aboutToShow, [this, i] {
       m_button_state = i;
       p_prior_cbox->setCurrentIndex(0);
       emit signal_show(m_button_state);

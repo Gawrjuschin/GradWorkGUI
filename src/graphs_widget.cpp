@@ -19,12 +19,9 @@ constexpr int LABEL_FONTSIZE = 12;
 constexpr int TITLE_FONTSIZE = 18;
 
 Graphs_Widget::Graphs_Widget(Graphs_Data* gdata, QWidget* parent)
-    : QWidget(parent)
-    , p_chart_switch(new Graphs_Switch(this))
-    , p_chart_view(new Graphs_View(nullptr, this))
-    , p_vector_charts{}
-    , p_points_data(gdata)
-{
+    : QWidget(parent), p_chart_switch(new Graphs_Switch(this)),
+      p_chart_view(new Graphs_View(nullptr, this)), p_vector_charts{},
+      p_points_data(gdata) {
   auto* main_lo = new QVBoxLayout(this);
   auto* menu_lo = new QHBoxLayout;
   menu_lo->addWidget(p_chart_switch, 0);
@@ -35,32 +32,27 @@ Graphs_Widget::Graphs_Widget(Graphs_Data* gdata, QWidget* parent)
   for (std::size_t i = 0; i < p_vector_charts.size(); ++i) {
     adjust_graphs(i);
 
-    // connect(p_points_data->series(i), &QLineSeries::pointsReplaced, [=] { update_series(i); });
+    // connect(p_points_data->series(i), &QLineSeries::pointsReplaced, [=] {
+    // update_series(i); });
   }
 
-  connect(p_chart_switch, &Graphs_Switch::signal_show, this, &Graphs_Widget::slot_show);
-  connect(p_chart_switch,
-	  &Graphs_Switch::signal_approximate,
-	  this,
-	  &Graphs_Widget::slot_approximate);
-  connect(p_chart_switch,
-	  &Graphs_Switch::signal_deapproximate,
-	  this,
-	  &Graphs_Widget::slot_deapproximate);
-  connect(p_chart_switch, &Graphs_Switch::signal_save, p_chart_view, &Graphs_View::slot_save);
-  connect(p_chart_switch, &Graphs_Switch::signal_zoom_in, p_chart_view, &Graphs_View::slot_zoom_in);
-  connect(p_chart_switch,
-	  &Graphs_Switch::signal_zoom_out,
-	  p_chart_view,
-	  &Graphs_View::slot_zoom_out);
-  connect(p_chart_switch,
-	  &Graphs_Switch::signal_zoom_reset,
-	  p_chart_view,
-	  &Graphs_View::slot_zoom_reset);
+  connect(p_chart_switch, &Graphs_Switch::signal_show, this,
+          &Graphs_Widget::slot_show);
+  connect(p_chart_switch, &Graphs_Switch::signal_approximate, this,
+          &Graphs_Widget::slot_approximate);
+  connect(p_chart_switch, &Graphs_Switch::signal_deapproximate, this,
+          &Graphs_Widget::slot_deapproximate);
+  connect(p_chart_switch, &Graphs_Switch::signal_save, p_chart_view,
+          &Graphs_View::slot_save);
+  connect(p_chart_switch, &Graphs_Switch::signal_zoom_in, p_chart_view,
+          &Graphs_View::slot_zoom_in);
+  connect(p_chart_switch, &Graphs_Switch::signal_zoom_out, p_chart_view,
+          &Graphs_View::slot_zoom_out);
+  connect(p_chart_switch, &Graphs_Switch::signal_zoom_reset, p_chart_view,
+          &Graphs_View::slot_zoom_reset);
 }
 
-void Graphs_Widget::adjust_graphs(int i)
-{
+void Graphs_Widget::adjust_graphs(int i) {
   QFont labels_font;
   labels_font.setPixelSize(LABEL_FONTSIZE);
   QPen axis_pen(Qt::black);
@@ -110,14 +102,16 @@ void Graphs_Widget::adjust_graphs(int i)
   p_vector_charts[i]->setTitleFont(title_font);
   p_vector_charts[i]->setTitleBrush(title_brush);
   p_vector_charts[i]->setTitle(QString((tr("Graph of dependency %1_%2(λ)")))
-				   .arg(i >= 4 ? 'Z' : (i >= 2 ? 'U' : 'W'))
-				   .arg((i % 2) == 1 ? '1' : '0'));
+                                   .arg(i >= 4 ? 'Z' : (i >= 2 ? 'U' : 'W'))
+                                   .arg((i % 2) == 1 ? '1' : '0'));
 
   p_vector_charts[i]->setBackgroundVisible(false);
 
   p_vector_charts[i]->legend()->setAlignment(Qt::AlignBottom);
-  p_vector_charts[i]->legend()->markers().at(0)->setLabel(tr("Experimental values"));
-  p_vector_charts[i]->legend()->markers().at(1)->setLabel(tr("Exponential approximation"));
+  p_vector_charts[i]->legend()->markers().at(0)->setLabel(
+      tr("Experimental values"));
+  p_vector_charts[i]->legend()->markers().at(1)->setLabel(
+      tr("Exponential approximation"));
 
   p_vector_charts[i]->layout()->setContentsMargins(0, 0, 0, 0);
   p_vector_charts[i]->setMargins({0, 0, 0, 0});
@@ -128,8 +122,7 @@ void Graphs_Widget::adjust_graphs(int i)
 
 Graphs_Widget::~Graphs_Widget() = default;
 
-void Graphs_Widget::paintEvent(QPaintEvent* event)
-{
+void Graphs_Widget::paintEvent(QPaintEvent* event) {
   QStyleOption opt;
   opt.initFrom(this);
   QPainter p(this);
@@ -137,8 +130,7 @@ void Graphs_Widget::paintEvent(QPaintEvent* event)
   QWidget::paintEvent(event);
 }
 
-void Graphs_Widget::update_series(int index)
-{
+void Graphs_Widget::update_series(int index) {
   auto points = p_points_data->series(index)->points();
 
   if (points.empty()) {
@@ -149,8 +141,10 @@ void Graphs_Widget::update_series(int index)
   QPointF y_range = p_points_data->range(index);
   qDebug() << "Y range: " << y_range;
 
-  auto* x_axis = static_cast<QValueAxis*>(p_vector_charts[index]->axes().front());
-  auto* y_axis = static_cast<QValueAxis*>(p_vector_charts[index]->axes().back());
+  auto* x_axis =
+      static_cast<QValueAxis*>(p_vector_charts[index]->axes().front());
+  auto* y_axis =
+      static_cast<QValueAxis*>(p_vector_charts[index]->axes().back());
 
   x_axis->setRange(x_range.x(), x_range.y());
   y_axis->setRange(y_range.x(), y_range.y());
@@ -161,15 +155,13 @@ void Graphs_Widget::update_series(int index)
   y_axis->applyNiceNumbers();
 }
 
-void Graphs_Widget::slot_show(int index)
-{
+void Graphs_Widget::slot_show(int index) {
   if (p_chart_view->chart() != p_vector_charts[index].get()) {
     p_chart_view->setChart(p_vector_charts[index].get());
   }
 }
 
-void Graphs_Widget::slot_approximate(int index)
-{
+void Graphs_Widget::slot_approximate(int index) {
   if (p_points_data->series_apr(index)->count() == 0) {
     p_points_data->approximate(index);
   }
@@ -177,15 +169,14 @@ void Graphs_Widget::slot_approximate(int index)
   p_chart_view->repaint();
 }
 
-void Graphs_Widget::slot_deapproximate(int index)
-{
+void Graphs_Widget::slot_deapproximate(int index) {
   p_points_data->series_apr(index)->hide();
   p_chart_view->repaint();
 }
 
-void Graphs_Widget::slot_end()
-{
-  for (std::size_t graph_number{}; graph_number < Graphs_Data::GRAPHS_COUNT; ++graph_number) {
+void Graphs_Widget::slot_end() {
+  for (std::size_t graph_number{}; graph_number < Graphs_Data::GRAPHS_COUNT;
+       ++graph_number) {
     update_series(graph_number);
   }
   for (const auto& point : p_points_data->data(0)) {
@@ -195,8 +186,7 @@ void Graphs_Widget::slot_end()
   emit signal_end();
 }
 
-void Graphs_Widget::slot_stop()
-{
-  p_chart_view->setDisabled(false);   //Включаем меню
-  p_chart_switch->setDisabled(false); //Включаем графы
+void Graphs_Widget::slot_stop() {
+  p_chart_view->setDisabled(false);   // Включаем меню
+  p_chart_switch->setDisabled(false); // Включаем графы
 }

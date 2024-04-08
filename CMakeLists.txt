@@ -20,8 +20,6 @@ find_package(QT NAMES Qt5 COMPONENTS Core Widgets Charts REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets Charts REQUIRED)
 
 set(PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/backend_object.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/backend_object.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_data.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_switch.cpp

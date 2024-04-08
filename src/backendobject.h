@@ -11,7 +11,6 @@
 #include "graphs_data.h"
 #include "input_data.h"
 // #include "progress.h"
-#include "src/models.h"
 #include "table_data.h"
 #include "threadscontrol.h"
 
@@ -19,8 +18,8 @@ struct InputData;
 
 struct SimulationData
 {
-  Graphs_Data points_data{};
-  Table_Data table_data{};
+  PointsData points_data{};
+  TableData table_data{};
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,8 +87,8 @@ public:
   {}
   ~SimulationWorker() override {}
 
-  Graphs_Data* PointsData() noexcept { return std::addressof(p_data->points_data); }
-  Table_Data* TableData() noexcept { return std::addressof(p_data->table_data); }
+  PointsData& PointsData() noexcept { return p_data->points_data; }
+  TableData& TableData() noexcept { return p_data->table_data; }
 
 public slots:
   void process_body() override;
@@ -122,8 +121,8 @@ private:
 							  r_input_data.propability,
 							  queueing_system::MaxEventsCondition(
 							      r_input_data.events));
-	p_data->points_data.load(point_number, sim_result);
-	arrive();
+        p_data->points_data.load_result(point_number, sim_result);
+        arrive();
       }
     };
   }
@@ -132,8 +131,8 @@ private:
     return [this] {
       QVector<Event> events{};
       QVector<Request> requests{};
-      events.reserve(Table_Data::events_number);
-      requests.reserve(Table_Data::events_number / 2);
+      events.reserve(TableData::events_number);
+      requests.reserve(TableData::events_number / 2);
 
       const auto lambda = Graphs_Data::max_load * r_input_data.mu * r_input_data.channels;
       [[maybe_unused]] auto result = queueing_system::Simulate(
@@ -144,13 +143,6 @@ private:
 	  queueing_system::MaxEventsCondition(Table_Data::events_number),
 	  [&events](const Event& event) { events.push_back(event); },
 	  [&requests](const Request& request) { requests.push_back(request); });
-
-      // TODO: сделать метод replace
-      p_data->table_data.event_model()->clear();
-      p_data->table_data.request_model()->clear();
-
-      p_data->table_data.event_model()->append(std::move(events));
-      p_data->table_data.request_model()->append(std::move(requests));
     };
   }
 };
@@ -174,8 +166,7 @@ inline void SimulationWorker::process_body()
   if (!canceled()) {
     p_thread_pool->start(MakeSimulationTable());
 
-    p_data->points_data.calc_Yranges();
-    p_data->points_data.update();
+    p_data->points_data.process_results();
 
     p_thread_pool->waitForDone();
   }

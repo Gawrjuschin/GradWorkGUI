@@ -9,11 +9,10 @@
 #include <QTableView>
 #include <QVBoxLayout>
 
-Table_Widget::Table_Widget(Table_Data* tdata, QWidget* parent)
-    : QWidget(parent)
-    , p_tab_reqs(new QTableView)
-    , p_tab_evs(new QTableView)
-{
+Table_Widget::Table_Widget(TableData& tdata, QWidget* parent)
+    : QWidget(parent), r_tdata(tdata), p_tab_reqs(new QTableView),
+      p_tab_evs(new QTableView), p_model_reqs(new RequestModel),
+      p_model_evs(new EventModel) {
   auto* main_lo = new QVBoxLayout(this);
 
   main_lo->addWidget(new QLabel(tr("Requests:")));
@@ -21,13 +20,13 @@ Table_Widget::Table_Widget(Table_Data* tdata, QWidget* parent)
   main_lo->addWidget(new QLabel(tr("Events:")));
   main_lo->addWidget(p_tab_evs);
 
-  auto* rproxy = new QSortFilterProxyModel;
-  rproxy->setSourceModel(tdata->request_model());
-  auto* eproxy = new QSortFilterProxyModel;
-  eproxy->setSourceModel(tdata->event_model());
+  auto* reqs_proxy = new QSortFilterProxyModel;
+  reqs_proxy->setSourceModel(p_model_reqs);
+  auto* evs_proxy = new QSortFilterProxyModel;
+  evs_proxy->setSourceModel(p_model_evs);
 
-  p_tab_reqs->setModel(rproxy);
-  p_tab_evs->setModel(eproxy);
+  p_tab_reqs->setModel(reqs_proxy);
+  p_tab_evs->setModel(evs_proxy);
 
   p_tab_reqs->setContentsMargins({0, 0, 0, 0});
   p_tab_evs->setContentsMargins({0, 0, 0, 0});
@@ -41,15 +40,18 @@ Table_Widget::Table_Widget(Table_Data* tdata, QWidget* parent)
   p_tab_reqs->verticalHeader()->hide();
   p_tab_evs->verticalHeader()->hide();
 
-  connect(tdata->request_model(), &Request_Model::signal_update, [&]() {
-    p_tab_reqs->model()->sort(0, Qt::AscendingOrder);
-  });
-  connect(tdata->event_model(), &Event_Model::signal_update, [&]() {
-    p_tab_evs->model()->sort(1, Qt::AscendingOrder);
-  });
+  connect(p_model_reqs, &RequestModel::signal_update,
+          [reqs_proxy]() { reqs_proxy->sort(0, Qt::AscendingOrder); });
+  connect(p_model_evs, &EventModel::signal_update,
+          [evs_proxy]() { evs_proxy->sort(1, Qt::AscendingOrder); });
 }
 
 Table_Widget::~Table_Widget() = default;
+
+void Table_Widget::onReady() {
+  p_model_reqs->replace(r_tdata.requests);
+  p_model_evs->replace(r_tdata.events);
+}
 
 // void Table_Widget::paintEvent(QPaintEvent* event)
 // {

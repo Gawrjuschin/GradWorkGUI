@@ -8,16 +8,15 @@
 //~~~~~~~~~~~~~~ Модель заявок ~~~~~~~~~~~~~~~~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class Request_Model : public QAbstractTableModel
-{
+class RequestModel : public QAbstractTableModel {
   Q_OBJECT
 
 public:
   enum { COL_COUNT = 9 };
 
-  Request_Model(QObject* parent = 0);
+  RequestModel(QObject* parent = 0);
 
-  virtual ~Request_Model();
+  virtual ~RequestModel();
 
   virtual int rowCount(const QModelIndex&) const override;
 
@@ -25,7 +24,11 @@ public:
 
   virtual QVariant data(const QModelIndex& index, int role) const override;
 
-  virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+  virtual QVariant headerData(int section, Qt::Orientation orientation,
+                              int role) const override;
+
+  // Обменивается векторами с TableData
+  void replace(QVector<Request>& vec);
 
   void append(const Request& data);
 
@@ -37,7 +40,7 @@ signals:
   void signal_update();
 
 private:
-  QVector<Request> m_data;
+  QVector<Request> m_data{};
 
   enum { NUMBER = 0, TYPE, ARRIVE, Q_NUM, CH_NUM, START, SERVE, WAIT, END };
 };
@@ -46,16 +49,15 @@ private:
 //~~~~~~~~~~~~~~ Модель событий ~~~~~~~~~~~~~~~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class Event_Model : public QAbstractTableModel
-{
+class EventModel : public QAbstractTableModel {
   Q_OBJECT
 
 public:
   enum { COL_COUNT = 7 };
 
-  Event_Model(QObject* parent = 0);
+  EventModel(QObject* parent = 0);
 
-  virtual ~Event_Model();
+  virtual ~EventModel();
 
   virtual int rowCount(const QModelIndex&) const override;
 
@@ -63,7 +65,11 @@ public:
 
   virtual QVariant data(const QModelIndex& index, int role) const override;
 
-  virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+  virtual QVariant headerData(int section, Qt::Orientation orientation,
+                              int role) const override;
+
+  // Обменивается векторами с TableData
+  void replace(QVector<Event>& vec);
 
   void append(const Event& data);
 

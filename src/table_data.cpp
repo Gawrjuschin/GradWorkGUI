@@ -2,18 +2,10 @@
 #include "models.h"
 
 Table_Data::Table_Data()
-    : p_rmodel(new Request_Model)
-    , p_emodel(new Event_Model)
-{}
+    : p_rmodel(new RequestModel), p_emodel(new EventModel) {}
 
 Table_Data::~Table_Data() = default;
 
-Request_Model* Table_Data::request_model()
-{
-  return p_rmodel.get();
-}
+RequestModel* Table_Data::request_model() { return p_rmodel.get(); }
 
-Event_Model* Table_Data::event_model()
-{
-  return p_emodel.get();
-}
+EventModel* Table_Data::event_model() { return p_emodel.get(); }

@@ -50,16 +50,6 @@ QtCharts::QLineSeries* Graphs_Data::series_apr(int i) noexcept
   return m_points_apr[i];
 }
 
-void Graphs_Data::load(int point, const queueing_system::SimulationResult& result) noexcept
-{
-  m_exp_data[W_0][point].setY(result.avg_wait.first);
-  m_exp_data[W_1][point].setY(result.avg_wait.second);
-  m_exp_data[U_0][point].setY(result.avg_utility.first);
-  m_exp_data[U_1][point].setY(result.avg_utility.second);
-  m_exp_data[Z_0][point].setY(result.avg_requests.first);
-  m_exp_data[Z_1][point].setY(result.avg_requests.second);
-}
-
 void Graphs_Data::calc_Yranges() noexcept
 {
   for (std::size_t graph_number{}; graph_number < GRAPHS_COUNT; ++graph_number) {

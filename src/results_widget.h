@@ -4,8 +4,8 @@
 #include <QWidget>
 #include <memory>
 
-class Table_Data;
-class Graphs_Data;
+class TableData;
+class GraphsData;
 class QStackedWidget;
 class QTabWidget;
 class Table_Widget;
@@ -17,7 +17,8 @@ class Results_Widget : public QWidget
   Q_OBJECT
 
 public:
-  Results_Widget(Table_Data* tdata, Graphs_Data* gdata, QWidget* parent = nullptr);
+  Results_Widget(TableData& tdata, const GraphsData& gdata,
+                 QWidget* parent = nullptr);
   ~Results_Widget();
 
 protected:
