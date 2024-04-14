@@ -3,21 +3,20 @@
 
 #include <QWidget>
 
-class TableData;
+struct TableData;
 class RequestModel;
 class EventModel;
 class QTableView;
 
-class Table_Widget : public QWidget
-{
+class TableWidget : public QWidget {
   Q_OBJECT
 
 public:
-  explicit Table_Widget(TableData& tdata, QWidget* parent = nullptr);
-  ~Table_Widget();
+  explicit TableWidget(TableData& tdata, QWidget* parent = nullptr);
+  ~TableWidget();
 
 public slots:
-  void onReady();
+  void onDataReady();
 
 protected:
   // void paintEvent(QPaintEvent* event) override;

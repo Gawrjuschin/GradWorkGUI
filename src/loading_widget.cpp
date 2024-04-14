@@ -46,8 +46,8 @@ Loading_Widget::Loading_Widget(const int pix_size, QWidget* parent)
   view->setRenderHint(QPainter::Antialiasing);
   sub_lo->addWidget(view);
 
-  connect(p_timer_text, &QTimer::timeout, this, &Loading_Widget::next_text);
-  connect(p_timer_pic, &QTimer::timeout, this, &Loading_Widget::next_pic);
+  connect(p_timer_text, &QTimer::timeout, this, &Loading_Widget::onNextText);
+  connect(p_timer_pic, &QTimer::timeout, this, &Loading_Widget::onNextPic);
 }
 
 Loading_Widget::~Loading_Widget() = default;
@@ -63,8 +63,7 @@ void Loading_Widget::rotate_pic(double angle)
   p_proxy->setTransform(transform);
 }
 
-void Loading_Widget::setPixmap(const QPixmap& pic)
-{
+void Loading_Widget::onSetPixmap(const QPixmap& pic) {
   p_pic_lbl->setPixmap(pic.scaledToHeight(m_pix_size, Qt::TransformationMode::SmoothTransformation));
   emit pixmapChanged();
 }
@@ -74,8 +73,7 @@ QPixmap Loading_Widget::pixmap() const
   return p_pic_lbl->pixmap(Qt::ReturnByValueConstant{});
 }
 
-void Loading_Widget::slot_stop()
-{
+void Loading_Widget::onStop() {
   p_timer_text->stop();
   p_timer_pic->stop();
   m_stage = 0;
@@ -84,14 +82,12 @@ void Loading_Widget::slot_stop()
   p_proxy->setTransform(transform);
 }
 
-void Loading_Widget::slot_start()
-{
+void Loading_Widget::onStart() {
   p_timer_text->start(0);
   p_timer_pic->start(0);
 }
 
-void Loading_Widget::next_text()
-{
+void Loading_Widget::onNextText() {
   switch (m_stage) {
     case 0:
       p_text->setText(tr("Loading"));
@@ -111,8 +107,7 @@ void Loading_Widget::next_text()
   p_timer_text->start(interval_p_text);
 }
 
-void Loading_Widget::next_pic()
-{
+void Loading_Widget::onNextPic() {
   rotate_pic(angle);
   p_timer_pic->start(interval_pic);
 }

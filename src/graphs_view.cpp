@@ -28,22 +28,22 @@ Graphs_View::Graphs_View(QChart* chart, QWidget* parent)
 
 Graphs_View::~Graphs_View() = default;
 
-void Graphs_View::slot_zoom_in()
+void Graphs_View::onZoomIn()
 {
   chart()->zoomIn();
 }
 
-void Graphs_View::slot_zoom_out()
+void Graphs_View::onZoomOut()
 {
   chart()->zoomOut();
 }
 
-void Graphs_View::slot_zoom_reset()
+void Graphs_View::onZoomReset()
 {
   chart()->zoomReset();
 }
 
-void Graphs_View::slot_save(QString filename)
+void Graphs_View::onSave(QString filename)
 {
   QPixmap pixmap(this->size());
   QPainter painter(&pixmap);

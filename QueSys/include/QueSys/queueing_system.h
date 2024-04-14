@@ -48,9 +48,8 @@ SimulationResult CalcResult(const SimulationStatus& simulation_status) noexcept;
 struct MaxEventsCondition
 {
 public:
-  MaxEventsCondition(const std::size_t max_events)
-      : max_events_(max_events)
-  {}
+  explicit MaxEventsCondition(const std::size_t max_events)
+      : max_events_(max_events) {}
 
   MaxEventsCondition(const MaxEventsCondition&) = default;
   MaxEventsCondition& operator=(const MaxEventsCondition&) = default;
@@ -74,9 +73,7 @@ private:
 struct PropConvCondition
 {
 public:
-  PropConvCondition(const double eps)
-      : eps_(eps)
-  {}
+  explicit PropConvCondition(const double eps) : eps_(eps) {}
 
   PropConvCondition(const PropConvCondition&) = default;
   PropConvCondition& operator=(const PropConvCondition&) = default;

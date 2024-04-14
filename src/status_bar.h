@@ -22,8 +22,8 @@ public:
 
 public slots:
   void onStop();
-  void slot_update();
-  void slot_start();
+  void onUpdate();
+  void onStart();
   void onReady();
 
 private:

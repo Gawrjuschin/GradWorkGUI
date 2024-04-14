@@ -8,6 +8,9 @@
 
 struct TableData
 {
+  static constexpr std::size_t kEventsNumber = 1000;
+  static constexpr std::size_t kRequestsNumber = kEventsNumber / 2;
+
   QVector<Request> requests{};
   QVector<Event> events{};
 };

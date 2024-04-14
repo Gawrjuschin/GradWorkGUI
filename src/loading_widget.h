@@ -9,7 +9,7 @@ class Loading_Widget : public QWidget
 {
   Q_OBJECT
 
-  Q_PROPERTY(QPixmap pixmap READ pixmap WRITE setPixmap NOTIFY pixmapChanged)
+  Q_PROPERTY(QPixmap pixmap READ pixmap WRITE onSetPixmap NOTIFY pixmapChanged)
 
 public:
   explicit Loading_Widget(const int pix_size, QWidget* parent = nullptr);
@@ -18,13 +18,13 @@ public:
   QPixmap pixmap() const;
 
 public slots:
-  void slot_stop();
-  void slot_start();
-  void setPixmap(const QPixmap& pic);
+  void onStop();
+  void onStart();
+  void onSetPixmap(const QPixmap& pic);
 
 protected slots:
-  void next_text();
-  void next_pic();
+  void onNextText();
+  void onNextPic();
 
 signals:
   void pixmapChanged();

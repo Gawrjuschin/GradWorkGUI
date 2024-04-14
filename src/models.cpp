@@ -84,7 +84,7 @@ void RequestModel::replace(QVector<Request> &vec) {
   beginResetModel();
   swap(m_data, vec);
   endResetModel();
-  emit signal_update();
+  emit sigUpdate();
 }
 
 void RequestModel::append(
@@ -95,14 +95,14 @@ void RequestModel::append(
   beginInsertRows({}, m_data.count(), m_data.count());
   m_data.append(data);
   endInsertRows();
-  emit signal_update();
+  emit sigUpdate();
 }
 
 void RequestModel::append(QVector<Request> vec) {
   beginResetModel();
   m_data = vec;
   endResetModel();
-  emit signal_update();
+  emit sigUpdate();
 }
 
 void RequestModel::clear() {
@@ -183,21 +183,21 @@ void EventModel::replace(QVector<Event> &vec) {
   beginResetModel();
   swap(m_data, vec);
   endResetModel();
-  emit signal_update();
+  emit sigUpdate();
 }
 
 void EventModel::append(const Event &data) {
   beginInsertRows({}, m_data.count(), m_data.count());
   m_data.append(data);
   endInsertRows();
-  emit signal_update();
+  emit sigUpdate();
 }
 
 void EventModel::append(QVector<Event> vec) {
   beginResetModel();
   m_data = vec;
   endResetModel();
-  emit signal_update();
+  emit sigUpdate();
 }
 
 void EventModel::clear() {

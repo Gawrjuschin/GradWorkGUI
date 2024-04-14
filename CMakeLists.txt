@@ -20,8 +20,7 @@ find_package(QT NAMES Qt5 COMPONENTS Core Widgets Charts REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets Charts REQUIRED)
 
 set(PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_data.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/points_data.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_switch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_switch.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_view.cpp
@@ -46,7 +45,6 @@ set(PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/synchronizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/synchronizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_data.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/table_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/worker_object.h

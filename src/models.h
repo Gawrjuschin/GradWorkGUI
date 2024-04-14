@@ -14,18 +14,18 @@ class RequestModel : public QAbstractTableModel {
 public:
   enum { COL_COUNT = 9 };
 
-  RequestModel(QObject* parent = 0);
+  explicit RequestModel(QObject* parent = 0);
 
-  virtual ~RequestModel();
+  ~RequestModel();
 
-  virtual int rowCount(const QModelIndex&) const override;
+  int rowCount(const QModelIndex&) const override;
 
-  virtual int columnCount(const QModelIndex&) const override;
+  int columnCount(const QModelIndex&) const override;
 
-  virtual QVariant data(const QModelIndex& index, int role) const override;
+  QVariant data(const QModelIndex& index, int role) const override;
 
-  virtual QVariant headerData(int section, Qt::Orientation orientation,
-                              int role) const override;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role) const override;
 
   // Обменивается векторами с TableData
   void replace(QVector<Request>& vec);
@@ -37,7 +37,7 @@ public:
   void clear();
 
 signals:
-  void signal_update();
+  void sigUpdate();
 
 private:
   QVector<Request> m_data{};
@@ -55,18 +55,18 @@ class EventModel : public QAbstractTableModel {
 public:
   enum { COL_COUNT = 7 };
 
-  EventModel(QObject* parent = 0);
+  explicit EventModel(QObject* parent = 0);
 
-  virtual ~EventModel();
+  ~EventModel();
 
-  virtual int rowCount(const QModelIndex&) const override;
+  int rowCount(const QModelIndex&) const override;
 
-  virtual int columnCount(const QModelIndex&) const override;
+  int columnCount(const QModelIndex&) const override;
 
-  virtual QVariant data(const QModelIndex& index, int role) const override;
+  QVariant data(const QModelIndex& index, int role) const override;
 
-  virtual QVariant headerData(int section, Qt::Orientation orientation,
-                              int role) const override;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role) const override;
 
   // Обменивается векторами с TableData
   void replace(QVector<Event>& vec);
@@ -78,7 +78,7 @@ public:
   void clear();
 
 signals:
-  void signal_update();
+  void sigUpdate();
 
 private:
   QVector<Event> m_data;

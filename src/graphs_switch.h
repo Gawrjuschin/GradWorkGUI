@@ -19,22 +19,22 @@ public:
   ~Graphs_Switch();
 
 protected slots:
-  void slot_approximation();
-  void slot_save();
-  void slot_update(int);
+  void onApproximation();
+  void onSave();
+  void onUpdate(int);
 
 signals:
-  void signal_show(int);
-  void signal_approximate(int);
-  void signal_deapproximate(int);
-  void signal_save(QString);
-  void signal_zoom_in();
-  void signal_zoom_out();
-  void signal_zoom_reset();
+  void sigShow(int);
+  void sigApproximate(int);
+  void sigDeapproximate(int);
+  void sigSave(QString);
+  void sigZoomIn();
+  void sigZoomOut();
+  void sigZoomReset();
 
 private:
   std::array<QPushButton*, MENU_BUTTONS> m_vector_buttons;
-  std::array<QMenu*, MENUS> m_vector_menus;
+  std::array<QMenu*, MENUS> m_menus_array;
   QComboBox* p_prior_cbox;
   QPushButton* p_zoom_in;
   QPushButton* p_zoom_out;

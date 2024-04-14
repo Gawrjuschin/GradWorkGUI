@@ -1,7 +1,6 @@
 #include "table_widget.h"
 #include "models.h"
 #include "table_data.h"
-
 #include <QHeaderView>
 #include <QLabel>
 #include <QPainter>
@@ -9,7 +8,7 @@
 #include <QTableView>
 #include <QVBoxLayout>
 
-Table_Widget::Table_Widget(TableData& tdata, QWidget* parent)
+TableWidget::TableWidget(TableData& tdata, QWidget* parent)
     : QWidget(parent), r_tdata(tdata), p_tab_reqs(new QTableView),
       p_tab_evs(new QTableView), p_model_reqs(new RequestModel),
       p_model_evs(new EventModel) {
@@ -40,15 +39,15 @@ Table_Widget::Table_Widget(TableData& tdata, QWidget* parent)
   p_tab_reqs->verticalHeader()->hide();
   p_tab_evs->verticalHeader()->hide();
 
-  connect(p_model_reqs, &RequestModel::signal_update,
+  connect(p_model_reqs, &RequestModel::sigUpdate,
           [reqs_proxy]() { reqs_proxy->sort(0, Qt::AscendingOrder); });
-  connect(p_model_evs, &EventModel::signal_update,
+  connect(p_model_evs, &EventModel::sigUpdate,
           [evs_proxy]() { evs_proxy->sort(1, Qt::AscendingOrder); });
 }
 
-Table_Widget::~Table_Widget() = default;
+TableWidget::~TableWidget() = default;
 
-void Table_Widget::onReady() {
+void TableWidget::onDataReady() {
   p_model_reqs->replace(r_tdata.requests);
   p_model_evs->replace(r_tdata.events);
 }

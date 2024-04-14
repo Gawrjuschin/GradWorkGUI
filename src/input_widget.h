@@ -25,18 +25,18 @@ protected:
   void paintEvent(QPaintEvent* event) override;
 
 public slots:
-  void slot_done();
+  void onDone();
 
 protected slots:
-  void update();
-  void slot_start();
-  void slot_pause_resume();
-  void slot_stop();
+  void onUpdate();
+  void onStart();
+  void onPauseResume();
+  void onStop();
 
 signals:
-  void signal_start();
-  void signal_pause();
-  void signal_resume();
+  void sigStart();
+  void sigPause();
+  void sigResume();
   void sigStop();
 
 private:

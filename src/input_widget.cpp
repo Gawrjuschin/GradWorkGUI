@@ -80,6 +80,7 @@ Input_Widget::Input_Widget(double min_load, double max_load, QWidget* parent)
     p_pr_input->setValue(0.25);
     p_pr_input->setRange(single_step, 1.00);
     p_pr_input->setSingleStep(single_step);
+    // TODO: изменить формулу
     p_parameter_desc->setText(
 	QString(tr("[%1;  %2]"))
 	    .arg(QString().setNum(p_mu_input->value() * p_ch_input->value() * m_min_load, 'g', 4))
@@ -132,20 +133,20 @@ Input_Widget::Input_Widget(double min_load, double max_load, QWidget* parent)
 
   // Настройки кнопок управления
   {
-    connect(p_start_btn, &QPushButton::clicked, this, &Input_Widget::slot_start);
-    connect(p_pause_btn, &QPushButton::clicked, this, &Input_Widget::slot_pause_resume);
-    connect(p_stop_btn, &QPushButton::clicked, this, &Input_Widget::slot_stop);
+    connect(p_start_btn, &QPushButton::clicked, this, &Input_Widget::onStart);
+    connect(p_pause_btn, &QPushButton::clicked, this,
+            &Input_Widget::onPauseResume);
+    connect(p_stop_btn, &QPushButton::clicked, this, &Input_Widget::onStop);
   }
   // Настройки спинбоксов
   {
     connect(p_mu_input,
-	    static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-	    this,
-	    &Input_Widget::update);
+            static_cast<void (QDoubleSpinBox::*)(double)>(
+                &QDoubleSpinBox::valueChanged),
+            this, &Input_Widget::onUpdate);
     connect(p_ch_input,
-	    static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-	    this,
-	    &Input_Widget::update);
+            static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this,
+            &Input_Widget::onUpdate);
   }
 }
 
@@ -165,8 +166,7 @@ void Input_Widget::paintEvent(QPaintEvent* event)
   QWidget::paintEvent(event);
 }
 
-void Input_Widget::update()
-{
+void Input_Widget::onUpdate() {
   p_parameter_desc->setText(
       QString(tr("[%1;  %2]"))
 	  .arg(QString().setNum(p_mu_input->value() * p_ch_input->value() * m_min_load, 'g', 4))
@@ -189,35 +189,31 @@ void Input_Widget::load_data()
 		     .events = p_ev_input->value()};
 }
 
-void Input_Widget::slot_done()
-{
+void Input_Widget::onDone() {
   p_start_btn->setDisabled(false);
   p_pause_btn->setDisabled(true);
   p_stop_btn->setDisabled(true);
 }
 
-void Input_Widget::slot_start()
-{
+void Input_Widget::onStart() {
   p_start_btn->setDisabled(true);
   p_pause_btn->setDisabled(false);
   p_stop_btn->setDisabled(false);
   load_data();
-  emit signal_start();
+  emit sigStart();
 }
 
-void Input_Widget::slot_pause_resume()
-{
+void Input_Widget::onPauseResume() {
   if ((m_paused = (!m_paused))) {
     p_pause_btn->setText(tr("Resume"));
-    emit signal_pause();
+    emit sigPause();
   } else {
     p_pause_btn->setText(tr("Pause"));
-    emit signal_resume();
+    emit sigResume();
   }
 }
 
-void Input_Widget::slot_stop()
-{
+void Input_Widget::onStop() {
   p_start_btn->setDisabled(false);
   p_pause_btn->setDisabled(true);
   p_stop_btn->setDisabled(true);
