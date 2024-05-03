@@ -11,7 +11,11 @@
 #include "input_data.h"
 #include "points_data.h"
 // #include "progress.h"
+#include "qdebug.h"
 #include "table_data.h"
+
+#include "backendobjectworker.h"
+
 #include "threadscontrol.h"
 
 struct InputData;
@@ -20,56 +24,6 @@ struct SimulationData
 {
   PointsData points_data{};
   TableData table_data{};
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Интерфейс воркера
-class BackendObjectWorker : public QObject
-{
-  Q_OBJECT
-public:
-  explicit BackendObjectWorker(QObject* parent = nullptr)
-      : p_threads_control(std::make_unique<ThreadsControl>())
-      , p_progress(std::make_unique<Progress>())
-  {
-    // Как определить, что ведутся вычисления???
-  }
-
-  virtual ~BackendObjectWorker() = default;
-
-  // const ThreadsControl& GetThreadsControl() const noexcept { return *p_threads_control; };
-  const Progress& GetProgress() const noexcept { return *p_progress; }
-
-  // Управление выполнением задания
-  void pause() { p_threads_control->pause(); }
-  void resume() { p_threads_control->resume(); }
-  void stop() { p_threads_control->cancel(); }
-
-  bool paused() const noexcept { return p_threads_control->paused(); };
-  bool canceled() const noexcept { return p_threads_control->canceled(); }
-
-public slots:
-  void onProcess() {
-    p_progress->reset();
-    processBody();
-    p_threads_control->reset();
-    emit sigDone();
-  }
-
-signals:
-  void sigDone();
-
-protected:
-  void arrive() noexcept { p_progress->arrive(); }
-
-  void sleep() const noexcept { p_threads_control->sleep(); }
-
-  virtual void processBody() = 0;
-
-private:
-  std::unique_ptr<ThreadsControl> p_threads_control;
-  std::unique_ptr<Progress> p_progress;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -111,7 +65,9 @@ private:
       constexpr auto dLoad =
           static_cast<double>(PointsData::kMaxLoad - PointsData::kMinLoad) /
           static_cast<long>(PointsData::kPointsCount);
-      for (auto point_number = start_point; point_number < end_point; ++point_number) {
+      for (auto point_number = start_point;
+           !canceled() && (point_number < end_point); ++point_number) {
+        sleep();
         const auto load = PointsData::kMinLoad + dLoad * point_number;
         const auto lambda = load * r_input_data.mu * r_input_data.channels;
 
@@ -187,10 +143,12 @@ public:
     p_worker->moveToThread(p_worker_thread);
     p_worker_thread->start();
 
-    connect(this, &BackendObject::sigStart, p_worker,
+    connect(this, &BackendObject::sigStarted, p_worker,
             &BackendObjectWorker::onProcess);
     connect(p_worker, &BackendObjectWorker::sigDone, this,
-            &BackendObject::onDone);
+            &BackendObject::sigDataReady);
+    connect(p_worker, &BackendObjectWorker::sigStopped, this,
+            &BackendObject::sigStopped);
   }
 
   ~BackendObject() override
@@ -208,21 +166,17 @@ public:
 
 public slots:
   void onStart() {
-    Q_ASSERT(!p_worker->canceled());
-    Q_ASSERT(!p_worker->paused());
-    emit sigStart();
+    qDebug() << __PRETTY_FUNCTION__;
+    emit sigStarted();
   }
   void onPause() { p_worker->pause(); }
   void onResume() { p_worker->resume(); }
   void onStop() { p_worker->stop(); }
-  void onDone() {
-    // TODO: расчитать новые границы
-    emit sigDataReady();
-  }
 
 signals:
-  void sigStart();
+  void sigStarted();
   void sigDataReady();
+  void sigStopped();
 
 private:
   QThread* p_worker_thread;

@@ -5,24 +5,24 @@
 
 #include <QWidget>
 
-class QGroupBox;
-class QSpinBox;
-class QDoubleSpinBox;
-class QPushButton;
-class QLabel;
+struct InputWidgetImpl;
 
-class Input_Widget : public QWidget
-{
+class InputWidget : public QWidget {
   Q_OBJECT
 
 public:
-  explicit Input_Widget(double min_load, double max_load, QWidget* parent = nullptr);
-  ~Input_Widget();
+  explicit InputWidget(double min_load, double max_load,
+                       QWidget* parent = nullptr);
+
+  InputWidget(const InputWidget&) = delete;
+  InputWidget& operator=(const InputWidget&) = delete;
+
+  InputWidget(InputWidget&&) = delete;
+  InputWidget& operator=(InputWidget&&) = delete;
+
+  ~InputWidget() override;
 
   const InputData& data() const noexcept;
-
-protected:
-  void paintEvent(QPaintEvent* event) override;
 
 public slots:
   void onDone();
@@ -31,6 +31,7 @@ protected slots:
   void onUpdate();
   void onStart();
   void onPauseResume();
+  // TODO: пересмотреть логику остановки по аналогии с onDone
   void onStop();
 
 signals:
@@ -40,29 +41,15 @@ signals:
   void sigStop();
 
 private:
-  double m_min_load;
-  double m_max_load;
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  QLabel* p_parameter_desc;
-  QLabel* p_requests_desc;
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  QDoubleSpinBox* p_mu_input;
-  QSpinBox* p_ch_input;
-  QDoubleSpinBox* p_pr_input;
-  QSpinBox* p_th_input;
-  QSpinBox* p_ev_input;
-  QPushButton* p_stop_btn;
-  QPushButton* p_pause_btn;
-  QPushButton* p_start_btn;
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  std::unique_ptr<InputWidgetImpl> p_impl_;
   InputData m_data{};
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  //Флаг паузы. Далее будет заменён на класс-синхронизатор из стороннего проекта с синхронизацией потоков
-  bool m_paused{false};
 
 private:
-  void load_data(); //Обновляет данные. Вызывается до отправки signal_start
+  QWidget* makeSystemGrpbx();
+  QWidget* makeSimulationGrpbx();
+  QWidget* makeControlsGrpbx();
+
+  void loadData(); // Обновляет данные. Вызывается до отправки signal_start
 };
 
 #endif // INPUT_WIDGET_H

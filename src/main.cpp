@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
       break;
     }
   }
-  Main_Window widget;
+  MainWindow widget;
   widget.show();
 
   return a.exec();

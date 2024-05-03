@@ -37,7 +37,6 @@ set(PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/models.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/models.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/progress.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/progress.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/results_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/results_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/status_bar.h
@@ -49,7 +48,9 @@ set(PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/worker_object.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/worker_table.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/resources.qrc
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/resources.qrc    
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobjectworker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobjectworker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.h

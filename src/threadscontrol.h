@@ -5,29 +5,6 @@
 #include <condition_variable>
 #include <mutex>
 
-class Progress
-{
-public:
-  Progress() = default;
-
-  Progress(const Progress&) = delete;
-  Progress& operator=(const Progress&) = delete;
-
-  Progress(Progress&&) = delete;
-  Progress& operator=(Progress&&) = delete;
-
-  ~Progress() = default;
-
-  operator std::uint32_t() const noexcept { return m_value.load(std::memory_order_acquire); }
-  std::uint32_t value() const noexcept { return m_value.load(std::memory_order_acquire); }
-
-  std::uint32_t arrive() noexcept { return ++m_value; };
-  void reset() noexcept { m_value.store(0, std::memory_order_release); }
-
-private:
-  std::atomic_uint32_t m_value{};
-};
-
 class ThreadsControl
 {
 public:
@@ -50,13 +27,18 @@ public:
   }
 
   void pause() noexcept { m_pause_flag.test_and_set(std::memory_order_release); }
-  void resume() noexcept { m_pause_flag.clear(std::memory_order_release); }
+
+  void resume() noexcept {
+    m_pause_flag.clear(std::memory_order_release);
+    m_cvar.notify_all();
+  }
 
   void cancel() noexcept
   {
     m_cancel_flag.test_and_set(std::memory_order_release);
     if (paused()) {
-      m_cvar.notify_all();
+      resume();
+      // m_cvar.notify_all();
     }
   }
   void reset() noexcept
