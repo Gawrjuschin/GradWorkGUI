@@ -1,21 +1,6 @@
 #include "event.h"
 #include <iomanip>
 
-double_pair Event::get_sys_status() const
-{
-  return system_status;
-}
-
-double_pair Event::get_q_status() const
-{
-  return queue_status;
-}
-
-double Event::get_time() const
-{
-  return time;
-}
-
 std::ostream& operator<<(std::ostream& s, const Event& event)
 {
   constexpr int precision = 5;
@@ -35,8 +20,8 @@ std::istream& operator>>(std::istream& s, Event& event)
   int request{0};
   double time{0};
   double time_next{0};
-  int_pair system_status{0, 0};
-  int_pair queue_status{0, 0};
+  std::pair system_status{0, 0};
+  std::pair queue_status{0, 0};
   char syntax{0};
   if (s >> std::skipws >> number >> time >> type >> syntax >> system_status.first >> syntax
       >> system_status.second >> syntax >> queue_status.first >> syntax >> queue_status.second

@@ -3,8 +3,6 @@
 
 #include <QObject>
 
-#include <memory>
-
 #include "progress.h"
 #include "threadscontrol.h"
 

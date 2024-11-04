@@ -8,29 +8,7 @@ enum class RequestType { kNone = 0, kFirst = 1, kSecond = 2 };
 std::ostream& operator<<(std::ostream& os, const RequestType& type);
 std::istream& operator>>(std::istream& is, RequestType& type);
 
-class Request //Класс заявки
-{
-public: //Методы класса
-  Request() = default;
-
-  Request(const Request& ri) = default;
-  Request& operator=(const Request& ri) = default;
-  Request(Request&& ri) noexcept = default;
-  Request& operator=(Request&& ri) noexcept = default;
-
-  ~Request() = default;
-
-  void set(int number,
-	   RequestType type,
-	   double arrive_time,
-	   int queue_number,
-	   int ch_number,
-	   double start_time,
-	   double serve_time,
-	   double wait_time,
-	   double serve_end) noexcept;
-
-public: //Поля класса публичные для простоты заполнения
+struct Request {
   int number{};                         // Номер заявки
   RequestType type{RequestType::kNone}; //Тип заявки (None, 1 или 2)
   double arrive_time{};                 //Время прибытия

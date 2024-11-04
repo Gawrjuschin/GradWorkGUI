@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 
+project(${PROJECT_NAME})
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(PROJECT_NAME
     QueSysLib
     )
@@ -29,11 +34,6 @@ set(LIBRARY_SOURCE
     ${LIBRARY_SOURCE_DIR}/request.cpp
     ${LIBRARY_SOURCE_DIR}/event.cpp
     )
-
-project(${PROJECT_NAME})
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(${LIBRARY_NAME} STATIC
     ${LIBRARY_HEADERS}

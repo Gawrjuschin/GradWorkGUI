@@ -46,15 +46,12 @@ set(PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_data.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/worker_object.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/worker_table.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/resources.qrc    
     ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobjectworker.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobjectworker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/simulationworker.h
     )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

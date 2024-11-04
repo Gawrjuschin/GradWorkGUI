@@ -3,6 +3,7 @@
 #include "input_widget.h"
 #include "points_data.h"
 #include "results_widget.h"
+#include "simulationworker.h"
 #include "status_bar.h"
 
 #include <QApplication>
@@ -21,7 +22,7 @@ constexpr int kProgressbarMargins = 4; // Где-то зашиты отступ�
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       p_input(new InputWidget(PointsData::kMinLoad, PointsData::kMaxLoad)),
-      p_worker(new SimulationWorker(p_input->data())),
+      p_worker(new SimulationWorker(p_input->inputData())),
       p_backend(new BackendObject(p_worker, this)),
       p_results(
           new Results_Widget(p_worker->TableData(), p_worker->PointsData())),
@@ -87,7 +88,6 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 							     QMessageBox::No | QMessageBox::Yes,
 							     QMessageBox::Yes);
   if (resBtn == QMessageBox::Yes) {
-    // Здесь нужно останавливать активные треды
     event->accept();
   } else {
     event->ignore();

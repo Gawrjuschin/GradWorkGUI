@@ -22,7 +22,7 @@ public:
 
   ~InputWidget() override;
 
-  const InputData& data() const noexcept;
+  const InputData& inputData() const noexcept;
 
 public slots:
   void onDone();

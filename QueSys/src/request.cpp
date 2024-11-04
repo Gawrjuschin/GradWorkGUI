@@ -5,27 +5,6 @@
 
 #include <cstdint>
 
-void Request::set(int _number,
-		  RequestType _type,
-		  double _arrive_time,
-		  int _queue_number,
-		  int _ch_number,
-		  double _start_time,
-		  double _serve_time,
-		  double _wait_time,
-		  double _serve_end) noexcept
-{
-  number = _number;
-  type = _type;
-  arrive_time = _arrive_time;
-  queue_number = _queue_number;
-  ch_number = _ch_number;
-  start_time = _start_time;
-  serve_time = _serve_time;
-  wait_time = _wait_time;
-  serve_end = _serve_end;
-}
-
 std::ostream& operator<<(std::ostream& os, const RequestType& type)
 {
   return os << static_cast<std::uint8_t>(type);

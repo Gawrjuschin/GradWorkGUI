@@ -165,22 +165,20 @@ InputWidget::InputWidget(double min_load, double max_load, QWidget* parent)
 
 InputWidget::~InputWidget() = default;
 
-const InputData& InputWidget::data() const noexcept
-{
-  return m_data;
-}
+const InputData& InputWidget::inputData() const noexcept { return m_data; }
 
 void InputWidget::onUpdate() {
+  auto lambdaLower =
+      QString().setNum(p_impl_->p_mu_input->value() *
+                           p_impl_->p_ch_input->value() * p_impl_->min_load,
+                       'g', 4);
+  auto lambdaUpper =
+      QString().setNum(p_impl_->p_mu_input->value() *
+                           p_impl_->p_ch_input->value() * p_impl_->max_load,
+                       'g', 4);
+
   p_impl_->p_lambda_range->setText(
-      QString(tr("[%1;  %2]"))
-          .arg(QString().setNum(p_impl_->p_mu_input->value() *
-                                    p_impl_->p_ch_input->value() *
-                                    p_impl_->min_load,
-                                'g', 4))
-          .arg(QString().setNum(p_impl_->p_mu_input->value() *
-                                    p_impl_->p_ch_input->value() *
-                                    p_impl_->max_load,
-                                'g', 4)));
+      QString(tr("[%1;  %2]")).arg(lambdaLower).arg(lambdaUpper));
 }
 
 void InputWidget::loadData() {

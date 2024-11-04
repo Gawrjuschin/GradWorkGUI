@@ -3,10 +3,9 @@
 
 #include "event.h"
 #include "request.h"
+
+#include <cmath>
 #include <functional>
-#include <iostream>
-#include <memory>
-#include <vector>
 
 namespace queueing_system {
 
@@ -37,7 +36,7 @@ struct SimulationStatus
   std::pair<int, int> requests_total{};
   std::pair<int, int> requests_served{};
   std::pair<int, int> requests_waited{};
-  // Среднее число заяволк в системе вычисляется на ходу
+  // Среднее число заявок в системе вычисляется на ходу
   std::pair<double, double> requests_weighted_summ{};
 };
 
@@ -48,16 +47,16 @@ SimulationResult CalcResult(const SimulationStatus& simulation_status) noexcept;
 struct MaxEventsCondition
 {
 public:
-  explicit MaxEventsCondition(const std::size_t max_events)
+  constexpr explicit MaxEventsCondition(const std::size_t max_events) noexcept
       : max_events_(max_events) {}
 
-  MaxEventsCondition(const MaxEventsCondition&) = default;
-  MaxEventsCondition& operator=(const MaxEventsCondition&) = default;
+  MaxEventsCondition(const MaxEventsCondition&) noexcept = default;
+  MaxEventsCondition& operator=(const MaxEventsCondition&) noexcept = default;
 
-  MaxEventsCondition(MaxEventsCondition&&) = default;
-  MaxEventsCondition& operator=(MaxEventsCondition&&) = default;
+  MaxEventsCondition(MaxEventsCondition&&) noexcept = default;
+  MaxEventsCondition& operator=(MaxEventsCondition&&) noexcept = default;
 
-  ~MaxEventsCondition() = default;
+  ~MaxEventsCondition() noexcept = default;
 
   // Условие продолжения
   constexpr bool operator()(const SimulationStatus& simulation_status) const noexcept
@@ -73,7 +72,7 @@ private:
 struct PropConvCondition
 {
 public:
-  explicit PropConvCondition(const double eps) : eps_(eps) {}
+  constexpr explicit PropConvCondition(const double eps) noexcept : eps_(eps) {}
 
   PropConvCondition(const PropConvCondition&) = default;
   PropConvCondition& operator=(const PropConvCondition&) = default;
@@ -91,7 +90,7 @@ public:
       return true;
     }
 
-    auto res = CalcResult(simulation_status);
+    const auto res = CalcResult(simulation_status);
     if (prev_prop_ == res.propability.first || std::abs(prev_prop_ - res.propability.first) > eps_) {
       prev_prop_ = res.propability.first;
       return true;
@@ -104,13 +103,11 @@ private:
   double eps_;
 };
 
-SimulationResult Simulate(double lambda_th,
-			  double mu_th,
-			  int channels_number,
-			  double prop,
-			  std::function<bool(const SimulationStatus&)> continue_condition,
-			  std::function<void(const Event&)> write_event = nullptr,
-			  std::function<void(const Request&)> write_request = nullptr);
+SimulationResult
+Simulate(double lambda_th, double mu_th, int channels_number, double prop,
+         std::function<bool(const SimulationStatus&)> continue_condition,
+         std::function<void(const Event&)> write_event = nullptr,
+         std::function<void(const Request&)> write_request = nullptr);
 // TODO: реализовать перегрузку с ограничением на eps
 
 } // namespace queueing_system
