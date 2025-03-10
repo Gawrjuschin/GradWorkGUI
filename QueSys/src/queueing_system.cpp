@@ -138,13 +138,14 @@ static inline auto StartQueued(RequestsFlow& req_generator,
 // Канал с минимальным оставшимся временем обслуживания освободится раньше
 // прихода очередной заявки Освобождается канал с минимальным оставшимся
 // временем обслуживания.
-static inline auto
-FreeMin(RequestsFlow& req_generator, Request& next_request,
-        std::vector<Request>& channels, RequestsQueue& queue,
-        std::pair<int, int>& system_status, SimulationStatus& simulation_status,
-        std::vector<Request>::iterator free_it,
-        std::vector<Request>::iterator min_it,
-        std::function<void(const Request&)> write_request) -> Event {
+static inline auto FreeMin(RequestsFlow& req_generator, Request& next_request,
+                           std::vector<Request>& channels, RequestsQueue& queue,
+                           std::pair<int, int>& system_status,
+                           SimulationStatus& simulation_status,
+                           std::vector<Request>::iterator free_it,
+                           std::vector<Request>::iterator min_it,
+                           std::function<void(const Request&)> write_request)
+    -> Event {
   simulation_status.time_passed = min_it->serve_end;
 
   // Изменение количества заявок в СМО

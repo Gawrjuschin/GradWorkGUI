@@ -9,8 +9,7 @@
 
 namespace queueing_system {
 
-struct SimulationResult
-{
+struct SimulationResult {
   double time_passed{};
   int events{};
   int requests{};
@@ -23,8 +22,7 @@ struct SimulationResult
 };
 
 // TODO: убрать SimulationStatus и заменить его в API на SimulationResult
-struct SimulationStatus
-{
+struct SimulationStatus {
   // Номер очередной заявки. Фактически количество сгенерированных заявок
   int request_number{0};
   // Номер последнего события. Фактически количество сгенерированных событий
@@ -44,8 +42,7 @@ struct SimulationStatus
 SimulationResult CalcResult(const SimulationStatus& simulation_status) noexcept;
 
 // Выход по достижению указанного числа событий
-struct MaxEventsCondition
-{
+struct MaxEventsCondition {
 public:
   constexpr explicit MaxEventsCondition(const std::size_t max_events) noexcept
       : max_events_(max_events) {}
@@ -59,8 +56,8 @@ public:
   ~MaxEventsCondition() noexcept = default;
 
   // Условие продолжения
-  constexpr bool operator()(const SimulationStatus& simulation_status) const noexcept
-  {
+  constexpr bool
+  operator()(const SimulationStatus& simulation_status) const noexcept {
     return simulation_status.event_number <= max_events_;
   }
 
@@ -68,9 +65,8 @@ private:
   std::size_t max_events_;
 };
 
-// Выход по сходимости по доли заявок
-struct PropConvCondition
-{
+// Выход по сходимости по доле заявок
+struct PropConvCondition {
 public:
   constexpr explicit PropConvCondition(const double eps) noexcept : eps_(eps) {}
 
@@ -84,14 +80,15 @@ public:
 
   // Условие продолжения
   // TODO: протестировать
-  constexpr bool operator()(const SimulationStatus& simulation_status) const noexcept
-  {
+  constexpr bool
+  operator()(const SimulationStatus& simulation_status) const noexcept {
     if (simulation_status.request_number == 0) {
       return true;
     }
 
     const auto res = CalcResult(simulation_status);
-    if (prev_prop_ == res.propability.first || std::abs(prev_prop_ - res.propability.first) > eps_) {
+    if (prev_prop_ == res.propability.first ||
+        std::abs(prev_prop_ - res.propability.first) > eps_) {
       prev_prop_ = res.propability.first;
       return true;
     }
@@ -108,7 +105,6 @@ Simulate(double lambda_th, double mu_th, int channels_number, double prop,
          std::function<bool(const SimulationStatus&)> continue_condition,
          std::function<void(const Event&)> write_event = nullptr,
          std::function<void(const Request&)> write_request = nullptr);
-// TODO: реализовать перегрузку с ограничением на eps
 
 } // namespace queueing_system
 

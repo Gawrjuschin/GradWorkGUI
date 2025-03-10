@@ -16,8 +16,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
 
-find_package(QT NAMES Qt5 COMPONENTS Core Widgets Charts REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets Charts REQUIRED)
+# TODO: Qt5 compatibility
+find_package(QT NAMES Qt6 COMPONENTS Core Widgets Charts REQUIRED)
+find_package(Qt6 COMPONENTS Core Widgets Charts REQUIRED)
 
 set(PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/points_data.h
