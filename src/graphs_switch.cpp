@@ -26,13 +26,17 @@ Graphs_Switch::Graphs_Switch(QWidget* parent)
   create_menus();
   adjust_widget();
 
-  connect(p_prior_cbox,
-	  static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-	  [this](int priority) {
-	    m_button_state = m_button_state / 2 * 2 + priority;
-            emit sigShow(m_button_state);
-	  });
-  
+  connect(
+      p_prior_cbox,
+      static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+      [this](int priority) {
+        for (size_t i{}; i < std::size(m_vector_buttons); ++i) {
+          m_vector_buttons[i]->setMenu(m_menus_array[i * 2 + priority]);
+        }
+        m_button_state = m_button_state / 2 * 2 + priority;
+        emit sigShow(m_button_state);
+      });
+
   connect(p_zoom_in, &QPushButton::clicked, this, &Graphs_Switch::sigZoomIn);
   connect(p_zoom_out, &QPushButton::clicked, this, &Graphs_Switch::sigZoomOut);
   connect(p_zoom_reset, &QPushButton::clicked, this, &Graphs_Switch::sigZoomReset);
@@ -91,7 +95,7 @@ void Graphs_Switch::create_menus()
     connect(act, &QAction::triggered, this, &Graphs_Switch::onSave);
     connect(m_menus_array[i], &QMenu::aboutToShow, [this, i] {
       m_button_state = i;
-      p_prior_cbox->setCurrentIndex(0);
+      // p_prior_cbox->setCurrentIndex(0);
       emit sigShow(m_button_state);
     });
   }
