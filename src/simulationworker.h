@@ -23,11 +23,14 @@ public:
   explicit SimulationWorker(const InputData& input_data,
                             QObject* parent = nullptr)
       : BackendObjectWorker(parent), r_input_data(input_data),
-        p_data(new SimulationData), p_thread_pool(new QThreadPool(this)) {}
+        p_thread_pool(new QThreadPool(this)) {
+    m_data.table_data.events.reserve(TableData::kEventsNumber);
+    m_data.table_data.requests.reserve(TableData::kRequestsNumber);
+  }
   ~SimulationWorker() override = default;
 
-  PointsData& PointsData() noexcept { return p_data->points_data; }
-  TableData& TableData() noexcept { return p_data->table_data; }
+  PointsData& PointsData() noexcept { return m_data.points_data; }
+  TableData& TableData() noexcept { return m_data.table_data; }
 
 signals:
   void sigDone();
@@ -37,12 +40,12 @@ protected:
 
 private:
   const InputData& r_input_data;
-  SimulationData* p_data;
   QThreadPool* p_thread_pool;
+  SimulationData m_data{};
 
 private:
-  auto
-  MakeSimulationPart(const std::pair<std::size_t, std::size_t>& points_range) {
+  auto MakeSimulationPartTask(
+      const std::pair<std::size_t, std::size_t>& points_range) {
     Q_ASSERT(points_range.first < points_range.second);
     Q_ASSERT(points_range.second <= PointsData::kPointsCount);
 
@@ -61,19 +64,17 @@ private:
             lambda, r_input_data.mu, r_input_data.channels,
             r_input_data.propability,
             queueing_system::MaxEventsCondition(r_input_data.events));
-        p_data->points_data.load_result(point_number, load, sim_result);
+        m_data.points_data.load_result(point_number, load, sim_result);
         arrive();
       }
     };
   }
-  auto MakeSimulationTable() noexcept {
+  auto MakeSimulationTableTask() noexcept {
     return [this] {
       auto& events = TableData().events;
       auto& requests = TableData().requests;
       events.clear();
       requests.clear();
-      events.reserve(TableData::kEventsNumber);
-      requests.reserve(TableData::kRequestsNumber);
 
       const auto lambda =
           PointsData::kMaxLoad * r_input_data.mu * r_input_data.channels;
@@ -85,6 +86,10 @@ private:
           [&requests](const Request& request) { requests.push_back(request); });
     };
   }
+
+  auto MakeGraphsPrepareTask() noexcept {
+    return [this]() { m_data.points_data.process_results(); };
+  }
 };
 
 inline void SimulationWorker::processBody() {
@@ -95,20 +100,22 @@ inline void SimulationWorker::processBody() {
 
   for (std::size_t thread_num{};
        thread_num < p_thread_pool->maxThreadCount() - 1; ++thread_num) {
-    p_thread_pool->start(MakeSimulationPart(
-        {chunk_size * thread_num, chunk_size * (thread_num + 1)}));
+    const auto points_range =
+        std::make_pair(chunk_size * thread_num, chunk_size * (thread_num + 1));
+    p_thread_pool->start(MakeSimulationPartTask(points_range));
   }
   // Последний "кусок" вычислений с остатком
-  p_thread_pool->start(
-      MakeSimulationPart({chunk_size * (p_thread_pool->maxThreadCount() - 1),
-                          PointsData::kPointsCount}));
+  const auto points_range =
+      std::make_pair(chunk_size * (p_thread_pool->maxThreadCount() - 1),
+                     PointsData::kPointsCount);
+  p_thread_pool->start(MakeSimulationPartTask(points_range));
 
   p_thread_pool->waitForDone();
 
+  // Заполнение таблицы и подготовка графов
   if (!canceled()) {
-    p_thread_pool->start(MakeSimulationTable());
-
-    p_data->points_data.process_results();
+    p_thread_pool->start(MakeSimulationTableTask());
+    p_thread_pool->start(MakeGraphsPrepareTask());
 
     p_thread_pool->waitForDone();
   }
