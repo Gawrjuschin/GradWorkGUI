@@ -9,10 +9,9 @@ class QStackedWidget;
 class QTabWidget;
 class TableWidget;
 class Graphs_Widget;
-class Loading_Widget;
+class LoadingWidget;
 
-class Results_Widget : public QWidget
-{
+class Results_Widget : public QWidget {
   Q_OBJECT
 
 public:
@@ -38,7 +37,7 @@ private:
   QTabWidget* p_tabs_widget;
   TableWidget* p_table_widget;
   Graphs_Widget* p_graphs_widget;
-  Loading_Widget* p_loading_widget;
+  LoadingWidget* p_loading_widget;
 
   enum { WAITING = 0, PROCESSING = 1, PAUSED = 2, READY = 3 };
 };

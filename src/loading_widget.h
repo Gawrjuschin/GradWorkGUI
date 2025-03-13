@@ -5,22 +5,21 @@
 
 class QLabel;
 
-class Loading_Widget : public QWidget
-{
+class LoadingWidget : public QWidget {
   Q_OBJECT
 
-  Q_PROPERTY(QPixmap pixmap READ pixmap WRITE onSetPixmap NOTIFY pixmapChanged)
+  Q_PROPERTY(QPixmap pixmap READ pixmap WRITE setPixmap NOTIFY pixmapChanged)
 
 public:
-  explicit Loading_Widget(const int pix_size, QWidget* parent = nullptr);
-  ~Loading_Widget();
+  explicit LoadingWidget(const int pix_size, QWidget* parent = nullptr);
+  ~LoadingWidget();
 
   QPixmap pixmap() const;
+  void setPixmap(const QPixmap& pic);
 
 public slots:
   void onStop();
   void onStart();
-  void onSetPixmap(const QPixmap& pic);
 
 protected slots:
   void onNextText();

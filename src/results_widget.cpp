@@ -11,14 +11,14 @@
 
 constexpr int pix_size = 200;
 
-Results_Widget::Results_Widget(TableData &tdata, const PointsData &points_data,
-                               QWidget *parent)
+Results_Widget::Results_Widget(TableData& tdata, const PointsData& points_data,
+                               QWidget* parent)
     : QWidget(parent), p_widget_host(new QStackedWidget(this)),
       p_tabs_widget(new QTabWidget(this)),
       p_table_widget(new TableWidget(tdata, this)),
       p_graphs_widget(new Graphs_Widget(points_data, this)),
-      p_loading_widget(new Loading_Widget(pix_size, this)) {
-  auto *main_lo = new QVBoxLayout(this);
+      p_loading_widget(new LoadingWidget(pix_size, this)) {
+  auto* main_lo = new QVBoxLayout(this);
   main_lo->addWidget(p_widget_host);
 
   p_widget_host->addWidget(new QLabel(tr("Waiting for input parameters"), this));
