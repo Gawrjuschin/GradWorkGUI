@@ -31,7 +31,6 @@ public slots:
   void onDataReady();
 
 signals:
-  void signal_prepare();
   void sigDataReady();
 
 private:

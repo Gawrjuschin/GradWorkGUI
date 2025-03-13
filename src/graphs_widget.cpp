@@ -20,13 +20,10 @@ constexpr int TITLE_FONTSIZE = 18;
 
 Graphs_Widget::Graphs_Widget(const PointsData& points_data, QWidget* parent)
     : QWidget(parent), r_points_data(points_data),
-      p_chart_switch(new Graphs_Switch(this)),
+      p_chart_switch(new GraphsSwitch(this)),
       p_chart_view(new Graphs_View(nullptr, this)), charts_array{} {
   auto* main_lo = new QVBoxLayout(this);
-  auto* menu_lo = new QHBoxLayout;
-  menu_lo->addWidget(p_chart_switch, 0);
-  menu_lo->addStretch(1);
-  main_lo->addLayout(menu_lo);
+  main_lo->addWidget(p_chart_switch);
   main_lo->addWidget(p_chart_view, 1);
 
   for (std::size_t i = 0; i < charts_array.size(); ++i) {
@@ -36,19 +33,18 @@ Graphs_Widget::Graphs_Widget(const PointsData& points_data, QWidget* parent)
     // update_series(i); });
   }
 
-  connect(p_chart_switch, &Graphs_Switch::sigShow, this,
-          &Graphs_Widget::onShow);
-  connect(p_chart_switch, &Graphs_Switch::sigApproximate, this,
+  connect(p_chart_switch, &GraphsSwitch::sigShow, this, &Graphs_Widget::onShow);
+  connect(p_chart_switch, &GraphsSwitch::sigApproximate, this,
           &Graphs_Widget::onApproximate);
-  connect(p_chart_switch, &Graphs_Switch::sigDeapproximate, this,
+  connect(p_chart_switch, &GraphsSwitch::sigDeapproximate, this,
           &Graphs_Widget::onDeapproximate);
-  connect(p_chart_switch, &Graphs_Switch::sigSave, p_chart_view,
+  connect(p_chart_switch, &GraphsSwitch::sigSave, p_chart_view,
           &Graphs_View::onSave);
-  connect(p_chart_switch, &Graphs_Switch::sigZoomIn, p_chart_view,
+  connect(p_chart_switch, &GraphsSwitch::sigZoomIn, p_chart_view,
           &Graphs_View::onZoomIn);
-  connect(p_chart_switch, &Graphs_Switch::sigZoomOut, p_chart_view,
+  connect(p_chart_switch, &GraphsSwitch::sigZoomOut, p_chart_view,
           &Graphs_View::onZoomOut);
-  connect(p_chart_switch, &Graphs_Switch::sigZoomReset, p_chart_view,
+  connect(p_chart_switch, &GraphsSwitch::sigZoomReset, p_chart_view,
           &Graphs_View::onZoomReset);
 }
 
@@ -176,11 +172,10 @@ void Graphs_Widget::onPointsReady() {
        ++graph_number) {
     update_series(graph_number);
   }
+  for (auto& apr_series : apr_series_array) {
+    apr_series->hide();
+  }
   onShow(0);
+  p_chart_switch->reset();
   emit sigEnd();
-}
-
-void Graphs_Widget::onStop() {
-  p_chart_view->setDisabled(false);   // Включаем меню
-  p_chart_switch->setDisabled(false); // Включаем графы
 }

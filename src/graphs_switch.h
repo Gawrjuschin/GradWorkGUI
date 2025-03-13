@@ -7,21 +7,24 @@
 class QPushButton;
 class QMenu;
 class QComboBox;
+class QGroupBox;
 
-class Graphs_Switch : public QWidget
-{
+class GraphsSwitch : public QWidget {
   Q_OBJECT
 
-  enum { MENU_BUTTONS = 3, MENUS = 6 };
+  static constexpr std::size_t BUTTONS_COUNT{3};
+  static constexpr std::size_t GRAPHS_COUNT{6};
 
 public:
-  explicit Graphs_Switch(QWidget* parent = nullptr);
-  ~Graphs_Switch();
+  explicit GraphsSwitch(QWidget* parent = nullptr);
+  ~GraphsSwitch() = default;
+
+  void reset();
 
 protected slots:
   void onApproximation();
   void onSave();
-  void onUpdate(int);
+  void onPriorityChange(int);
 
 signals:
   void sigShow(int);
@@ -33,17 +36,15 @@ signals:
   void sigZoomReset();
 
 private:
-  std::array<QPushButton*, MENU_BUTTONS> m_vector_buttons;
-  std::array<QMenu*, MENUS> m_menus_array;
+  std::array<QPushButton*, BUTTONS_COUNT> m_graphs_buttons;
+  std::array<QMenu*, GRAPHS_COUNT> m_graphs_menus;
   QComboBox* p_prior_cbox;
-  QPushButton* p_zoom_in;
-  QPushButton* p_zoom_out;
-  QPushButton* p_zoom_reset;
-  int m_button_state{0};
+  int m_selected_graph{0};
 
 private:
-  void create_menus();
-  void adjust_widget();
+  QGroupBox* MakeGraphsGroup();
+  QGroupBox* MakeZoomGroup();
+  void CreateMenus();
 };
 
 #endif // GRAPHS_SWITCH_H

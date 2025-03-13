@@ -6,7 +6,7 @@
 #include <array>
 #include <memory>
 
-class Graphs_Switch;
+class GraphsSwitch;
 class Graphs_View;
 class PointsData;
 
@@ -26,7 +26,6 @@ protected:
 
 public slots:
   void onPointsReady();
-  void onStop();
 
 protected slots:
   void onShow(int index);
@@ -38,7 +37,7 @@ signals:
 
 private:
   const PointsData& r_points_data;
-  Graphs_Switch* p_chart_switch;
+  GraphsSwitch* p_chart_switch;
   Graphs_View* p_chart_view;
   std::array<std::unique_ptr<QChart>, GRAPHS_COUNT> charts_array{};
   std::array<QLineSeries*, GRAPHS_COUNT> exp_series_array{};

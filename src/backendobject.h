@@ -1,7 +1,6 @@
 #ifndef BACKENDOBJECT_H
 #define BACKENDOBJECT_H
 
-#include <QDebug>
 #include <QObject>
 #include <QThread>
 #include <QThreadPool>
@@ -45,10 +44,7 @@ public:
   const Progress& getProgress() const noexcept { return p_worker->GetProgress(); }
 
 public slots:
-  void onStart() {
-    qDebug() << __PRETTY_FUNCTION__;
-    emit sigStarted();
-  }
+  void onStart() { emit sigStarted(); }
   void onPause() { p_worker->pause(); }
   void onResume() { p_worker->resume(); }
   void onStop() { p_worker->stop(); }
