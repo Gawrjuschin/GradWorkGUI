@@ -31,33 +31,31 @@ SimulationResult
 CalcResult(const SimulationStatus& simulation_status) noexcept {
   SimulationResult result{};
 
-  result.time_passed = simulation_status.time_passed;
-  result.requests = simulation_status.request_number;
-  result.events = simulation_status.event_number;
-  result.avg_period = {
-      simulation_status.time_passed / simulation_status.requests_total.first,
-      simulation_status.time_passed / simulation_status.requests_total.second};
-  result.avg_serve = {simulation_status.serve_total.first /
-                          simulation_status.requests_served.first,
-                      simulation_status.serve_total.second /
-                          simulation_status.requests_served.second};
-  result.propability = {simulation_status.requests_total.first /
-                            (simulation_status.requests_total.first +
-                             simulation_status.requests_total.second),
-                        simulation_status.requests_total.second /
-                            (simulation_status.requests_total.first +
-                             simulation_status.requests_total.second)};
-  result.avg_wait = {simulation_status.wait_total.first /
-                         simulation_status.requests_waited.first,
-                     simulation_status.wait_total.second /
-                         simulation_status.requests_waited.second};
-  result.avg_requests = {simulation_status.requests_weighted_summ.first /
-                             simulation_status.time_passed,
-                         simulation_status.requests_weighted_summ.second /
-                             simulation_status.time_passed};
+  const auto [request_number, event_number, time_passed, serve_total,
+              wait_total, requests_total, requests_served, requests_waited,
+              requests_weighted_summ] = simulation_status;
 
+  result.time_passed = time_passed;
+  result.requests = request_number;
+  result.events = event_number;
+  result.avg_period = {time_passed / requests_total.first,
+                       time_passed / requests_total.second};
+  result.avg_serve = {serve_total.first / requests_served.first,
+                      serve_total.second / requests_served.second};
+  result.propability = {
+      requests_total.first / (requests_total.first + requests_total.second),
+      requests_total.second / (requests_total.first + requests_total.second)};
+
+  // TODO: придумать лучшее решение для случаев, когда ожидания не было вообще
+  if (requests_waited.second != 0) {
+    result.avg_wait = {wait_total.first / requests_waited.first,
+                       wait_total.second / requests_waited.second};
+  }
   result.avg_utility = {result.avg_wait.first + result.avg_serve.first,
                         result.avg_wait.second + result.avg_serve.second};
+
+  result.avg_requests = {requests_weighted_summ.first / time_passed,
+                         requests_weighted_summ.second / time_passed};
 
   return result;
 }
