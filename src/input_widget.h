@@ -20,7 +20,7 @@ public:
   InputWidget(InputWidget&&) = delete;
   InputWidget& operator=(InputWidget&&) = delete;
 
-  ~InputWidget() override;
+  ~InputWidget();
 
   const InputData& inputData() const noexcept;
 

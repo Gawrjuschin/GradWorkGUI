@@ -10,7 +10,8 @@ class RequestsFlow { // Класс потока заявок
                      // Генерирует информацию о следующей заявке
 public:
   RequestsFlow() = delete;
-  RequestsFlow(double lambda, double mu, double prop);
+  RequestsFlow(double lambda, double mu, double prop,
+               const std::uint32_t seed = {});
 
   RequestsFlow(const RequestsFlow&) = delete;
   RequestsFlow& operator=(const RequestsFlow&) = delete;
@@ -24,9 +25,9 @@ public:
 
 private:
   // Три независимые С.В.
-  std::default_random_engine engine_l1;
-  std::default_random_engine engine_l2;
-  std::default_random_engine engine_m;
+  std::default_random_engine engine_l1{};
+  std::default_random_engine engine_l2{};
+  std::default_random_engine engine_m{};
   // Распределения для потоков заявок и потока обслуживания
   std::exponential_distribution<> distr_l1;
   std::exponential_distribution<> distr_l2;
@@ -43,10 +44,18 @@ private:
   double get_serve();
 };
 
-RequestsFlow::RequestsFlow(double lambda, double mu, double prop)
-    : engine_l1{}, engine_l2{}, engine_m{}, distr_l1{lambda * prop},
-      distr_l2{lambda * (1 - prop)}, distr_m{mu}, time{0} // , priority{-1}
+RequestsFlow::RequestsFlow(double lambda, double mu, double prop,
+                           const std::uint32_t seed)
+    : distr_l1{lambda * prop}, distr_l2{lambda * (1 - prop)}, distr_m{mu},
+      time{0} // , priority{-1}
 {
+  std::default_random_engine seed_engine{seed};
+  std::uniform_int_distribution seed_distr{};
+
+  engine_l1.seed(seed_distr(seed_engine));
+  engine_l2.seed(seed_distr(seed_engine));
+  engine_m.seed(seed_distr(seed_engine));
+
   arrive_time[0] = get_arrive(0);
   arrive_time[1] = get_arrive(1);
 }

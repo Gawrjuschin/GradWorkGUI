@@ -63,7 +63,8 @@ private:
         const auto sim_result = queueing_system::Simulate(
             lambda, r_input_data.mu, r_input_data.channels,
             r_input_data.propability,
-            queueing_system::MaxEventsCondition(r_input_data.events));
+            queueing_system::MaxEventsCondition(r_input_data.events),
+            r_input_data.seed);
         m_data.points_data.load_result(point_number, load, sim_result);
         arrive();
       }
@@ -82,6 +83,7 @@ private:
           lambda, r_input_data.mu, r_input_data.channels,
           r_input_data.propability,
           queueing_system::MaxEventsCondition(TableData::kEventsNumber),
+          r_input_data.seed,
           [&events](const Event& event) { events.push_back(event); },
           [&requests](const Request& request) { requests.push_back(request); });
     };

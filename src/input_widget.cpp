@@ -11,6 +11,9 @@
 #include <QStyleOption>
 #include <QThread>
 #include <QtMath>
+
+#include <numbers>
+
 constexpr double kSingleStep = 0.01;
 constexpr int kMaxChannels = 16;
 
@@ -25,6 +28,7 @@ struct InputWidgetImpl {
   QDoubleSpinBox* p_pr_input{nullptr};
   QSpinBox* p_threads_input{nullptr};
   QSpinBox* p_events_input{nullptr};
+  QSpinBox* p_seed_input{nullptr};
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Флаг паузы. Далее будет заменён на класс-синхронизатор из стороннего
   // проекта с синхронизацией потоков
@@ -119,6 +123,15 @@ QWidget* InputWidget::makeSimulationGrpbx() {
   simulation_lo->addWidget(events_lbl, 1, 0);
   simulation_lo->addWidget(p_impl_->p_events_input, 1, 1);
 
+  // TODO: shortcut
+  auto* seed_lbl = new QLabel(tr("Simulations seed"));
+  p_impl_->p_seed_input = new QSpinBox;
+  p_impl_->p_seed_input->setRange(std::numeric_limits<std::int32_t>::min(),
+                                  std::numeric_limits<std::int32_t>::max());
+  seed_lbl->setBuddy(p_impl_->p_events_input);
+  simulation_lo->addWidget(seed_lbl, 2, 0);
+  simulation_lo->addWidget(p_impl_->p_seed_input, 2, 1);
+
   return simulation_grbx;
 }
 
@@ -186,7 +199,8 @@ void InputWidget::loadData() {
                      .propability = p_impl_->p_pr_input->value(),
                      .channels = p_impl_->p_ch_input->value(),
                      .threads = p_impl_->p_threads_input->value(),
-                     .events = p_impl_->p_events_input->value()};
+                     .events = p_impl_->p_events_input->value(),
+                     .seed = std::uint32_t(p_impl_->p_seed_input->value())};
 }
 
 void InputWidget::onDone() {

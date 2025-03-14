@@ -225,9 +225,10 @@ static inline auto EnqueueNext(RequestsFlow& req_generator,
 SimulationResult
 Simulate(double lambda_th, double mu_th, int channels_number, double prop,
          std::function<bool(const SimulationStatus&)> continue_condition,
+         const std::uint32_t seed,
          std::function<void(const Event&)> write_event,
          std::function<void(const Request&)> write_request) {
-  RequestsFlow req_generator(lambda_th, mu_th, prop);
+  RequestsFlow req_generator(lambda_th, mu_th, prop, seed);
 
   std::vector<Request> channels(channels_number);
   RequestsQueue queue{};

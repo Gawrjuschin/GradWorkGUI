@@ -5,6 +5,7 @@
 #include "request.h"
 
 #include <cmath>
+#include <cstdint>
 #include <functional>
 
 namespace queueing_system {
@@ -103,6 +104,7 @@ private:
 SimulationResult
 Simulate(double lambda_th, double mu_th, int channels_number, double prop,
          std::function<bool(const SimulationStatus&)> continue_condition,
+         const std::uint32_t seed = {},
          std::function<void(const Event&)> write_event = nullptr,
          std::function<void(const Request&)> write_request = nullptr);
 
