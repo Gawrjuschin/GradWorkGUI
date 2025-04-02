@@ -1,50 +1,34 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.23)
 
-project(${PROJECT_NAME})
+project(QueSysLib)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(PROJECT_NAME
-    QueSysLib
-    )
+add_library(QueSys OBJECT)
 
-set(LIBRARY_NAME
+target_sources(
     QueSys
-    )
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/QueSys/queueing_system.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/queueing_system.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/QueSys/request.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/request.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/QueSys/event.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/event.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/QueSys/requests_flow.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/QueSys/requests_queue.h
+)
 
-set(LIBRARY_HEADERS_DIR
-    include/${LIBRARY_NAME}
-    )
+target_include_directories(
+    QueSys
+    PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/QueSys>
+)
 
-set(LIBRARY_HEADERS
-    ${LIBRARY_HEADERS_DIR}/queueing_system.h
-    ${LIBRARY_HEADERS_DIR}/request.h
-    ${LIBRARY_HEADERS_DIR}/requests_flow.h
-    ${LIBRARY_HEADERS_DIR}/requests_queue.h
-    ${LIBRARY_HEADERS_DIR}/event.h
-    )
-
-set(LIBRARY_SOURCE_DIR
-    src
-    )
-
-set(LIBRARY_SOURCE
-    ${LIBRARY_SOURCE_DIR}/queueing_system.cpp
-    ${LIBRARY_SOURCE_DIR}/request.cpp
-    ${LIBRARY_SOURCE_DIR}/event.cpp
-    )
-
-add_library(${LIBRARY_NAME} STATIC
-    ${LIBRARY_HEADERS}
-    ${LIBRARY_SOURCE}
-    )
-target_include_directories(${LIBRARY_NAME} PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/${LIBRARY_NAME}>
-    $<INSTALL_INTERFACE:include/${LIBRARY_NAME}>
-    )
-
-target_include_directories(${LIBRARY_NAME} PUBLIC
+target_include_directories(
+    QueSys
+    PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
-    )
+)

@@ -8,7 +8,6 @@ struct InputData
   int channels{};
   int threads{};
   int events{};
-  unsigned int seed{};
 };
 
 #endif // INPUT_DATA_H

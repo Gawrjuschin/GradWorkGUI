@@ -1,26 +1,22 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.23)
 
-set(PROJECT_NAME GradWorkGUI)
-set(APP_NAME gradwork_gui)
-project(${PROJECT_NAME} VERSION 1.0 LANGUAGES CXX)
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
+project(
+    GradWorkGUI
+    VERSION 1.0
+    LANGUAGES CXX
+)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
 
 # TODO: Qt5 compatibility
-find_package(QT NAMES Qt6 COMPONENTS Core Widgets Charts REQUIRED)
 find_package(Qt6 COMPONENTS Core Widgets Charts REQUIRED)
+qt_standard_project_setup()
 
-set(PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+add_subdirectory(QueSys)
+
+set(GRADWORKGUI_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/points_data.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_switch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_switch.h
@@ -47,51 +43,36 @@ set(PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_data.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/resources.qrc    
     ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobjectworker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/simulationworker.h
-    )
-
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(${APP_NAME}
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-    )
-
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET untitled APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-else()
-    if(ANDROID)
-        add_library(${APP_NAME} SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(${APP_NAME}
-            ${PROJECT_SOURCES}
-        )
-    endif()
-endif()
-
-add_subdirectory(QueSys)
-
-target_link_libraries(${APP_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core
-                                  PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-                                  PRIVATE Qt${QT_VERSION_MAJOR}::Charts
-                                  PRIVATE QueSys)
-
-set_target_properties(${APP_NAME} PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.${APP_NAME}.edu
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
 )
 
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(${APP_NAME})
-endif()
+qt_add_resources(
+    GRADWORKGUI_SOURCES
+    src/resources.qrc
+)
+
+qt_add_executable(gradwork_gui)
+
+target_sources(
+    gradwork_gui
+    PRIVATE
+    ${GRADWORKGUI_SOURCES}
+)
+
+target_link_libraries(
+    gradwork_gui
+    PRIVATE
+    Qt6::Core Qt6::Widgets Qt6::Charts
+    QueSys
+)
+
+set_target_properties(
+    gradwork_gui
+    PROPERTIES
+    WIN32_EXECUTABLE ON
+    MACOSX_BUNDLE ON
+)

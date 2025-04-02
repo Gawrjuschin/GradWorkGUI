@@ -22,7 +22,8 @@ struct SimulationResult {
   std::pair<double, double> avg_requests;
 };
 
-// TODO: убрать SimulationStatus и заменить его в API на SimulationResult
+// Статус СМО в момент времени time_passed. Используется для проверки условия
+// продолжения симуляции
 struct SimulationStatus {
   // Номер очередной заявки. Фактически количество сгенерированных заявок
   int request_number{0};
@@ -42,6 +43,7 @@ struct SimulationStatus {
 // TODO: заменить на отдельные функции для расчёта характеристик
 SimulationResult CalcResult(const SimulationStatus& simulation_status) noexcept;
 
+// Условие продолжения симуляции
 // Выход по достижению указанного числа событий
 struct MaxEventsCondition {
 public:
@@ -66,6 +68,8 @@ private:
   std::size_t max_events_;
 };
 
+// Условие продолжения симуляции
+// TODO: протестировать
 // Выход по сходимости по доле заявок
 struct PropConvCondition {
 public:
@@ -80,7 +84,6 @@ public:
   ~PropConvCondition() = default;
 
   // Условие продолжения
-  // TODO: протестировать
   constexpr bool
   operator()(const SimulationStatus& simulation_status) const noexcept {
     if (simulation_status.request_number == 0) {
@@ -101,12 +104,18 @@ private:
   double eps_;
 };
 
+// Запуск симуляции СМО с заданными параметрами до заданного условия с записью
+// результатов симуляции
 SimulationResult
 Simulate(double lambda_th, double mu_th, int channels_number, double prop,
          std::function<bool(const SimulationStatus&)> continue_condition,
-         const std::uint32_t seed = {},
-         std::function<void(const Event&)> write_event = nullptr,
-         std::function<void(const Request&)> write_request = nullptr);
+         std::function<void(const Event&)> write_event,
+         std::function<void(const Request&)> write_request);
+
+// Запуск симуляции СМО с заданными параметрами до заданного условия
+SimulationResult
+Simulate(double lambda_th, double mu_th, int channels_number, double prop,
+         std::function<bool(const SimulationStatus&)> continue_condition);
 
 } // namespace queueing_system
 

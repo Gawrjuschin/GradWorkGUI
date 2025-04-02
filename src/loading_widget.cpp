@@ -54,7 +54,7 @@ LoadingWidget::LoadingWidget(const int pix_size, QWidget* parent)
   connect(p_timer_pic, &QTimer::timeout, this, &LoadingWidget::onNextPic);
 
   QPixmap default_pixmap(pix_size, pix_size);
-  default_pixmap.load(":/images/loading.png");
+  Q_ASSERT(default_pixmap.load(":/images/loading.png"));
   setPixmap(std::move(default_pixmap));
 }
 
