@@ -28,11 +28,11 @@ public:
                       int role) const override;
 
   // Обменивается векторами с TableData
-  void replace(QVector<Request>& vec);
+  void replace(QVector<queueing_system::Request>& vec);
 
-  void append(const Request& data);
+  void append(const queueing_system::Request& data);
 
-  void append(QVector<Request> vec);
+  void append(QVector<queueing_system::Request> vec);
 
   void clear();
 
@@ -40,7 +40,7 @@ signals:
   void sigUpdate();
 
 private:
-  QVector<Request> m_data{};
+  QVector<queueing_system::Request> m_data{};
 
   enum { NUMBER = 0, TYPE, ARRIVE, Q_NUM, CH_NUM, START, SERVE, WAIT, END };
 };
@@ -69,11 +69,11 @@ public:
                       int role) const override;
 
   // Обменивается векторами с TableData
-  void replace(QVector<Event>& vec);
+  void replace(QVector<queueing_system::Event>& vec);
 
-  void append(const Event& data);
+  void append(const queueing_system::Event& data);
 
-  void append(QVector<Event> vec);
+  void append(QVector<queueing_system::Event> vec);
 
   void clear();
 
@@ -81,7 +81,7 @@ signals:
   void sigUpdate();
 
 private:
-  QVector<Event> m_data;
+  QVector<queueing_system::Event> m_data;
 
   enum { EV_NUM = 0, TIME, TYPE, S_STATUS, Q_STATUS, REQ_NUM, NEXT };
 };

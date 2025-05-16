@@ -1,15 +1,13 @@
 #include "queueing_system.h"
-
-#include "requests_flow.h"
-#include "requests_queue.h"
+#include "requests_flow.hpp"
+#include "requests_queue.hpp"
 
 #include <cassert>
 #include <string>
 
-#include <cassert>
-
 namespace queueing_system {
 
+namespace detail {
 static inline auto FreeMin(std::vector<Request>& channels) noexcept {
   auto free = end(channels);
   auto min = begin(channels);
@@ -24,8 +22,10 @@ static inline auto FreeMin(std::vector<Request>& channels) noexcept {
       }
     }
   }
-  return make_pair(free, min);
+  return std::make_pair(free, min);
 }
+
+} // namespace detail
 
 SimulationResult
 CalcResult(const SimulationStatus& simulation_status) noexcept {
@@ -60,16 +60,14 @@ CalcResult(const SimulationStatus& simulation_status) noexcept {
   return result;
 }
 
-// 1)
-// Очередная заявка встаёт на обслуживание
-// Первый свободный прибор принимает заявку
+// 1) Очередная заявка встаёт на обслуживание. Первый свободный прибор принимает
+// заявку
 static inline auto StartNext(RequestsFlow& req_generator, Request& next_request,
                              std::vector<Request>& channels,
                              RequestsQueue& queue,
                              std::pair<int, int>& system_status,
                              SimulationStatus& simulation_status,
-                             std::vector<Request>::iterator free_it,
-                             std::vector<Request>::iterator min_it) -> Event {
+                             std::vector<Request>::iterator free_it) -> Event {
   simulation_status.time_passed = next_request.arrive_time;
 
   *free_it = next_request;
@@ -92,7 +90,7 @@ static inline auto StartNext(RequestsFlow& req_generator, Request& next_request,
 
   return {.number = simulation_status.event_number,
           .time = simulation_status.time_passed,
-          .type = (free_it->type == RequestType::kFirst) ? 1 : 2,
+          .type = (free_it->type == RequestType::kFirst) ? 1u : 2u,
           .system_status = system_status,
           .queue_status = queue.status(),
           .request = free_it->number,
@@ -102,14 +100,12 @@ static inline auto StartNext(RequestsFlow& req_generator, Request& next_request,
 // 2)
 // Первая в очереди заявка встаёт на обслуживание
 // Первый свободный прибор принимает заявку
-static inline auto StartQueued(RequestsFlow& req_generator,
-                               Request& next_request,
-                               std::vector<Request>& channels,
-                               RequestsQueue& queue,
-                               std::pair<int, int>& system_status,
-                               SimulationStatus& simulation_status,
-                               std::vector<Request>::iterator free_it,
-                               std::vector<Request>::iterator min_it) -> Event {
+static inline Event StartQueued(Request& next_request,
+                                std::vector<Request>& channels,
+                                RequestsQueue& queue,
+                                std::pair<int, int>& system_status,
+                                SimulationStatus& simulation_status,
+                                std::vector<Request>::iterator free_it) {
   (*free_it) = queue.front();
 
   // Изменение количества заявок в СМО
@@ -124,7 +120,7 @@ static inline auto StartQueued(RequestsFlow& req_generator,
   // Запись данных в новое событие
   return {.number = simulation_status.event_number,
           .time = simulation_status.time_passed,
-          .type = (free_it->type == RequestType::kFirst) ? 7 : 8,
+          .type = (free_it->type == RequestType::kFirst) ? 7u : 8u,
           .system_status = system_status,
           .queue_status = queue.status(),
           .request = free_it->number,
@@ -136,28 +132,25 @@ static inline auto StartQueued(RequestsFlow& req_generator,
 // Канал с минимальным оставшимся временем обслуживания освободится раньше
 // прихода очередной заявки Освобождается канал с минимальным оставшимся
 // временем обслуживания.
-static inline auto FreeMin(RequestsFlow& req_generator, Request& next_request,
-                           std::vector<Request>& channels, RequestsQueue& queue,
-                           std::pair<int, int>& system_status,
-                           SimulationStatus& simulation_status,
-                           std::vector<Request>::iterator free_it,
-                           std::vector<Request>::iterator min_it,
-                           std::function<void(const Request&)> write_request)
-    -> Event {
+static inline Event
+FreeMin(Request& next_request, RequestsQueue& queue,
+        std::pair<int, int>& system_status, SimulationStatus& simulation_status,
+        std::vector<Request>::iterator min_it,
+        const std::function<void(const Request&)>& write_request) {
   simulation_status.time_passed = min_it->serve_end;
 
   // Изменение количества заявок в СМО
   (min_it->type == RequestType::kFirst) ? --system_status.first
                                         : --system_status.second;
   // Запись данных в новое событие
-  Event current_event = {.number = simulation_status.event_number,
-                         .time = simulation_status.time_passed,
-                         .type = (min_it->type == RequestType::kFirst) ? 5 : 6,
-                         .system_status = system_status,
-                         .queue_status = queue.status(),
-                         .request = min_it->number,
-                         .time_next = next_request.arrive_time -
-                                      simulation_status.time_passed};
+  Event current_event = {
+      .number = simulation_status.event_number,
+      .time = simulation_status.time_passed,
+      .type = (min_it->type == RequestType::kFirst) ? 5u : 6u,
+      .system_status = system_status,
+      .queue_status = queue.status(),
+      .request = min_it->number,
+      .time_next = next_request.arrive_time - simulation_status.time_passed};
 
   //(*min_it) - освободившаяся заявка
   // Только здесь изменяется число обработанных заявок
@@ -189,11 +182,9 @@ static inline auto FreeMin(RequestsFlow& req_generator, Request& next_request,
 };
 
 // Перегрузка без записи вышедшей из системы заявки
-static inline auto FreeMin(RequestsFlow& req_generator, Request& next_request,
-                           std::vector<Request>& channels, RequestsQueue& queue,
+static inline auto FreeMin(Request& next_request, RequestsQueue& queue,
                            std::pair<int, int>& system_status,
                            SimulationStatus& simulation_status,
-                           std::vector<Request>::iterator free_it,
                            std::vector<Request>::iterator min_it) -> Event {
   simulation_status.time_passed = min_it->serve_end;
 
@@ -201,14 +192,14 @@ static inline auto FreeMin(RequestsFlow& req_generator, Request& next_request,
   (min_it->type == RequestType::kFirst) ? --system_status.first
                                         : --system_status.second;
   // Запись данных в новое событие
-  Event current_event = {.number = simulation_status.event_number,
-                         .time = simulation_status.time_passed,
-                         .type = (min_it->type == RequestType::kFirst) ? 5 : 6,
-                         .system_status = system_status,
-                         .queue_status = queue.status(),
-                         .request = min_it->number,
-                         .time_next = next_request.arrive_time -
-                                      simulation_status.time_passed};
+  Event current_event = {
+      .number = simulation_status.event_number,
+      .time = simulation_status.time_passed,
+      .type = (min_it->type == RequestType::kFirst) ? 5u : 6u,
+      .system_status = system_status,
+      .queue_status = queue.status(),
+      .request = min_it->number,
+      .time_next = next_request.arrive_time - simulation_status.time_passed};
 
   //(*min_it) - освободившаяся заявка
   // Только здесь изменяется число обработанных заявок
@@ -238,13 +229,9 @@ static inline auto FreeMin(RequestsFlow& req_generator, Request& next_request,
 //  Очередная заявка прийдёт раньше, чем освободится канал с минимальным
 //  оставшимся временем обслуживания Очередная заявка встаёт в очередь.
 static inline auto EnqueueNext(RequestsFlow& req_generator,
-                               Request& next_request,
-                               std::vector<Request>& channels,
-                               RequestsQueue& queue,
+                               Request& next_request, RequestsQueue& queue,
                                std::pair<int, int>& system_status,
-                               SimulationStatus& simulation_status,
-                               std::vector<Request>::iterator free_it,
-                               std::vector<Request>::iterator min_it) -> Event {
+                               SimulationStatus& simulation_status) -> Event {
   simulation_status.time_passed = next_request.arrive_time;
 
   double prev_arrive_time = next_request.arrive_time;
@@ -261,7 +248,7 @@ static inline auto EnqueueNext(RequestsFlow& req_generator,
   // Запись данных в новое событие
   return {.number = simulation_status.event_number,
           .time = simulation_status.time_passed,
-          .type = (next_request.type == RequestType::kFirst) ? 3 : 4,
+          .type = (next_request.type == RequestType::kFirst) ? 3u : 4u,
           .system_status = system_status,
           .queue_status = queue.status(),
           .request = (next_request.number - 1),
@@ -288,7 +275,7 @@ Simulate(double lambda_th, double mu_th, int channels_number, double prop,
   for (sim_status.event_number = 1; continue_condition(sim_status);
        ++sim_status.event_number) {
     Event current_event{};
-    auto [free_it, min_it] = FreeMin(channels);
+    auto [free_it, min_it] = detail::FreeMin(channels);
     const auto prev_status = sys_status;
     const auto prev_time = sim_status.time_passed;
 
@@ -301,18 +288,18 @@ Simulate(double lambda_th, double mu_th, int channels_number, double prop,
           // Очередь пуста.
           // Первый свободный прибор принимает очередную заявку (1)
           current_event = StartNext(req_gen, next_req, channels, queue,
-                                    sys_status, sim_status, free_it, min_it);
+                                    sys_status, sim_status, free_it);
         } else {
           // В очереди есть заявка
           // Первый свободный прибор принимает заявку из очереди (2)
-          current_event = StartQueued(req_gen, next_req, channels, queue,
-                                      sys_status, sim_status, free_it, min_it);
+          current_event = StartQueued(next_req, channels, queue, sys_status,
+                                      sim_status, free_it);
         }
       } else {
         // Все приборы заняты
         // Следующая заявка встаёт в очередь (4)
-        current_event = EnqueueNext(req_gen, next_req, channels, queue,
-                                    sys_status, sim_status, free_it, min_it);
+        current_event =
+            EnqueueNext(req_gen, next_req, queue, sys_status, sim_status);
       }
     } else {
       // Есть загруженный прибор и прибор освободится раньше, чем придёт
@@ -322,21 +309,20 @@ Simulate(double lambda_th, double mu_th, int channels_number, double prop,
           // Очередь пуста
           // Освобождается прибор с минимальным оставшимся временем обслуживания
           // (3)
-          current_event =
-              FreeMin(req_gen, next_req, channels, queue, sys_status,
-                      sim_status, free_it, min_it, write_request);
+          current_event = FreeMin(next_req, queue, sys_status, sim_status,
+                                  min_it, write_request);
         } else {
           // В очереди есть заявка
           // Первый свободный прибор принимает заявку из очереди (2)
-          current_event = StartQueued(req_gen, next_req, channels, queue,
-                                      sys_status, sim_status, free_it, min_it);
+          current_event = StartQueued(next_req, channels, queue, sys_status,
+                                      sim_status, free_it);
         }
       } else {
         // Все приборы заняты
         // Освобождается прибор с минимальным оставшимся временем обслуживания
         // (3)
-        current_event = FreeMin(req_gen, next_req, channels, queue, sys_status,
-                                sim_status, free_it, min_it, write_request);
+        current_event = FreeMin(next_req, queue, sys_status, sim_status, min_it,
+                                write_request);
       }
     }
 
@@ -383,7 +369,7 @@ Simulate(double lambda_th, double mu_th, int channels_number, double prop,
   for (sim_status.event_number = 1; continue_condition(sim_status);
        ++sim_status.event_number) {
     Event current_event{};
-    auto [free_it, min_it] = FreeMin(channels);
+    auto [free_it, min_it] = detail::FreeMin(channels);
     const auto prev_status = sys_status;
     const auto prev_time = sim_status.time_passed;
 
@@ -396,18 +382,18 @@ Simulate(double lambda_th, double mu_th, int channels_number, double prop,
           // Очередь пуста.
           // Первый свободный прибор принимает очередную заявку (1)
           current_event = StartNext(req_gen, next_req, channels, queue,
-                                    sys_status, sim_status, free_it, min_it);
+                                    sys_status, sim_status, free_it);
         } else {
           // В очереди есть заявка
           // Первый свободный прибор принимает заявку из очереди (2)
-          current_event = StartQueued(req_gen, next_req, channels, queue,
-                                      sys_status, sim_status, free_it, min_it);
+          current_event = StartQueued(next_req, channels, queue, sys_status,
+                                      sim_status, free_it);
         }
       } else {
         // Все приборы заняты
         // Следующая заявка встаёт в очередь (4)
-        current_event = EnqueueNext(req_gen, next_req, channels, queue,
-                                    sys_status, sim_status, free_it, min_it);
+        current_event =
+            EnqueueNext(req_gen, next_req, queue, sys_status, sim_status);
       }
     } else {
       // Есть загруженный прибор и прибор освободится раньше, чем придёт
@@ -417,20 +403,20 @@ Simulate(double lambda_th, double mu_th, int channels_number, double prop,
           // Очередь пуста
           // Освобождается прибор с минимальным оставшимся временем обслуживания
           // (3)
-          current_event = FreeMin(req_gen, next_req, channels, queue,
-                                  sys_status, sim_status, free_it, min_it);
+          current_event =
+              FreeMin(next_req, queue, sys_status, sim_status, min_it);
         } else {
           // В очереди есть заявка
           // Первый свободный прибор принимает заявку из очереди (2)
-          current_event = StartQueued(req_gen, next_req, channels, queue,
-                                      sys_status, sim_status, free_it, min_it);
+          current_event = StartQueued(next_req, channels, queue, sys_status,
+                                      sim_status, free_it);
         }
       } else {
         // Все приборы заняты
         // Освобождается прибор с минимальным оставшимся временем обслуживания
         // (3)
-        current_event = FreeMin(req_gen, next_req, channels, queue, sys_status,
-                                sim_status, free_it, min_it);
+        current_event =
+            FreeMin(next_req, queue, sys_status, sim_status, min_it);
       }
     }
 

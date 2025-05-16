@@ -20,7 +20,7 @@ QVariant RequestModel::data(const QModelIndex &index, int role) const {
   if (role != Qt::DisplayRole && role != Qt::EditRole) {
     return QVariant();
   }
-  const Request &data = m_data[index.row()];
+  const queueing_system::Request& data = m_data[index.row()];
   switch (index.column()) {
   case NUMBER:
     return qint32(data.number);
@@ -78,7 +78,7 @@ QVariant RequestModel::headerData(int section, Qt::Orientation orientation,
   }
 }
 
-void RequestModel::replace(QVector<Request> &vec) {
+void RequestModel::replace(QVector<queueing_system::Request>& vec) {
   // По Мейерсу
   using std::swap;
   beginResetModel();
@@ -87,9 +87,8 @@ void RequestModel::replace(QVector<Request> &vec) {
   emit sigUpdate();
 }
 
-void RequestModel::append(
-    const Request
-        &data) { // When reimplementing insertRows() in a subclass, you must
+void RequestModel::append(const queueing_system::Request& data) {
+  // When reimplementing insertRows() in a subclass, you must
   // call this function before inserting data into the model's
   // underlying data store
   beginInsertRows({}, m_data.count(), m_data.count());
@@ -98,7 +97,7 @@ void RequestModel::append(
   emit sigUpdate();
 }
 
-void RequestModel::append(QVector<Request> vec) {
+void RequestModel::append(QVector<queueing_system::Request> vec) {
   beginResetModel();
   m_data = vec;
   endResetModel();
@@ -127,7 +126,7 @@ QVariant EventModel::data(const QModelIndex &index, int role) const {
   if (role != Qt::DisplayRole && role != Qt::EditRole) {
     return QVariant();
   }
-  const Event &data = m_data[index.row()];
+  const queueing_system::Event& data = m_data[index.row()];
   switch (index.column()) {
   case EV_NUM:
     return data.number;
@@ -177,7 +176,7 @@ QVariant EventModel::headerData(int section, Qt::Orientation orientation,
   }
 }
 
-void EventModel::replace(QVector<Event> &vec) {
+void EventModel::replace(QVector<queueing_system::Event>& vec) {
   // По Мейерсу
   using std::swap;
   beginResetModel();
@@ -186,14 +185,14 @@ void EventModel::replace(QVector<Event> &vec) {
   emit sigUpdate();
 }
 
-void EventModel::append(const Event &data) {
+void EventModel::append(const queueing_system::Event& data) {
   beginInsertRows({}, m_data.count(), m_data.count());
   m_data.append(data);
   endInsertRows();
   emit sigUpdate();
 }
 
-void EventModel::append(QVector<Event> vec) {
+void EventModel::append(QVector<queueing_system::Event> vec) {
   beginResetModel();
   m_data = vec;
   endResetModel();

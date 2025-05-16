@@ -12,10 +12,16 @@
 #include <QThread>
 #include <QtMath>
 
+#include <cstdint>
 #include <limits>
 
 constexpr double kSingleStep = 0.01;
 constexpr int kMaxChannels = 16;
+
+constexpr int kMinEvents = 1'000;
+constexpr int kMaxEvents = 1'000'000;
+static_assert(kMinEvents >= 0);
+static_assert(kMaxEvents <= std::numeric_limits<std::uint32_t>::max());
 
 struct InputWidgetImpl {
   double min_load;
@@ -112,9 +118,6 @@ QWidget* InputWidget::makeSimulationGrpbx() {
   threads_lbl->setBuddy(p_impl_->p_threads_input);
   simulation_lo->addWidget(threads_lbl, 0, 0);
   simulation_lo->addWidget(p_impl_->p_threads_input, 0, 1);
-
-  constexpr int kMinEvents = 1'000;
-  constexpr int kMaxEvents = 1'000'000;
   auto* events_lbl = new QLabel(tr("Number of &events"));
   p_impl_->p_events_input = new QSpinBox;
   p_impl_->p_events_input->setRange(kMinEvents, kMaxEvents);
@@ -185,11 +188,12 @@ void InputWidget::onUpdate() {
 }
 
 void InputWidget::loadData() {
-  m_data = InputData{.mu = p_impl_->p_mu_input->value(),
-                     .propability = p_impl_->p_pr_input->value(),
-                     .channels = p_impl_->p_ch_input->value(),
-                     .threads = p_impl_->p_threads_input->value(),
-                     .events = p_impl_->p_events_input->value()};
+  m_data = InputData{
+      .mu = p_impl_->p_mu_input->value(),
+      .propability = p_impl_->p_pr_input->value(),
+      .channels = p_impl_->p_ch_input->value(),
+      .threads = p_impl_->p_threads_input->value(),
+      .events = static_cast<std::uint32_t>(p_impl_->p_events_input->value())};
 }
 
 void InputWidget::onDone() {

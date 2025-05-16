@@ -11,8 +11,8 @@
 class PointsData
 {
 public:
-  static constexpr std::size_t kPointsCount = 1'000;
-  static constexpr std::size_t kGraphsCount = 6;
+  static constexpr int kPointsCount = 1'000;
+  static constexpr int kGraphsCount = 6;
   static constexpr double kMinLoad = 0.35;
   static constexpr double kMaxLoad = 0.95;
 

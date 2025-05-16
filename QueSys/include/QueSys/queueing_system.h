@@ -1,19 +1,23 @@
 #ifndef queueing_system_H
 #define queueing_system_H
 
-#include "event.h"
-#include "request.h"
+#include "event.hpp"
+#include "request.hpp"
 
 #include <cmath>
-#include <cstdint>
 #include <functional>
+#include <utility>
 
 namespace queueing_system {
 
+/**
+ * @brief The SimulationResult class - расчётные экспериментальные
+ * параметры СМО.
+ */
 struct SimulationResult {
   double time_passed{};
-  int events{};
-  int requests{};
+  std::uint32_t events{};
+  std::uint32_t requests{};
   std::pair<double, double> avg_period;
   std::pair<double, double> avg_serve;
   std::pair<double, double> propability;
@@ -22,29 +26,35 @@ struct SimulationResult {
   std::pair<double, double> avg_requests;
 };
 
-// Статус СМО в момент времени time_passed. Используется для проверки условия
-// продолжения симуляции
+/**
+ * @brief The SimulationStatus class - состояние СМО в момент времени
+ time_passed. Используется для проверки условия продолжения симуляции.
+ */
 struct SimulationStatus {
-  // Номер очередной заявки. Фактически количество сгенерированных заявок
-  int request_number{0};
-  // Номер последнего события. Фактически количество сгенерированных событий
-  int event_number{0};
 
+  std::uint32_t request_number{0};
+  std::uint32_t event_number{0};
   double time_passed{};
   std::pair<double, double> serve_total{};
   std::pair<double, double> wait_total{};
   std::pair<int, int> requests_total{};
   std::pair<int, int> requests_served{};
   std::pair<int, int> requests_waited{};
-  // Среднее число заявок в системе вычисляется на ходу
   std::pair<double, double> requests_weighted_summ{};
 };
 
-// TODO: заменить на отдельные функции для расчёта характеристик
+/**
+ * @brief CalcResult - расчёт параметров СМО из её текущего состояния
+ * @param simulation_status - состояние СМО
+ * @return
+ */
 SimulationResult CalcResult(const SimulationStatus& simulation_status) noexcept;
 
-// Условие продолжения симуляции
-// Выход по достижению указанного числа событий
+namespace conditions {
+/**
+ * @brief The MaxEventsCondition class - условие продолжения симуляции по числу
+ * событий. operator()  возвращает true, если условие выполняется
+ */
 struct MaxEventsCondition {
 public:
   constexpr explicit MaxEventsCondition(const std::size_t max_events) noexcept
@@ -58,7 +68,6 @@ public:
 
   ~MaxEventsCondition() noexcept = default;
 
-  // Условие продолжения
   constexpr bool
   operator()(const SimulationStatus& simulation_status) const noexcept {
     return simulation_status.event_number <= max_events_;
@@ -68,9 +77,10 @@ private:
   std::size_t max_events_;
 };
 
-// Условие продолжения симуляции
-// TODO: протестировать
-// Выход по сходимости по доле заявок
+/**
+ * @brief The PropConvCondition class - условие продолжения симуляции по
+ * сходимости теоретической доли заявок с заданной точностью eps
+ */
 struct PropConvCondition {
 public:
   constexpr explicit PropConvCondition(const double eps) noexcept : eps_(eps) {}
@@ -104,15 +114,34 @@ private:
   double eps_;
 };
 
-// Запуск симуляции СМО с заданными параметрами до заданного условия с записью
-// результатов симуляции
+} // namespace conditions
+
+/**
+ * @brief Simulate - запуск симуляции работы СМО с заданными параметрами
+ * @param lambda_th - параметр интенсивности потока заявок СМО
+ * @param mu_th - параметр интенсивности обслуживания СМО
+ * @param channels_number - число каналов СМО
+ * @param prop - доля заявок высшего приоритета в потоке заявок
+ * @param continue_condition - Callable, предикат продолжения симуляции
+ * @param write_event - Callable, записывающий все события
+ * @param write_request - Callable, записывающий все заявки
+ * @return
+ */
 SimulationResult
 Simulate(double lambda_th, double mu_th, int channels_number, double prop,
          std::function<bool(const SimulationStatus&)> continue_condition,
          std::function<void(const Event&)> write_event,
          std::function<void(const Request&)> write_request);
 
-// Запуск симуляции СМО с заданными параметрами до заданного условия
+/**
+ * @brief Simulate - запуск симуляции работы СМО с заданными параметрами
+ * @param lambda_th - параметр интенсивности потока заявок СМО
+ * @param mu_th - параметр интенсивности обслуживания СМО
+ * @param channels_number - число каналов СМО
+ * @param prop - доля заявок высшего приоритета в потоке заявок
+ * @param continue_condition - Callable, предикат продолжения симуляции
+ * @return
+ */
 SimulationResult
 Simulate(double lambda_th, double mu_th, int channels_number, double prop,
          std::function<bool(const SimulationStatus&)> continue_condition);
