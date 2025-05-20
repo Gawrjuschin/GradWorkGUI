@@ -1,7 +1,7 @@
-#ifndef SIMULATIONWORKER_H
-#define SIMULATIONWORKER_H
+#ifndef SIMULATION_WORKER_H
+#define SIMULATION_WORKER_H
 
-#include "backendobjectworker.h"
+#include "simulation_interface.hpp"
 #include "input_data.h"
 #include "points_data.h"
 #include "table_data.h"
@@ -15,9 +15,11 @@ struct SimulationData {
   TableData table_data{};
 };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class SimulationWorker : public BackendObjectWorker {
+/**
+ * @brief The SimulationWorker class - реализация многопоточной симуляции СМО с
+ * заданными параметрами
+ */
+class SimulationWorker : public SimulationInterface {
   Q_OBJECT
 
   const InputData& r_input_data;
@@ -27,7 +29,7 @@ class SimulationWorker : public BackendObjectWorker {
 public:
   explicit SimulationWorker(const InputData& input_data,
                             QObject* parent = nullptr)
-      : BackendObjectWorker(parent), r_input_data(input_data),
+      : SimulationInterface(parent), r_input_data(input_data),
         p_thread_pool(new QThreadPool(this)) {
     m_data.table_data.events.reserve(TableData::kEventsNumber);
     m_data.table_data.requests.reserve(TableData::kRequestsNumber);
@@ -120,4 +122,4 @@ inline void SimulationWorker::processBody() {
   }
 }
 
-#endif // SIMULATIONWORKER_H
+#endif // SIMULATION_WORKER_H

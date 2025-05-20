@@ -1,17 +1,46 @@
 cmake_minimum_required(VERSION 3.23)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 project(
     GradWorkGUI
     VERSION 1.0
     LANGUAGES CXX
 )
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+option(GRADWORKGUI_ENABLE_DOCS "Build doxygen docs" ON)
 
 # TODO: Qt5 compatibility
 find_package(Qt6 COMPONENTS Core Widgets Charts REQUIRED)
 qt_standard_project_setup()
+
+
+if(GRADWORKGUI_ENABLE_DOCS)
+    find_package(Doxygen REQUIRED)
+
+    set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/docs")
+    set(DOXYGEN_GENERATE_HTML YES)
+    set(DOXYGEN_GENERATE_MAN YES)
+    set(DOXYGEN_MARKDOWN_SUPPORT YES)
+    set(DOXYGEN_AUTOLINK_SUPPORT YES)
+    set(DOXYGEN_HAVE_DOT NO)
+    set(DOXYGEN_COLLABORATION_GRAPH YES)
+    set(DOXYGEN_CLASS_GRAPH YES)
+    set(DOXYGEN_UML_LOOK YES)
+    set(DOXYGEN_DOT_UML_DETAILS YES)
+    set(DOXYGEN_DOT_WRAP_THRESHOLD 100)
+    set(DOXYGEN_CALL_GRAPH YES)
+    set(DOXYGEN_QUIET YES)
+
+    doxygen_add_docs(
+        cmake_packaging_docs
+        "${CMAKE_CURRENT_LIST_DIR}"
+        ALL
+        COMMENT "generate docs for gradwork_gui"
+    )
+
+endif()
 
 add_subdirectory(QueSys)
 
@@ -43,11 +72,11 @@ set(GRADWORKGUI_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_data.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobjectworker.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/backendobject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/simulation_interface.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/simulation_control.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/simulation_worker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/simulationworker.h
 )
 
 qt_add_resources(

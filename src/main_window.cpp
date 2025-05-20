@@ -1,9 +1,9 @@
 #include "main_window.h"
-#include "backendobject.h"
+#include "simulation_control.hpp"
 #include "input_widget.h"
 #include "points_data.h"
 #include "results_widget.h"
-#include "simulationworker.h"
+#include "simulation_worker.h"
 #include "status_bar.h"
 
 #include <QApplication>
@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       p_input(new InputWidget(PointsData::kMinLoad, PointsData::kMaxLoad)),
       p_worker(new SimulationWorker(p_input->inputData())),
-      p_backend(new BackendObject(p_worker, this)),
+      p_backend(new SimulationControl(p_worker, this)),
       p_results(
           new Results_Widget(p_worker->TableData(), p_worker->PointsData())),
       p_status(new Status_Bar(p_backend->getProgress(), this)) {
@@ -59,25 +59,25 @@ void MainWindow::connectComponents() {
   //
 
   connect(p_input, &InputWidget::sigStart, p_results, &Results_Widget::onStart);
-  connect(p_input, &InputWidget::sigStart, p_backend, &BackendObject::onStart);
+  connect(p_input, &InputWidget::sigStart, p_backend, &SimulationControl::onStart);
   connect(p_input, &InputWidget::sigStart, p_status, &Status_Bar::onStart);
   connect(p_input, &InputWidget::sigPause, p_results, &Results_Widget::onPause);
-  connect(p_input, &InputWidget::sigPause, p_backend, &BackendObject::onPause);
+  connect(p_input, &InputWidget::sigPause, p_backend, &SimulationControl::onPause);
   connect(p_input, &InputWidget::sigResume, p_results,
           &Results_Widget::onResume);
   connect(p_input, &InputWidget::sigResume, p_backend,
-          &BackendObject::onResume);
-  connect(p_backend, &BackendObject::sigDataReady, p_results,
+          &SimulationControl::onResume);
+  connect(p_backend, &SimulationControl::sigDataReady, p_results,
           &Results_Widget::onDataReady);
-  connect(p_input, &InputWidget::sigStop, p_backend, &BackendObject::onStop);
-  connect(p_backend, &BackendObject::sigStopped, p_results,
+  connect(p_input, &InputWidget::sigStop, p_backend, &SimulationControl::onStop);
+  connect(p_backend, &SimulationControl::sigStopped, p_results,
           &Results_Widget::onStop);
 
   connect(p_results, &Results_Widget::sigDataReady, p_input,
           &InputWidget::onDone);
 
   connect(p_input, &InputWidget::sigStop, p_status, &Status_Bar::onStop);
-  connect(p_backend, &BackendObject::sigDataReady, p_status,
+  connect(p_backend, &SimulationControl::sigDataReady, p_status,
           &Status_Bar::onReady);
 }
 

@@ -8,7 +8,7 @@ class Results_Widget;
 class Status_Bar;
 
 class SimulationWorker;
-class BackendObject;
+class SimulationControl;
 
 class MainWindow : public QMainWindow
 {
@@ -21,7 +21,7 @@ public:
 private:
   InputWidget* p_input;
   SimulationWorker* p_worker;
-  BackendObject* p_backend;
+  SimulationControl* p_backend;
   Results_Widget* p_results;
   Status_Bar* p_status;
 
