@@ -16,24 +16,34 @@
 class SimulationControl : public QObject {
   Q_OBJECT
 
+  QThread* p_worker_thread;
+  SimulationInterface* p_worker;
+
+  bool m_busy_flag_{false};
+
 public:
   explicit SimulationControl(SimulationInterface* worker,
                              QObject* parent = nullptr)
       : QObject(parent), p_worker_thread(new QThread(this)), p_worker(worker) {
     Q_ASSERT(p_worker);
     p_worker->moveToThread(p_worker_thread);
-    p_worker_thread->start();
 
     connect(this, &SimulationControl::sigStarted, p_worker,
             &SimulationInterface::onProcess);
-    connect(p_worker, &SimulationInterface::sigDone, this,
-            &SimulationControl::sigDataReady);
-    connect(p_worker, &SimulationInterface::sigStopped, this,
-            &SimulationControl::sigStopped);
+    connect(p_worker, &SimulationInterface::sigDone, [this] {
+      m_busy_flag_ = false;
+      emit sigDataReady();
+    });
+    connect(p_worker, &SimulationInterface::sigStopped, [this] {
+      m_busy_flag_ = false;
+      emit sigStopped();
+    });
+
+    p_worker_thread->start();
   }
 
   ~SimulationControl() override {
-    if (p_worker_thread->isRunning()) {
+    if (p_worker_thread->isRunning() && m_busy_flag_) {
       onStop();
       while (p_worker->canceled()) {
       }
@@ -45,19 +55,21 @@ public:
   const Progress& getProgress() const noexcept { return p_worker->GetProgress(); }
 
 public slots:
-  void onStart() { emit sigStarted(); }
+  void onStart() {
+    m_busy_flag_ = true;
+    emit sigStarted();
+  }
+
   void onPause() { p_worker->pause(); }
+
   void onResume() { p_worker->resume(); }
+
   void onStop() { p_worker->stop(); }
 
 signals:
   void sigStarted();
   void sigDataReady();
   void sigStopped();
-
-private:
-  QThread* p_worker_thread;
-  SimulationInterface* p_worker;
 };
 
 #endif // SIMULATION_CONTROL_H

@@ -67,8 +67,6 @@ set(GRADWORKGUI_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/results_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/status_bar.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/status_bar.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/synchronizer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/synchronizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_data.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.cpp
