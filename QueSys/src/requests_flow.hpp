@@ -48,6 +48,11 @@ public:
 
   ~RequestsFlow() = default;
 
+  /**
+   * @brief operator () - генерация очередной заявки
+   * @param request_number - номер очередной заявки
+   * @return
+   */
   Request operator()(const std::uint32_t request_number) {
     // Заявка второго типа пришла раньше (приоритет 0)
     if (arrive_time_second <= arrive_time_first) {

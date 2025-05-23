@@ -8,15 +8,17 @@
 #include <QueSys/queueing_system.h>
 #include <cmath>
 
-class PointsData
-{
-public:
-  static constexpr int kPointsCount = 1'000;
-  static constexpr int kGraphsCount = 6;
-  static constexpr double kMinLoad = 0.35;
-  static constexpr double kMaxLoad = 0.95;
+/**
+ * @brief The PointsData class - отвечает за хранение результатов моделирования
+ * в виде 6 векторов точек. Вычисляет границы и аппроксимацию графиков.
+ */
+class PointsData {
 
-  // Вместо int
+public:
+  /**
+   * @brief The Graph enum - индексы графиков, соответствующие характеристикам
+   * СМО
+   */
   enum Graph : int {
     kWaitFirst,
     kWaitSecond,
@@ -26,26 +28,37 @@ public:
     kAVGSecond
   };
 
-  PointsData()
-      : m_experimantal{QVector<QPointF>(kPointsCount),
-                       QVector<QPointF>(kPointsCount),
-                       QVector<QPointF>(kPointsCount),
-                       QVector<QPointF>(kPointsCount),
-                       QVector<QPointF>(kPointsCount),
-                       QVector<QPointF>(kPointsCount)},
-        m_approximation{
-            QVector<QPointF>(kPointsCount), QVector<QPointF>(kPointsCount),
-            QVector<QPointF>(kPointsCount), QVector<QPointF>(kPointsCount),
-            QVector<QPointF>(kPointsCount), QVector<QPointF>(kPointsCount)} {
-    // Выделяю память для точек
-    std::for_each(
-        begin(m_experimantal), end(m_experimantal),
-        [](QVector<QPointF>& points) { points.resize(kPointsCount); });
-    std::for_each(
-        begin(m_approximation), end(m_approximation),
-        [](QVector<QPointF>& points) { points.resize(kPointsCount); });
+  /**
+   * @brief kPointsCount - количество точек в графике
+   */
+  static constexpr int kPointsCount = 1'000;
+  /**
+   * @brief kGraphsCount - количество графиков
+   */
+  static constexpr int kGraphsCount = 6;
+  /**
+   * @brief kMinLoad - минимальный коэффициент нагрузки СМО
+   */
+  static constexpr double kMinLoad = 0.35;
+  /**
+   * @brief kMaxLoad - максимальный коэффициент нагрузки СМО
+   */
+  static constexpr double kMaxLoad = 0.95;
+
+public:
+  PointsData() {
+    for (std::size_t idx{}; idx < kGraphsCount; ++idx) {
+      m_experimantal[idx] = QVector<QPointF>(kPointsCount);
+      m_approximation[idx] = QVector<QPointF>(kPointsCount);
+    }
   }
 
+  /**
+   * @brief load_result - метод загружает результат симуляции
+   * @param index - номер точки
+   * @param load - коэффициент нагрузки СМО
+   * @param result - результат симуляции работы СМО
+   */
   void load_result(int index, const qreal load,
                    const queueing_system::SimulationResult& result) noexcept {
     m_experimantal[kWaitFirst][index] = {load, result.avg_wait.first};
@@ -56,32 +69,59 @@ public:
     m_experimantal[kAVGSecond][index] = {load, result.avg_requests.second};
   }
 
-  void process_results() {
+  /**
+   * @brief processResults - расчёты аппроксимации и границ графиков
+   */
+  void processResults() {
     for (int graph = 0; graph < kGraphsCount; ++graph) {
       calc_y_ranges(graph);
-      aproximate(graph);
+      approximate(graph);
     }
   }
 
+  /**
+   * @brief pointsExperimental - геттер вектора точек указанного графика
+   * @param graph - номер графика (PointsData::Graph)
+   * @return
+   */
   const QVector<QPointF>& pointsExperimental(int graph) const noexcept {
     Q_ASSERT(Graph::kWaitFirst <= graph && graph <= Graph::kAVGSecond);
     return m_experimantal.at(graph);
   }
 
+  /**
+   * @brief pointsAproximation - геттер вектора точек аппроксимации указанного
+   * графика
+   * @param graph - номер графика (PointsData::Graph)
+   * @return
+   */
   const QVector<QPointF>& pointsAproximation(int graph) const noexcept {
     Q_ASSERT(Graph::kWaitFirst <= graph && graph <= Graph::kAVGSecond);
     return m_approximation.at(graph);
   }
+  /**
+   * @brief RangeX - граница по оси X указанного графика
+   * @param graph
+   * @return
+   */
   constexpr std::pair<qreal, qreal> RangeX(int graph) const noexcept {
     return {PointsData::kMinLoad, PointsData::kMaxLoad};
   }
-
+  /**
+   * @brief RangeY - граница по оси Y указанного графика
+   * @param graph
+   * @return
+   */
   std::pair<qreal, qreal> RangeY(int graph) const noexcept {
     Q_ASSERT(Graph::kWaitFirst <= graph && graph <= Graph::kAVGSecond);
     return m_y_ranges[graph];
   }
 
 private:
+  /**
+   * @brief calc_y_ranges
+   * @param graph
+   */
   void calc_y_ranges(int graph) {
     const auto [min, max] = std::minmax_element(
         std::cbegin(m_experimantal[graph]), std::cend(m_experimantal[graph]),
@@ -91,17 +131,23 @@ private:
     m_y_ranges[graph] = {min->y(), max->y()};
   }
 
-  void aproximate(const int graph) { // Применяется МНК к указанному графику
+  /**
+   * @brief approximate - апроксимация указанного графика с помощью МНК для
+   * экспоненциальной зависимости (логорифмирование значений)
+   * @param graph - выбранный график
+   */
+  void approximate(const int graph) {
     constexpr int N = kPointsCount;
     double sx = 0;
     double sx2 = 0;
     double sy = 0;
     double sxy = 0;
     for (auto& point : m_experimantal[graph]) {
+      const auto logy = std::log(point.y());
       sx += point.x();
       sx2 += point.x() * point.x();
-      sy += std::log(point.y());
-      sxy += point.x() * std::log(point.y());
+      sy += logy;
+      sxy += point.x() * logy;
     }
     auto b = (N * sxy - sx * sy) / (N * sx2 - sx * sx);
     auto a = std::exp((sy - b * sx) / N);
@@ -113,8 +159,8 @@ private:
   }
 
 private:
-  std::array<QVector<QPointF>, kPointsCount> m_experimantal;
-  std::array<QVector<QPointF>, kPointsCount> m_approximation;
+  std::array<QVector<QPointF>, kPointsCount> m_experimantal{};
+  std::array<QVector<QPointF>, kPointsCount> m_approximation{};
 
   std::array<std::pair<qreal, qreal>, kGraphsCount> m_y_ranges{};
 };

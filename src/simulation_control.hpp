@@ -52,23 +52,50 @@ public:
     p_worker_thread->wait();
   }
 
-  const Progress& getProgress() const noexcept { return p_worker->GetProgress(); }
+  /**
+   * @brief getProgress - геттер прогресса симуляции.
+   * @return
+   */
+  const Progress& getProgress() const noexcept { return p_worker->getProgress(); }
 
 public slots:
+  /**
+   * @brief onStart - слот запуска симуляции. Устанавливает флаг выполнения,
+   * который используется в деструкторе. Вызывает соответствующий метод
+   * реализации симуляции.
+   */
   void onStart() {
     m_busy_flag_ = true;
     emit sigStarted();
   }
-
+  /**
+   * @brief onPause - слот паузы. Вызывает соответствующий метод реализации
+   * симуляции.
+   */
   void onPause() { p_worker->pause(); }
-
+  /**
+   * @brief onResume - слот возобновления. Вызывает соответствующий метод
+   * реализации симуляции.
+   */
   void onResume() { p_worker->resume(); }
-
+  /**
+   * @brief onStop - слот остановки. Вызывает соответствующий метод реализации
+   * симуляции.
+   */
   void onStop() { p_worker->stop(); }
 
 signals:
+  /**
+   * @brief sigStarted - сигнал о запуске симуляции.
+   */
   void sigStarted();
+  /**
+   * @brief sigDataReady - сигнал о готовности симуляции.
+   */
   void sigDataReady();
+  /**
+   * @brief sigStopped - сигнал об остановке симуляции.
+   */
   void sigStopped();
 };
 

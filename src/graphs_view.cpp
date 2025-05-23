@@ -4,7 +4,7 @@
 #include <QFileDialog>
 #include <QObject>
 
-Graphs_View::Graphs_View(QWidget* parent)
+GraphsView::GraphsView(QWidget* parent)
     : QChartView(parent)
 {
   setDragMode(QGraphicsView::NoDrag);
@@ -15,7 +15,7 @@ Graphs_View::Graphs_View(QWidget* parent)
   setMinimumSize({640, 480});
 }
 
-Graphs_View::Graphs_View(QChart* chart, QWidget* parent)
+GraphsView::GraphsView(QChart* chart, QWidget* parent)
     : QChartView(chart, parent)
 {
   setDragMode(QGraphicsView::NoDrag);
@@ -26,24 +26,9 @@ Graphs_View::Graphs_View(QChart* chart, QWidget* parent)
   setMinimumSize({640, 480});
 }
 
-Graphs_View::~Graphs_View() = default;
+GraphsView::~GraphsView() = default;
 
-void Graphs_View::onZoomIn()
-{
-  chart()->zoomIn();
-}
-
-void Graphs_View::onZoomOut()
-{
-  chart()->zoomOut();
-}
-
-void Graphs_View::onZoomReset()
-{
-  chart()->zoomReset();
-}
-
-void Graphs_View::onSave(QString filename)
+void GraphsView::onSave(QString filename)
 {
   QPixmap pixmap(this->size());
   QPainter painter(&pixmap);
@@ -56,7 +41,7 @@ void Graphs_View::onSave(QString filename)
   pixmap.save(savepath);
 }
 
-void Graphs_View::wheelEvent(QWheelEvent* event)
+void GraphsView::wheelEvent(QWheelEvent* event)
 {
   if (event->angleDelta().x() < 0 || event->angleDelta().y() > 0) {
     chart()->zoomIn();
@@ -65,7 +50,7 @@ void Graphs_View::wheelEvent(QWheelEvent* event)
   }
 }
 
-void Graphs_View::mousePressEvent(QMouseEvent* event)
+void GraphsView::mousePressEvent(QMouseEvent* event)
 {
   if (rect().contains(event->pos()) && event->button() == Qt::LeftButton) {
     setCursor(QCursor(Qt::OpenHandCursor));
@@ -75,7 +60,7 @@ void Graphs_View::mousePressEvent(QMouseEvent* event)
   QChartView::mousePressEvent(event);
 }
 
-void Graphs_View::mouseMoveEvent(QMouseEvent* event)
+void GraphsView::mouseMoveEvent(QMouseEvent* event)
 {
   if (event->buttons() == Qt::LeftButton) {
     setCursor(QCursor(Qt::ClosedHandCursor));
@@ -87,7 +72,7 @@ void Graphs_View::mouseMoveEvent(QMouseEvent* event)
   QChartView::mouseMoveEvent(event);
 }
 
-void Graphs_View::mouseReleaseEvent(QMouseEvent* event)
+void GraphsView::mouseReleaseEvent(QMouseEvent* event)
 {
   if (event->button() == Qt::LeftButton) {
     setCursor(QCursor(Qt::ArrowCursor));

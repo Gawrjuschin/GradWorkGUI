@@ -3,7 +3,7 @@
 #include "input_widget.h"
 #include "points_data.h"
 #include "results_widget.h"
-#include "simulation_worker.h"
+#include "quesys_simulation.h"
 #include "status_bar.h"
 
 #include <QApplication>
@@ -22,11 +22,11 @@ constexpr int kProgressbarMargins = 4; // Где-то зашиты отступ�
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       p_input(new InputWidget(PointsData::kMinLoad, PointsData::kMaxLoad)),
-      p_worker(new SimulationWorker(p_input->inputData())),
+      p_worker(new QueSysSimulation(p_input->inputData())),
       p_backend(new SimulationControl(p_worker, this)),
       p_results(
-          new Results_Widget(p_worker->TableData(), p_worker->PointsData())),
-      p_status(new Status_Bar(p_backend->getProgress(), this)) {
+          new ResultsWidget(p_worker->TableData(), p_worker->PointsData())),
+      p_status(new StatusBar(p_backend->getProgress(), this)) {
   setWindowTitle(tr("Prioritized system simulation"));
   adjustCentralWidget();
   p_status->setProgressBarWidth(kInputWidth - kProgressbarMargins);
@@ -58,27 +58,27 @@ void MainWindow::connectComponents() {
   //                       Results_Widget::onDataReady -> InputWidget::onDone
   //
 
-  connect(p_input, &InputWidget::sigStart, p_results, &Results_Widget::onStart);
+  connect(p_input, &InputWidget::sigStart, p_results, &ResultsWidget::onStart);
   connect(p_input, &InputWidget::sigStart, p_backend, &SimulationControl::onStart);
-  connect(p_input, &InputWidget::sigStart, p_status, &Status_Bar::onStart);
-  connect(p_input, &InputWidget::sigPause, p_results, &Results_Widget::onPause);
+  connect(p_input, &InputWidget::sigStart, p_status, &StatusBar::onStart);
+  connect(p_input, &InputWidget::sigPause, p_results, &ResultsWidget::onPause);
   connect(p_input, &InputWidget::sigPause, p_backend, &SimulationControl::onPause);
   connect(p_input, &InputWidget::sigResume, p_results,
-          &Results_Widget::onResume);
+          &ResultsWidget::onResume);
   connect(p_input, &InputWidget::sigResume, p_backend,
           &SimulationControl::onResume);
   connect(p_backend, &SimulationControl::sigDataReady, p_results,
-          &Results_Widget::onDataReady);
+          &ResultsWidget::onDataReady);
   connect(p_input, &InputWidget::sigStop, p_backend, &SimulationControl::onStop);
   connect(p_backend, &SimulationControl::sigStopped, p_results,
-          &Results_Widget::onStop);
+          &ResultsWidget::onStop);
 
-  connect(p_results, &Results_Widget::sigDataReady, p_input,
+  connect(p_results, &ResultsWidget::sigDataReady, p_input,
           &InputWidget::onDone);
 
-  connect(p_input, &InputWidget::sigStop, p_status, &Status_Bar::onStop);
+  connect(p_input, &InputWidget::sigStop, p_status, &StatusBar::onStop);
   connect(p_backend, &SimulationControl::sigDataReady, p_status,
-          &Status_Bar::onReady);
+          &StatusBar::onReady);
 }
 
 void MainWindow::closeEvent(QCloseEvent* event) {

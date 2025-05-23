@@ -8,25 +8,32 @@ class RequestModel;
 class EventModel;
 class QTableView;
 
+/**
+ * @brief The TableWidget class - виджет, отвечающий за отображение таблиц
+ * событий и заявок СМО
+ */
 class TableWidget : public QWidget {
   Q_OBJECT
 
-public:
-  explicit TableWidget(TableData& tdata, QWidget* parent = nullptr);
-  ~TableWidget();
-
-public slots:
-  void onDataReady();
-
-protected:
-  // void paintEvent(QPaintEvent* event) override;
-
-private:
   TableData& r_tdata;
   QTableView* p_tab_reqs;
   QTableView* p_tab_evs;
   RequestModel* p_model_reqs;
   EventModel* p_model_evs;
+
+public:
+  explicit TableWidget(TableData& tdata, QWidget* parent = nullptr);
+
+  ~TableWidget();
+
+public slots:
+  /**
+   * @brief onDataReady - загружает новые данные в модели таблиц из TableData
+   */
+  void onDataReady();
+
+protected:
+  // void paintEvent(QPaintEvent* event) override;
 };
 
 #endif // TABLE_WIDGET_H

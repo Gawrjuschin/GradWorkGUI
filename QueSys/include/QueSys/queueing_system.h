@@ -15,15 +15,42 @@ namespace queueing_system {
  * параметры СМО.
  */
 struct SimulationResult {
+  /**
+   * @brief time_passed - время последнего события
+   */
   double time_passed{};
+  /**
+   * @brief events - число событий за время симуляции (номер последнего события)
+   */
   std::uint32_t events{};
+  /**
+   * @brief requests - число заявок за время симуляции (номер последней заявки)
+   */
   std::uint32_t requests{};
-  std::pair<double, double> avg_period;
-  std::pair<double, double> avg_serve;
-  std::pair<double, double> propability;
-  std::pair<double, double> avg_wait;
-  std::pair<double, double> avg_utility;
-  std::pair<double, double> avg_requests;
+  /**
+   * @brief avg_period - среднее время между заявками каждого типа
+   */
+  std::pair<double, double> avg_period{};
+  /**
+   * @brief avg_serve - среднее время обслуживания заявок каждого типа
+   */
+  std::pair<double, double> avg_serve{};
+  /**
+   * @brief propability - доли заявок каждого типа
+   */
+  std::pair<double, double> propability{};
+  /**
+   * @brief avg_wait - среднее время ожидания в очереди заявок каждого типа
+   */
+  std::pair<double, double> avg_wait{};
+  /**
+   * @brief avg_utility - среднее время в СМО заявок каждого типа
+   */
+  std::pair<double, double> avg_utility{};
+  /**
+   * @brief avg_requests - среднее число заявок каждого типа
+   */
+  std::pair<double, double> avg_requests{};
 };
 
 /**
@@ -31,15 +58,42 @@ struct SimulationResult {
  time_passed. Используется для проверки условия продолжения симуляции.
  */
 struct SimulationStatus {
-
-  std::uint32_t request_number{0};
-  std::uint32_t event_number{0};
+  /**
+   * @brief time_passed - время последнего события
+   */
   double time_passed{};
+  /**
+   * @brief events - число событий за время симуляции (номер последнего события)
+   */
+  std::uint32_t event_number{0};
+  /**
+   * @brief requests - число заявок за время симуляции (номер последней заявки)
+   */
+  std::uint32_t request_number{0};
+  /**
+   * @brief serve_total - общее время обслуживания заявок каждого типа
+   */
   std::pair<double, double> serve_total{};
+  /**
+   * @brief wait_total - общее время ожидания в очереди заявок каждого типа
+   */
   std::pair<double, double> wait_total{};
+  /**
+   * @brief requests_total - общее число заявок каждого типа
+   */
   std::pair<int, int> requests_total{};
+  /**
+   * @brief requests_served - число обслуженных заявок каждого типа
+   */
   std::pair<int, int> requests_served{};
+  /**
+   * @brief requests_waited - число заявок, стоявших в оченеди, каждого типа
+   */
   std::pair<int, int> requests_waited{};
+  /**
+   * @brief requests_weighted_summ - общее число заявок каждого типа,
+   * нормированное по времени между ними (взвешенное)
+   */
   std::pair<double, double> requests_weighted_summ{};
 };
 
@@ -55,7 +109,9 @@ namespace conditions {
  * @brief The MaxEventsCondition class - условие продолжения симуляции по числу
  * событий. operator()  возвращает true, если условие выполняется
  */
-struct MaxEventsCondition {
+class MaxEventsCondition {
+  std::size_t max_events_;
+
 public:
   constexpr explicit MaxEventsCondition(const std::size_t max_events) noexcept
       : max_events_(max_events) {}
@@ -68,21 +124,30 @@ public:
 
   ~MaxEventsCondition() noexcept = default;
 
+  /**
+   * @brief operator () - условие продолжения
+   * @param simulation_status - состояние СМО на текущей итерации симуляции
+   * @return
+   */
   constexpr bool
   operator()(const SimulationStatus& simulation_status) const noexcept {
     return simulation_status.event_number <= max_events_;
   }
-
-private:
-  std::size_t max_events_;
 };
 
 /**
  * @brief The PropConvCondition class - условие продолжения симуляции по
- * сходимости теоретической доли заявок с заданной точностью eps
+ * сходимости теоретической доли заявок с заданной точностью eps.
  */
-struct PropConvCondition {
+class PropConvCondition {
+  mutable double prev_prop_{};
+  double eps_;
+
 public:
+  /**
+   * @brief PropConvCondition - конструктор
+   * @param eps - точность
+   */
   constexpr explicit PropConvCondition(const double eps) noexcept : eps_(eps) {}
 
   PropConvCondition(const PropConvCondition&) = default;
@@ -93,7 +158,11 @@ public:
 
   ~PropConvCondition() = default;
 
-  // Условие продолжения
+  /**
+   * @brief operator () - условие продолжения
+   * @param simulation_status - состояние СМО на текущей итерации симуляции
+   * @return
+   */
   constexpr bool
   operator()(const SimulationStatus& simulation_status) const noexcept {
     if (simulation_status.request_number == 0) {
@@ -108,10 +177,6 @@ public:
     }
     return false;
   }
-
-private:
-  mutable double prev_prop_{};
-  double eps_;
 };
 
 } // namespace conditions

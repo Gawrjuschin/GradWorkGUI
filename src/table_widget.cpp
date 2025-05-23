@@ -1,5 +1,6 @@
 #include "table_widget.h"
-#include "models.h"
+#include "events_model.h"
+#include "requests_model.h"
 #include "table_data.h"
 #include <QHeaderView>
 #include <QLabel>
@@ -48,8 +49,8 @@ TableWidget::TableWidget(TableData& tdata, QWidget* parent)
 TableWidget::~TableWidget() = default;
 
 void TableWidget::onDataReady() {
-  p_model_reqs->replace(r_tdata.requests);
-  p_model_evs->replace(r_tdata.events);
+  p_model_reqs->swap(r_tdata.requests);
+  p_model_evs->swap(r_tdata.events);
 }
 
 // void Table_Widget::paintEvent(QPaintEvent* event)

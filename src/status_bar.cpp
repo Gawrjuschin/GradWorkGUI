@@ -8,7 +8,7 @@
 
 constexpr auto timer_interval = 100;
 
-Status_Bar::Status_Bar(const Progress& progress, QWidget* parent)
+StatusBar::StatusBar(const Progress& progress, QWidget* parent)
     : QStatusBar(parent)
     , r_progress(progress)
     , p_progressbar(new QProgressBar(this))
@@ -24,29 +24,29 @@ Status_Bar::Status_Bar(const Progress& progress, QWidget* parent)
   addPermanentWidget(p_text);
   p_text->setText(tr("Waiting for input."));
 
-  connect(p_timer, &QTimer::timeout, this, &Status_Bar::onUpdate);
+  connect(p_timer, &QTimer::timeout, this, &StatusBar::onUpdate);
 }
 
-Status_Bar::~Status_Bar() = default;
+StatusBar::~StatusBar() = default;
 
-void Status_Bar::setMaximum(int maximum)
+void StatusBar::setMaximum(int maximum)
 {
   p_progressbar->setMaximum(maximum);
 }
 
-void Status_Bar::setProgressBarWidth(int width)
+void StatusBar::setProgressBarWidth(int width)
 {
   p_progressbar->setFixedWidth(width);
 }
 
-void Status_Bar::onStop()
+void StatusBar::onStop()
 {
   p_progressbar->setValue(0);
   p_text->setText(tr("Waiting for input."));
   p_timer->stop();
 }
 
-void Status_Bar::onUpdate() {
+void StatusBar::onUpdate() {
   auto temp = r_progress.value() + 1;
   if (temp < p_progressbar->maximum()) {
     p_text->setText(tr("(%1/%2) simulations completed.").arg(temp).arg(p_progressbar->maximum()));
@@ -57,11 +57,11 @@ void Status_Bar::onUpdate() {
   }
   p_timer->start(timer_interval);
 }
-void Status_Bar::onStart() {
+void StatusBar::onStart() {
   p_progressbar->setValue(0);
   p_timer->start();
 }
-void Status_Bar::onReady()
+void StatusBar::onReady()
 {
   p_timer->stop();
   p_progressbar->setValue(p_progressbar->maximum());

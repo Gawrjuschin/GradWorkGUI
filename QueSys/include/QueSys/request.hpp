@@ -7,25 +7,76 @@
 namespace queueing_system {
 enum class RequestType { kNone = 0, kFirst = 1, kSecond = 2 };
 
+/**
+ * @brief operator << - перегрузка оператора вывода.
+ * @param os
+ * @param type
+ * @return
+ */
 std::ostream& operator<<(std::ostream& os, const RequestType& type);
+/**
+ * @brief operator >> - перегрузка оператора ввода.
+ * @param is
+ * @param type
+ * @return
+ */
 std::istream& operator>>(std::istream& is, RequestType& type);
 
 /**
- * @brief The Request class - структура заявки СМО
+ * @brief The Request class - структура заявки СМО.
  */
 struct Request {
-  std::uint32_t number{};               // Номер заявки
-  RequestType type{RequestType::kNone}; // Тип заявки (None, 1 или 2)
-  double arrive_time{};                 // Время прибытия
-  std::uint32_t queue_number{};         // Номер в очереди
-  std::uint32_t ch_number{};            // Номер прибора, обслуживающего заявку
-  double start_time{};                  // Время начала обслуживания
-  double serve_time{};                  // Время обслуживания
-  double wait_time{};                   // Время ожидания в очереди
-  double serve_end{};                   // Время окончания обслуживания
+  /**
+   * @brief number - номер заявки
+   */
+  std::uint32_t number{};
+  /**
+   * @brief type - тип заявки (None, 1 или 2)
+   */
+  RequestType type{RequestType::kNone};
+  /**
+   * @brief arrive_time - время прибытия
+   */
+  double arrive_time{};
+  /**
+   * @brief queue_number - номер в очереди
+   */
+  std::uint32_t queue_number{};
+  /**
+   * @brief ch_number - номер прибора, обслуживающего заявку
+   */
+  std::uint32_t ch_number{};
+  /**
+   * @brief start_time - время начала обслуживания
+   */
+  double start_time{};
+  /**
+   * @brief serve_time - время обслуживания
+   */
+  double serve_time{};
+  /**
+   * @brief wait_time - время ожидания в очереди
+   */
+  double wait_time{};
+  /**
+   * @brief serve_end - время окончания обслуживания
+   */
+  double serve_end{};
 };
 
+/**
+ * @brief operator << - перегрузка оператора вывода.
+ * @param os
+ * @param request
+ * @return
+ */
 std::ostream& operator<<(std::ostream& os, const Request& request);
+/**
+ * @brief operator >> - перегрузка оператора ввода.
+ * @param is
+ * @param request
+ * @return
+ */
 std::istream& operator>>(std::istream& is, Request& request);
 
 // Определяет значение по умолчанию

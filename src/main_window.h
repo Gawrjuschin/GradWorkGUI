@@ -4,28 +4,39 @@
 #include <QMainWindow>
 
 class InputWidget;
-class Results_Widget;
-class Status_Bar;
+class ResultsWidget;
+class StatusBar;
 
-class SimulationWorker;
+class QueSysSimulation;
 class SimulationControl;
 
+/**
+ * @brief The MainWindow class - виджет главного окна приложения.
+ * Главное окно состоит из виджета ввода (InputWidget), виджета результатов
+ * (ResultsWidget) и статуса (StatusBar).
+ */
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
 
 public:
   explicit MainWindow(QWidget* parent = nullptr);
+
   ~MainWindow();
 
 private:
   InputWidget* p_input;
-  SimulationWorker* p_worker;
+  QueSysSimulation* p_worker;
   SimulationControl* p_backend;
-  Results_Widget* p_results;
-  Status_Bar* p_status;
+  ResultsWidget* p_results;
+  StatusBar* p_status;
 
 protected:
+  /**
+   * @brief closeEvent - обработка закрития окна для вызова модального диалога с
+   * подтверждением.
+   * @param event
+   */
   void closeEvent(QCloseEvent* event) override;
 
 private:

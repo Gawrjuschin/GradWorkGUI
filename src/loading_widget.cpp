@@ -60,22 +60,6 @@ LoadingWidget::LoadingWidget(const int pix_size, QWidget* parent)
 
 LoadingWidget::~LoadingWidget() = default;
 
-void LoadingWidget::rotate_pic(double angle) {
-  static auto dx = p_proxy->scene()->sceneRect().width() / 2;
-  static auto dy = p_proxy->scene()->sceneRect().height() / 2;
-  QTransform transform = p_proxy->transform();
-  transform.translate(dx, dx);
-  transform.rotate(angle, Qt::ZAxis);
-  transform.translate(-dx, -dy);
-  p_proxy->setTransform(transform);
-}
-
-void LoadingWidget::setPixmap(const QPixmap& pic) {
-  p_pic_lbl->setPixmap(pic.scaledToHeight(
-      m_pix_size, Qt::TransformationMode::SmoothTransformation));
-  emit pixmapChanged();
-}
-
 QPixmap LoadingWidget::pixmap() const {
   return p_pic_lbl->pixmap(Qt::ReturnByValueConstant{});
 }
@@ -114,7 +98,23 @@ void LoadingWidget::onNextText() {
   p_timer_text->start(interval_p_text);
 }
 
+void LoadingWidget::setPixmap(const QPixmap& pic) {
+  p_pic_lbl->setPixmap(pic.scaledToHeight(
+      m_pix_size, Qt::TransformationMode::SmoothTransformation));
+  emit pixmapChanged();
+}
+
+void LoadingWidget::rotatePic(double angle) {
+  static auto dx = p_proxy->scene()->sceneRect().width() / 2;
+  static auto dy = p_proxy->scene()->sceneRect().height() / 2;
+  QTransform transform = p_proxy->transform();
+  transform.translate(dx, dx);
+  transform.rotate(angle, Qt::ZAxis);
+  transform.translate(-dx, -dy);
+  p_proxy->setTransform(transform);
+}
+
 void LoadingWidget::onNextPic() {
-  rotate_pic(angle);
+  rotatePic(angle);
   p_timer_pic->start(interval_pic);
 }

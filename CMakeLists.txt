@@ -32,6 +32,7 @@ if(GRADWORKGUI_ENABLE_DOCS)
     set(DOXYGEN_DOT_WRAP_THRESHOLD 100)
     set(DOXYGEN_CALL_GRAPH YES)
     set(DOXYGEN_QUIET YES)
+    set(DOXYGEN_EXCLUDE_PATTERNS "moc_*")
 
     doxygen_add_docs(
         cmake_packaging_docs
@@ -60,8 +61,6 @@ set(GRADWORKGUI_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/loading_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/models.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/models.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/progress.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/results_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/results_widget.cpp
@@ -72,9 +71,13 @@ set(GRADWORKGUI_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/simulation_interface.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/simulation_control.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/simulation_worker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/quesys_simulation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/events_model.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/events_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/requests_model.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/requests_model.cpp
 )
 
 qt_add_resources(
