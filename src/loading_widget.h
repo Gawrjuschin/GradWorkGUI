@@ -5,31 +5,15 @@
 
 class QLabel;
 
-class Loading_Widget : public QWidget
-{
+/**
+ * @brief The LoadingWidget class - виджет индикатора загрузки. Отображает
+ * вращающуюся картинку (throbber) и текст с меняющимся многоточием.
+ */
+class LoadingWidget : public QWidget {
   Q_OBJECT
 
   Q_PROPERTY(QPixmap pixmap READ pixmap WRITE setPixmap NOTIFY pixmapChanged)
 
-public:
-  explicit Loading_Widget(const int pix_size, QWidget *parent = nullptr);
-  ~Loading_Widget();
-
-  QPixmap pixmap() const;
-
-public slots:
-  void slot_stop();
-  void slot_start();
-  void setPixmap(const QPixmap& pic);
-
-protected slots:
-  void next_text();
-  void next_pic();
-
-signals:
-  void pixmapChanged();
-
-private:
   QLabel* p_text;
   QLabel* p_pic_lbl;
   QGraphicsProxyWidget* p_proxy;
@@ -39,8 +23,54 @@ private:
   QTimer* p_timer_pic;
   int m_stage{1};
 
+public:
+  explicit LoadingWidget(const int pix_size, QWidget* parent = nullptr);
+
+  ~LoadingWidget();
+
+  /**
+   * @brief pixmap - изобращение (throbber)
+   * @return
+   */
+  QPixmap pixmap() const;
+  /**
+   * @brief setPixmap - сеттер изображения (throbber)
+   * @param pic
+   */
+  void setPixmap(const QPixmap& pic);
+
+public slots:
+  /**
+   * @brief onStop - прекращает анимацию
+   */
+  void onStop();
+  /**
+   * @brief onStart - запускает анимацию
+   */
+  void onStart();
+
+protected slots:
+  /**
+   * @brief onNextText - переключение многоточия
+   */
+  void onNextText();
+  /**
+   * @brief onNextPic - вращение картинки (throbber) и запуск таймера
+   */
+  void onNextPic();
+
+signals:
+  /**
+   * @brief pixmapChanged - сигнал замены картинки
+   */
+  void pixmapChanged();
+
 private:
-  void rotate_pic(double angle);
+  /**
+   * @brief rotatePic - реализация вращения картинки
+   * @param angle
+   */
+  void rotatePic(double angle);
 };
 
 #endif // LOADING_WIDGET_H

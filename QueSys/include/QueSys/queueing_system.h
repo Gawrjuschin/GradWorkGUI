@@ -1,77 +1,216 @@
 #ifndef queueing_system_H
 #define queueing_system_H
 
-#include "event.h"
-#include "request_info.h"
-#include "system_parameters_types.h"
-#include <iostream>
-#include <memory>
-#include <vector>
+#include "event.hpp"
+#include "request.hpp"
 
-using   ipair   = std::pair<int,int>;
-using   dpair   = std::pair<double,double>;
-using   Request = std::pair<int, Request_info>;
+#include <cmath>
+#include <functional>
+#include <utility>
 
-class Req_flow;
-class Req_queue;
+namespace queueing_system {
 
-class Queueing_system
-{
+/**
+ * @brief The SimulationResult class - расчётные экспериментальные
+ * параметры СМО.
+ */
+struct SimulationResult {
+  /**
+   * @brief time_passed - время последнего события
+   */
+  double time_passed{};
+  /**
+   * @brief events - число событий за время симуляции (номер последнего события)
+   */
+  std::uint32_t events{};
+  /**
+   * @brief requests - число заявок за время симуляции (номер последней заявки)
+   */
+  std::uint32_t requests{};
+  /**
+   * @brief avg_period - среднее время между заявками каждого типа
+   */
+  std::pair<double, double> avg_period{};
+  /**
+   * @brief avg_serve - среднее время обслуживания заявок каждого типа
+   */
+  std::pair<double, double> avg_serve{};
+  /**
+   * @brief propability - доли заявок каждого типа
+   */
+  std::pair<double, double> propability{};
+  /**
+   * @brief avg_wait - среднее время ожидания в очереди заявок каждого типа
+   */
+  std::pair<double, double> avg_wait{};
+  /**
+   * @brief avg_utility - среднее время в СМО заявок каждого типа
+   */
+  std::pair<double, double> avg_utility{};
+  /**
+   * @brief avg_requests - среднее число заявок каждого типа
+   */
+  std::pair<double, double> avg_requests{};
+};
+
+/**
+ * @brief The SimulationStatus class - состояние СМО в момент времени
+ time_passed. Используется для проверки условия продолжения симуляции.
+ */
+struct SimulationStatus {
+  /**
+   * @brief time_passed - время последнего события
+   */
+  double time_passed{};
+  /**
+   * @brief events - число событий за время симуляции (номер последнего события)
+   */
+  std::uint32_t event_number{0};
+  /**
+   * @brief requests - число заявок за время симуляции (номер последней заявки)
+   */
+  std::uint32_t request_number{0};
+  /**
+   * @brief serve_total - общее время обслуживания заявок каждого типа
+   */
+  std::pair<double, double> serve_total{};
+  /**
+   * @brief wait_total - общее время ожидания в очереди заявок каждого типа
+   */
+  std::pair<double, double> wait_total{};
+  /**
+   * @brief requests_total - общее число заявок каждого типа
+   */
+  std::pair<int, int> requests_total{};
+  /**
+   * @brief requests_served - число обслуженных заявок каждого типа
+   */
+  std::pair<int, int> requests_served{};
+  /**
+   * @brief requests_waited - число заявок, стоявших в оченеди, каждого типа
+   */
+  std::pair<int, int> requests_waited{};
+  /**
+   * @brief requests_weighted_summ - общее число заявок каждого типа,
+   * нормированное по времени между ними (взвешенное)
+   */
+  std::pair<double, double> requests_weighted_summ{};
+};
+
+/**
+ * @brief CalcResult - расчёт параметров СМО из её текущего состояния
+ * @param simulation_status - состояние СМО
+ * @return
+ */
+SimulationResult CalcResult(const SimulationStatus& simulation_status) noexcept;
+
+namespace conditions {
+/**
+ * @brief The MaxEventsCondition class - условие продолжения симуляции по числу
+ * событий. operator()  возвращает true, если условие выполняется
+ */
+class MaxEventsCondition {
+  std::size_t max_events_;
 
 public:
+  constexpr explicit MaxEventsCondition(const std::size_t max_events) noexcept
+      : max_events_(max_events) {}
 
-  Queueing_system() = delete;
+  MaxEventsCondition(const MaxEventsCondition&) noexcept = default;
+  MaxEventsCondition& operator=(const MaxEventsCondition&) noexcept = default;
 
-  Queueing_system(double _lambda, double _mu, int _ch_num, double _p, int _max_ev_num);
+  MaxEventsCondition(MaxEventsCondition&&) noexcept = default;
+  MaxEventsCondition& operator=(MaxEventsCondition&&) noexcept = default;
 
-  Queueing_system(const Th_values& _th_vs, int _max_ev_num);
+  ~MaxEventsCondition() noexcept = default;
 
-  ~Queueing_system( );
-
-  void simulate();// Метод моделирования работы СМО c заданными параметрами
-
-  void simulate(double lambda, double mu);// Метод моделирования работы СМО c изменённой интенсивностью
-
-  void simulate(std::ostream& events_stream, std::ostream& requests_stream);
-  // Метод моделирования работы СМО c заданными параметрами
-  // и выводом данных в поток
-
-  void simulate(double eps);
-  // Метод моделирования работы СМО c заданной точностью
-
-  //Константные методы доступа к полям класса
-  Th_values   getTheory()        const;
-  Exp_values  getExperimental()  const;
-  dpair       getWait()          const;
-  dpair       getUtility()       const;
-  dpair       getZ()             const;
-  dpair       getLambda()        const;
-  dpair       getMu()            const;
-  dpair       getProp()          const;
-  double      getThLambda()      const;
-  double      getThMu()          const;
-  double      getThProp()        const;
-  dpair       getThWait()        const;
-  dpair       getThUtility()     const;
-  int         getChNum()         const;
-  double      getLoad()          const;
-  ipair       s_status()         const;
-  ipair       q_status()         const;
-  ipair       getReqCount()      const;
-  int         getReqNum()        const;
-  int         getEvNum()         const;
-  int         getMaxEvNum()      const;
-
-private: // Поля класса
-  Th_values   th_vs;  // Сохраняем значения параметров системы
-  Exp_values  exp_vs; // Результаты симуляции работы
-  std::unique_ptr<Req_flow> req_gen;
-  std::unique_ptr<Req_queue>   queue;
-  std::vector<Request> channels;
-  ipair       status; // Количество заявок каждого типа, находящихся на обслуживании
-  int         max_ev_num; // Количество генерируемых событий
-
-  auto free_min();
+  /**
+   * @brief operator () - условие продолжения
+   * @param simulation_status - состояние СМО на текущей итерации симуляции
+   * @return
+   */
+  constexpr bool
+  operator()(const SimulationStatus& simulation_status) const noexcept {
+    return simulation_status.event_number <= max_events_;
+  }
 };
+
+/**
+ * @brief The PropConvCondition class - условие продолжения симуляции по
+ * сходимости теоретической доли заявок с заданной точностью eps.
+ */
+class PropConvCondition {
+  mutable double prev_prop_{};
+  double eps_;
+
+public:
+  /**
+   * @brief PropConvCondition - конструктор
+   * @param eps - точность
+   */
+  constexpr explicit PropConvCondition(const double eps) noexcept : eps_(eps) {}
+
+  PropConvCondition(const PropConvCondition&) = default;
+  PropConvCondition& operator=(const PropConvCondition&) = default;
+
+  PropConvCondition(PropConvCondition&&) = default;
+  PropConvCondition& operator=(PropConvCondition&&) = default;
+
+  ~PropConvCondition() = default;
+
+  /**
+   * @brief operator () - условие продолжения
+   * @param simulation_status - состояние СМО на текущей итерации симуляции
+   * @return
+   */
+  constexpr bool
+  operator()(const SimulationStatus& simulation_status) const noexcept {
+    if (simulation_status.request_number == 0) {
+      return true;
+    }
+
+    const auto res = CalcResult(simulation_status);
+    if (prev_prop_ == res.propability.first ||
+        std::abs(prev_prop_ - res.propability.first) > eps_) {
+      prev_prop_ = res.propability.first;
+      return true;
+    }
+    return false;
+  }
+};
+
+} // namespace conditions
+
+/**
+ * @brief Simulate - запуск симуляции работы СМО с заданными параметрами
+ * @param lambda_th - параметр интенсивности потока заявок СМО
+ * @param mu_th - параметр интенсивности обслуживания СМО
+ * @param channels_number - число каналов СМО
+ * @param prop - доля заявок высшего приоритета в потоке заявок
+ * @param continue_condition - Callable, предикат продолжения симуляции
+ * @param write_event - Callable, записывающий все события
+ * @param write_request - Callable, записывающий все заявки
+ * @return
+ */
+SimulationResult
+Simulate(double lambda_th, double mu_th, int channels_number, double prop,
+         std::function<bool(const SimulationStatus&)> continue_condition,
+         std::function<void(const Event&)> write_event,
+         std::function<void(const Request&)> write_request);
+
+/**
+ * @brief Simulate - запуск симуляции работы СМО с заданными параметрами
+ * @param lambda_th - параметр интенсивности потока заявок СМО
+ * @param mu_th - параметр интенсивности обслуживания СМО
+ * @param channels_number - число каналов СМО
+ * @param prop - доля заявок высшего приоритета в потоке заявок
+ * @param continue_condition - Callable, предикат продолжения симуляции
+ * @return
+ */
+SimulationResult
+Simulate(double lambda_th, double mu_th, int channels_number, double prop,
+         std::function<bool(const SimulationStatus&)> continue_condition);
+
+} // namespace queueing_system
 
 #endif // queueing_system_H

@@ -4,100 +4,82 @@
 #include <QFileDialog>
 #include <QObject>
 
-Graphs_View::Graphs_View( QWidget* parent )
-  : QChartView( parent )
-{
-  setDragMode( QGraphicsView::NoDrag );
-  this->setMouseTracking( true );
-  setRenderHint( QPainter::Antialiasing );
-  setContentsMargins( {0,0,0,0} );
-  setFrameShape( QFrame::NoFrame );
-  setMinimumSize( {640,480} );
-}
-
-Graphs_View::Graphs_View(QChart* chart, QWidget* parent)
-  : QChartView(chart, parent)
+GraphsView::GraphsView(QWidget* parent)
+    : QChartView(parent)
 {
   setDragMode(QGraphicsView::NoDrag);
   this->setMouseTracking(true);
   setRenderHint(QPainter::Antialiasing);
-  setContentsMargins( {0,0,0,0} );
+  setContentsMargins({0, 0, 0, 0});
   setFrameShape(QFrame::NoFrame);
-  setMinimumSize( {640,480} );
+  setMinimumSize({640, 480});
 }
 
-Graphs_View::~Graphs_View( ) = default;
-
-void Graphs_View::slot_zoom_in()
+GraphsView::GraphsView(QChart* chart, QWidget* parent)
+    : QChartView(chart, parent)
 {
-  chart()->zoomIn();
+  setDragMode(QGraphicsView::NoDrag);
+  this->setMouseTracking(true);
+  setRenderHint(QPainter::Antialiasing);
+  setContentsMargins({0, 0, 0, 0});
+  setFrameShape(QFrame::NoFrame);
+  setMinimumSize({640, 480});
 }
 
-void Graphs_View::slot_zoom_out()
-{
-  chart()->zoomOut();
-}
+GraphsView::~GraphsView() = default;
 
-void Graphs_View::slot_zoom_reset()
-{
-  chart()->zoomReset();
-}
-
-void Graphs_View::slot_save(QString filename)
+void GraphsView::onSave(QString filename)
 {
   QPixmap pixmap(this->size());
   QPainter painter(&pixmap);
   painter.setRenderHint(QPainter::Antialiasing);
   render(&painter);
-  auto savepath = QFileDialog::getSaveFileName(this,
-                                               tr("Save graph"),
-                                               filename,
-                                               QString::fromLatin1("PNG (*.png);;JPEG (*.jpg)"));
-  pixmap.save(savepath);
+  auto savepath = QFileDialog::getSaveFileName(
+      this, tr("Save graph"), filename,
+      QString::fromLatin1("PNG (*.png);;JPEG (*.jpg)"));
+  if (savepath.endsWith(".jpg")) {
+    pixmap.save(savepath, "JPG", 90);
+  } else {
+    pixmap.save(savepath, "PNG", 100);
+  }
 }
 
-void Graphs_View::wheelEvent(QWheelEvent *event)
+void GraphsView::wheelEvent(QWheelEvent* event)
 {
-  if(event->angleDelta().x() < 0 || event->angleDelta().y() > 0)
-    {
-      chart()->zoomIn();
-    }
-  else
-    {
-      chart()->zoomOut();
-    }
+  if (event->angleDelta().x() < 0 || event->angleDelta().y() > 0) {
+    chart()->zoomIn();
+  } else {
+    chart()->zoomOut();
+  }
 }
 
-void Graphs_View::mousePressEvent(QMouseEvent* event)
+void GraphsView::mousePressEvent(QMouseEvent* event)
 {
-  if( rect().contains(event->pos()) && event->button() == Qt::LeftButton )
-    {
-      setCursor(QCursor(Qt::OpenHandCursor));
-      m_drag_pos = event->pos();
-      event->accept();
-    }
+  if (rect().contains(event->pos()) && event->button() == Qt::LeftButton) {
+    setCursor(QCursor(Qt::OpenHandCursor));
+    m_drag_pos = event->pos();
+    event->accept();
+  }
   QChartView::mousePressEvent(event);
 }
 
-void Graphs_View::mouseMoveEvent(QMouseEvent* event)
+void GraphsView::mouseMoveEvent(QMouseEvent* event)
 {
-  if(event->buttons() == Qt::LeftButton)
-    {
-      setCursor(QCursor(Qt::ClosedHandCursor));
-      auto dpos = event->pos() - m_drag_pos;
-      chart()->scroll(-dpos.x(),dpos.y());
-      m_drag_pos = event->pos();
-      event->accept();
-    }
+  if (event->buttons() == Qt::LeftButton) {
+    setCursor(QCursor(Qt::ClosedHandCursor));
+    auto dpos = event->pos() - m_drag_pos;
+    chart()->scroll(-dpos.x(), dpos.y());
+    m_drag_pos = event->pos();
+    event->accept();
+  }
   QChartView::mouseMoveEvent(event);
 }
 
-void Graphs_View::mouseReleaseEvent(QMouseEvent* event)
+void GraphsView::mouseReleaseEvent(QMouseEvent* event)
 {
-  if(event->button() == Qt::LeftButton)
-    {
-      setCursor(QCursor(Qt::ArrowCursor));
-      event->accept();
-    }
+  if (event->button() == Qt::LeftButton) {
+    setCursor(QCursor(Qt::ArrowCursor));
+    event->accept();
+  }
   QChartView::mouseMoveEvent(event);
 }

@@ -1,53 +1,89 @@
 #ifndef GRAPHS_WIDGET_H
 #define GRAPHS_WIDGET_H
 
+#include "points_data.h"
+
+#include <QChart>
+#include <QLineSeries>
 #include <QWidget>
-#include <QtCharts>
+
 #include <array>
-#include <memory>
 
-class Graphs_Switch;
-class Graphs_View;
-class Graphs_Data;
+class GraphsSwitch;
+class GraphsView;
 
-class Graphs_Widget : public QWidget
-{
+/**
+ * @brief The GraphsWidget class - виджет, отвечающий за отображение и
+ * переключение графиков. Хранит
+ */
+class GraphsWidget : public QWidget {
   Q_OBJECT
 
-  enum
-  {
-    GRAPHS_COUNT = 6
-  };
+  const PointsData& r_points_data;
+  GraphsSwitch* p_chart_switch;
+  GraphsView* p_chart_view;
+  std::array<QChart*, PointsData::kGraphsCount> charts_array{};
 
 public:
-  explicit Graphs_Widget(Graphs_Data* gdata, QWidget *parent = nullptr);
-  ~Graphs_Widget( );
+  explicit GraphsWidget(const PointsData& points_data,
+                        QWidget* parent = nullptr);
 
-protected:
-  virtual void paintEvent(QPaintEvent *event) override;
+  ~GraphsWidget();
 
 public slots:
-  void slot_end();
-  void slot_stop();
+  void onPointsReady();
 
 protected slots:
-  void slot_show(int index);
-  void slot_approximate(int index);
-  void slot_deapproximate(int index);
+  /**
+   * @brief onShow - переключиться на указанный график
+   * @param index - индекс графика
+   */
+  void onShow(int index);
+  /**
+   * @brief onApproximate - включить отображение апроксимации для указанного
+   * графика
+   * @param index - индекс графика
+   */
+  void onApproximate(int index);
+  /**
+   * @brief onDeapproximate - отключить отображжение апроксимации для указанного
+   * графика
+   * @param index - индекс графика
+   */
+  void onDeapproximate(int index);
 
 signals:
-  void signal_end();
+  /**
+   * @brief sigEnd - сигнал о готовности графиков к отображению
+   */
+  void sigEnd();
 
 private:
-  Graphs_Switch*    p_chart_switch;
-  Graphs_View*      p_chart_view;
-  std::array<std::unique_ptr<QChart>, GRAPHS_COUNT>  p_vector_charts;
-  Graphs_Data*      p_points_data;
+  /**
+   * @brief updateSeries - загрузить новые точки в графики и выполнить расчёты
+   * отображения по ним
+   * @param index - индекс графика
+   */
+  void updateSeries(int index);
 
-private:
-  void adjust_graphs(int index);
-  void update_series(int index);
-
+  /**
+   * @brief expSeries - извлечение серий экспериментальных точек для указанного
+   * графика
+   * @param index - индекс графика
+   * @return
+   */
+  QLineSeries* expSeries(int index) const {
+    return static_cast<QLineSeries*>(charts_array[index]->series()[0]);
+  }
+  /**
+   * @brief aprSeries - извлечение серий апроксимации точек для указанного
+   * графика
+   * @param index - индекс графика
+   * @return
+   */
+  QLineSeries* aprSeries(int index) const {
+    return static_cast<QLineSeries*>(charts_array[index]->series()[1]);
+  }
 };
 
 #endif // GRAPHS_WIDGET_H

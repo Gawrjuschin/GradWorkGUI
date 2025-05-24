@@ -1,100 +1,107 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.23)
 
-set(PROJECT_NAME GradWorkGUI)
-set(APP_NAME gradwork_gui)
-project(${PROJECT_NAME} VERSION 1.0 LANGUAGES CXX)
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Widgets Charts REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets Charts REQUIRED)
+project(
+    GradWorkGUI
+    VERSION 2.0
+    LANGUAGES CXX
+)
 
-set(PROJECT_SOURCES src/main.cpp
-    src/backend_object.h
-    src/backend_object.cpp
-    src/graphs_data.h
-    src/graphs_data.cpp
-    src/graphs_switch.cpp
-    src/graphs_switch.h
-    src/graphs_view.cpp
-    src/graphs_view.h
-    src/graphs_widget.h
-    src/graphs_widget.cpp
-    src/input_widget.h
-    src/input_widget.cpp
-    src/loading_widget.h
-    src/loading_widget.cpp
-    src/main_window.h
-    src/main_window.cpp
-    src/models.h
-    src/models.cpp
-    src/progress.h
-    src/progress.cpp
-    src/results_widget.h
-    src/results_widget.cpp
-    src/status_bar.h
-    src/status_bar.cpp
-    src/synchronizer.h
-    src/synchronizer.cpp
-    src/system_data.h
-    src/table_data.h
-    src/table_data.cpp
-    src/table_widget.h
-    src/table_widget.cpp
-    src/worker_object.h
-    src/worker_object.cpp
-    src/worker_table.h
-    src/worker_table.cpp
-    src/resources.qrc
+option(GRADWORKGUI_ENABLE_DOCS "Build doxygen docs" OFF)
+
+# TODO: Qt5 compatibility
+find_package(Qt6 COMPONENTS Core Widgets Charts REQUIRED)
+qt_standard_project_setup()
+
+
+if(GRADWORKGUI_ENABLE_DOCS)
+    find_package(Doxygen REQUIRED)
+
+    set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/docs")
+    set(DOXYGEN_GENERATE_HTML YES)
+    set(DOXYGEN_GENERATE_MAN YES)
+    set(DOXYGEN_MARKDOWN_SUPPORT YES)
+    set(DOXYGEN_AUTOLINK_SUPPORT YES)
+    set(DOXYGEN_HAVE_DOT NO)
+    set(DOXYGEN_COLLABORATION_GRAPH YES)
+    set(DOXYGEN_CLASS_GRAPH YES)
+    set(DOXYGEN_UML_LOOK YES)
+    set(DOXYGEN_DOT_UML_DETAILS YES)
+    set(DOXYGEN_DOT_WRAP_THRESHOLD 100)
+    set(DOXYGEN_CALL_GRAPH YES)
+    set(DOXYGEN_QUIET YES)
+    set(DOXYGEN_EXCLUDE_PATTERNS "moc_*")
+
+    doxygen_add_docs(
+        cmake_packaging_docs
+        "${CMAKE_CURRENT_LIST_DIR}"
+        ALL
+        COMMENT "generate docs for gradwork_gui"
     )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(${APP_NAME}
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-    )
-
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET untitled APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-else()
-    if(ANDROID)
-        add_library(${APP_NAME} SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(${APP_NAME}
-            ${PROJECT_SOURCES}
-        )
-    endif()
 endif()
 
 add_subdirectory(QueSys)
 
-target_link_libraries(${APP_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core
-                                  PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-                                  PRIVATE Qt${QT_VERSION_MAJOR}::Charts
-                                  PRIVATE QueSys)
-
-set_target_properties(${APP_NAME} PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.${APP_NAME}.edu
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+set(GRADWORKGUI_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/points_data.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_switch.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_switch.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_view.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_view.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphs_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/input_data.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/input_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/input_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/loading_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/loading_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/progress.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/results_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/results_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/status_bar.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/status_bar.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/table_data.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/table_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/simulation_interface.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/simulation_control.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/quesys_simulation.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/threads_control.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/events_model.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/events_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/requests_model.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/requests_model.cpp
 )
 
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(${APP_NAME})
-endif()
+qt_add_resources(
+    GRADWORKGUI_SOURCES
+    src/resources.qrc
+)
+
+qt_add_executable(gradwork_gui)
+
+target_sources(
+    gradwork_gui
+    PRIVATE
+    ${GRADWORKGUI_SOURCES}
+)
+
+target_link_libraries(
+    gradwork_gui
+    PRIVATE
+    Qt6::Core Qt6::Widgets Qt6::Charts
+    QueSys
+)
+
+set_target_properties(
+    gradwork_gui
+    PROPERTIES
+    WIN32_EXECUTABLE ON
+    MACOSX_BUNDLE ON
+)

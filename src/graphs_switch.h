@@ -2,53 +2,93 @@
 #define GRAPHS_SWITCH_H
 
 #include <QWidget>
+
 #include <array>
 
 class QPushButton;
 class QMenu;
 class QComboBox;
+class QGroupBox;
 
-class Graphs_Switch : public QWidget
-{
+/**
+ * @brief The GraphsSwitch class - виджет переключателя чартов.
+ */
+class GraphsSwitch : public QWidget {
   Q_OBJECT
 
-  enum
-  {
-    MENU_BUTTONS = 3,
-    MENUS = 6
-  };
+  static constexpr std::size_t kButtonsCount{3};
+  static constexpr std::size_t kGraphsCount{6};
+
+  std::array<QPushButton*, kButtonsCount> m_graphs_buttons;
+  std::array<QMenu*, kGraphsCount> m_graphs_menus;
+  QComboBox* p_prior_cbox;
+  int m_selected_graph{0};
 
 public:
-  explicit Graphs_Switch(QWidget *parent = nullptr);
-  ~Graphs_Switch();
+  explicit GraphsSwitch(QWidget* parent = nullptr);
+
+  ~GraphsSwitch() = default;
+
+  /**
+   * @brief reset - сброс состояния переключателя
+   */
+  void reset();
 
 protected slots:
-  void slot_approximation();
-  void slot_save();
-  void slot_update(int);
+  /**
+   * @brief onApproximation - слот активации апроксимации. Срабатывает при
+   * нажатии на галочку апроксимации в меню кнопки чарта.
+   */
+  void onApproximation();
+  /**
+   * @brief onSave - слот сохрнения чарта в файл. Срабатывает при нажатии кнопки
+   * сохранения. Открывает стандартный диалог сохранения, после чего испускает
+   * сигнал sigSave с путём до файла.
+   */
+  void onSave();
+  /**
+   * @brief onPriorityChange - слот переключения приоритета. Срабатывает при
+   * переключении комбобокса приоритета.
+   */
+  void onPriorityChange(int);
 
 signals:
-  void signal_show(int);
-  void signal_approximate(int);
-  void signal_deapproximate(int);
-  void signal_save(QString);
-  void signal_zoom_in();
-  void signal_zoom_out();
-  void signal_zoom_reset();
+  /**
+   * @brief sigShow - сигнал переключения на указанный чарт
+   */
+  void sigShow(int);
+  /**
+   * @brief sigApproximate - сигнал включения отображения апроксимации графика
+   * для указанного чарта
+   */
+  void sigApproximate(int);
+  /**
+   * @brief sigDeapproximate - сигнал отключения отображения апроксимации
+   * графика для указанного чарта
+   */
+  void sigDeapproximate(int);
+  /**
+   * @brief sigSave - сигнал сохранения активного чарта
+   * @param filename - имя чарта зависит от выбранного графика
+   */
+  void sigSave(QString filename);
+  /**
+   * @brief sigZoomIn - сигнал приближения чарта
+   */
+  void sigZoomIn();
+  /**
+   * @brief sigZoomOut - сигнал отдаления чарта
+   */
+  void sigZoomOut();
+  /**
+   * @brief sigZoomReset - сигнал сброса приближения чарта
+   */
+  void sigZoomReset();
 
 private:
-  std::array<QPushButton*, MENU_BUTTONS> m_vector_buttons;
-  std::array<QMenu*, MENUS>      m_vector_menus;
-  QComboBox*            p_prior_cbox;
-  QPushButton*          p_zoom_in;
-  QPushButton*          p_zoom_out;
-  QPushButton*          p_zoom_reset;
-  int                   m_button_state{0};
-
-private:
-  void create_menus();
-  void adjust_widget();
-
+  QGroupBox* MakeGraphsGroup();
+  QGroupBox* MakeZoomGroup();
+  void CreateMenus();
 };
 
 #endif // GRAPHS_SWITCH_H

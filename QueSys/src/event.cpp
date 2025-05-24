@@ -1,74 +1,39 @@
-#include "event.h"
+#include "event.hpp"
+
+#include <cstdint>
 #include <iomanip>
 
-Event::Event( )
-  : ev_num{-1}, time{}, type{}, sys_status{}
-  , q_status{}, req_num{-1}, time_next{}
-{
-
-}
-
-Event::Event(int _ev_num, double _time, int _type, ipair _sys_status, ipair _q_status,
-             int  _req_num, double _time_next)
-  : ev_num{_ev_num},  time{_time},  type{_type},  sys_status{_sys_status}
-  , q_status{_q_status},  req_num{_req_num},  time_next{_time_next}
-{
-
-}
-
-dpair   Event::get_sys_status() const
-{
-  return sys_status;
-}
-
-dpair   Event::get_q_status() const
-{
-  return q_status;
-}
-
-double  Event::get_time() const
-{
-  return time;
-}
-
-void Event::set(int  _ev_num, double _time, int _type, ipair _sys_status, ipair _q_status,
-                int  _req_num, double _time_next) //Метод для определения всех полей
-{
-  ev_num     = _ev_num;
-  time       = _time;
-  type       = _type;
-  sys_status = _sys_status;
-  q_status   = _q_status;
-  req_num    = _req_num;
-  time_next  = _time_next;
-}
-
-std::ostream& operator<<(std::ostream& s, const Event& E)
-{
+namespace queueing_system {
+std::ostream& operator<<(std::ostream& os, const Event& event) {
   constexpr int precision = 5;
-  s << std::setiosflags(std::ios::fixed);
-  s << std::setprecision(precision);
-  s << E.ev_num << "\t" << E.time << "\t" << E.type << "\t" <<  '(' << E.sys_status.first << ", " << E.sys_status.second << "; "
-    << E.q_status.first << ", " << E.q_status.second << ')' << "\t"
-    << E.req_num << "\t" << E.time_next << std::endl;
-  return s;
+  os << std::setiosflags(std::ios::fixed);
+  os << std::setprecision(precision);
+  os << event.number << "\t" << event.time << "\t" << event.type << "\t" << '('
+     << event.system_status.first << ", " << event.system_status.second << "; "
+     << event.queue_status.first << ", " << event.queue_status.second << ')'
+     << "\t" << event.request << "\t" << event.time_next << std::endl;
+  return os;
 }
 
-std::istream& operator>>(std::istream& s, Event& E)
-{
-  int    ev_num{0};int type{0}; int req_num{0};
-  double time{0}; double time_next{0};
-  ipair  sys_status{0,0}; ipair q_status{0,0};
+std::istream& operator>>(std::istream& os, Event& event) {
+  std::uint32_t number{0};
+  std::uint32_t type{0};
+  std::uint32_t request{0};
+  double time{0};
+  double time_next{0};
+  std::pair system_status{0, 0};
+  std::pair queue_status{0, 0};
   char syntax{0};
-  if(   s >> std::skipws >> ev_num >> time >> type >> syntax >> sys_status.first >> syntax
-        >> sys_status.second >> syntax >> q_status.first >> syntax
-        >> q_status.second >> syntax >> req_num >> time_next )
-    {
-      E.set(ev_num,time,type,sys_status,q_status,req_num,time_next);
-    }
-  else
-    {
-      s.clear(std::ios_base::failbit);
-    }
-  return s;
+  if (os >> std::skipws >> number >> time >> type >> syntax >>
+      system_status.first >> syntax >> system_status.second >> syntax >>
+      queue_status.first >> syntax >> queue_status.second >> syntax >>
+      request >> time_next) {
+    event = {number,       time,    type,     system_status,
+             queue_status, request, time_next};
+  } else {
+    os.clear(std::ios_base::failbit);
+  }
+  return os;
 }
+
+} // namespace queueing_system

@@ -1,71 +1,98 @@
 #ifndef INPUT_WIDGET_H
 #define INPUT_WIDGET_H
 
+#include "input_data.h"
+
 #include <QWidget>
 
-class QGroupBox;
+class QLabel;
 class QSpinBox;
 class QDoubleSpinBox;
 class QPushButton;
-class QLabel;
-struct System_Data;
 
-class Input_Widget : public QWidget
-{
+/**
+ * @brief The InputWidget class - виджет ввода параметров СМО и управления
+ * симуляцией.
+ */
+class InputWidget : public QWidget {
   Q_OBJECT
 
-public:
-  explicit Input_Widget( std::shared_ptr<System_Data> _system_parameters, QWidget *parent = nullptr);
-  ~Input_Widget();
+  bool m_paused{false};
+  double m_min_load;
+  double m_max_load;
+  InputData m_data{};
 
-protected:
-  void paintEvent(QPaintEvent* event) override;
+  QLabel* p_lambda_range;
+  QDoubleSpinBox* p_mu_input;
+  QSpinBox* p_ch_input;
+  QDoubleSpinBox* p_pr_input;
+  QSpinBox* p_threads_input;
+  QSpinBox* p_events_input;
+  QPushButton* p_start_btn;
+  QPushButton* p_pause_btn;
+  QPushButton* p_stop_btn;
+
+public:
+  explicit InputWidget(double min_load, double max_load,
+                       QWidget* parent = nullptr);
+
+  ~InputWidget();
+
+  /**
+   * @brief inputData - геттер данных формы. Используется получателем сигнала
+   * InputWidget::sigStart
+   * @return
+   */
+  const InputData& inputData() const noexcept;
 
 public slots:
-  void slot_done();
+  /**
+   * @brief onDone - слот, разблокирующий ввод
+   */
+  void onDone();
 
 protected slots:
-  void update();
-  void slot_start();
-  void slot_pause_resume();
-  void slot_stop();
+  /**
+   * @brief onUpdate
+   */
+  void onUpdate();
+  /**
+   * @brief onStart - слот кнопки p_start_btn
+   */
+  void onStart();
+  /**
+   * @brief onPauseResume - слот кнопки p_pause_btn
+   */
+  void onPauseResume();
+  /**
+   * @brief onStop - слот кнопки p_stop_btn
+   */
+  void onStop();
 
 signals:
-  void signal_start();
-  void signal_pause();
-  void signal_resume();
-  void signal_stop();
+  /**
+   * @brief sigStart - сигнал о старте симуляции
+   */
+  void sigStart();
+  /**
+   * @brief sigPause - сигнал паузы симуляции
+   */
+  void sigPause();
+  /**
+   * @brief sigResume - сигнал продолжения симуляции
+   */
+  void sigResume();
+  /**
+   * @brief sigStop - сигнал остановки симуляции
+   */
+  void sigStop();
 
 private:
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  QGroupBox*      p_sys_grbx;
-  QGroupBox*      p_sim_grbx;
-  QGroupBox*      p_ctrl_grbx;
-  QLabel*         p_par_desc;
-  QLabel*         p_avg_desc;
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  QDoubleSpinBox* p_mu_input;
-  QSpinBox*       p_ch_input;
-  QDoubleSpinBox* p_pr_input;
-  QSpinBox*       p_th_input;
-  QSpinBox*       p_ev_input;
-  QPushButton*    p_stop_btn;
-  QPushButton*    p_pause_btn;
-  QPushButton*    p_start_btn;
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  std::shared_ptr<System_Data> p_system_parameters;//Разделяемые данные, чтобы сигналом их не посылать
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  QWidget* makeSystemGrpbx();
+  QWidget* makeSimulationGrpbx();
+  QWidget* makeControlsGrpbx();
 
-  //Флаг паузы. Далее будет заменён на класс-синхронизатор из стороннего проекта с синхронизацией потоков
-  bool m_paused{false};
-
-private:
-  void load_data();//Обновляет данные. Вызывается до отправки signal_start
-  void build_first();
-  void build_second();
-  void build_third();
-  void build_fourth();
-
+  void loadData(); // Обновляет данные. Вызывается до отправки signal_start
 };
 
 #endif // INPUT_WIDGET_H

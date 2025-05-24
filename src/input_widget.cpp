@@ -1,212 +1,199 @@
 #include "input_widget.h"
-#include "system_data.h"
 
 #include <QDoubleSpinBox>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QLabel>
-#include <QPaintEvent>
 #include <QPainter>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QStyleOption>
 #include <QThread>
-#include <QtMath>
 
-constexpr double min_load = 0.35;
-constexpr double max_load = 0.95;
-constexpr double single_step = 0.01;
-constexpr int    min_evnum   = 1'000;
-constexpr int    max_evnum   = 1'000'000;
-constexpr int    max_channels = 16;
+#include <cstdint>
+#include <limits>
 
+constexpr double kSingleStep = 0.01;
+constexpr int kMaxChannels = 16;
 
-Input_Widget::Input_Widget(std::shared_ptr<System_Data> _p_system_parameters, QWidget *parent)
-  : QWidget(parent)
-  , p_sys_grbx(new QGroupBox(tr("System parameters"), this))
-  , p_sim_grbx(new QGroupBox(tr("Simulation parameters"), this))
-  , p_ctrl_grbx(new QGroupBox(tr("Process control"), this))
-  , p_par_desc(new QLabel(tr("empty"), this))//Переводит среднее время в среднее число
-  , p_avg_desc(new QLabel(tr("empty"), this))
-  , p_mu_input(new QDoubleSpinBox(this))
-  , p_ch_input(new QSpinBox(this))
-  , p_pr_input(new QDoubleSpinBox(this))
-  , p_th_input(new QSpinBox(this))
-  , p_ev_input(new QSpinBox(this))
-  , p_stop_btn(new QPushButton(tr("S&top"), this))
-  , p_pause_btn(new QPushButton(tr("&Pause"), this))
-  , p_start_btn(new QPushButton(tr("&Start"), this))
-  , p_system_parameters(_p_system_parameters)
-{
-  build_first();
-  build_second();
-  build_third();
-  build_fourth();
+constexpr int kMinEvents = 1'000;
+constexpr int kMaxEvents = 1'000'000;
+static_assert(kMinEvents >= 0);
+static_assert(kMaxEvents <= std::numeric_limits<std::uint32_t>::max());
 
-  p_par_desc->setText(QString(tr("[%1;%2]"))
-                      .arg(p_mu_input->value() * p_ch_input->value() * min_load)
-                      .arg(p_mu_input->value() * p_ch_input->value() * max_load));
-  p_avg_desc->setText(QString(tr("[%1;%2]"))
-                      .arg(1/(p_mu_input->value() * p_ch_input->value() * max_load))
-                      .arg(1/(p_mu_input->value() * p_ch_input->value() * min_load)));
+QWidget* InputWidget::makeSystemGrpbx() {
+  auto* system_grbx = new QGroupBox(tr("System parameters"));
+  system_grbx->setAlignment(Qt::AlignCenter);
 
-  connect(p_start_btn, &QPushButton::clicked,
-          this,      &Input_Widget::slot_start);
-  connect(p_pause_btn,&QPushButton::clicked,
-          this,      &Input_Widget::slot_pause_resume);
-  connect(p_stop_btn, &QPushButton::clicked,
-          this,      &Input_Widget::slot_stop);
+  auto* system_lo = new QGridLayout(system_grbx);
 
-  connect(p_mu_input, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-          this, &Input_Widget::update);
-  connect(p_ch_input, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-          this, &Input_Widget::update);
-}
+  auto* load_lbl = new QLabel(tr("Load range:"));
+  auto* load_desc =
+      new QLabel(QString(tr("[%1;  %2]")).arg(m_min_load).arg(m_max_load));
+  system_lo->addWidget(load_lbl, 0, 0);
+  system_lo->addWidget(load_desc, 0, 1);
 
-Input_Widget::~Input_Widget() = default;
+  auto* lambda_lbl = new QLabel(tr("Lambda range:"));
+  p_lambda_range = new QLabel;
+  system_lo->addWidget(lambda_lbl, 1, 0);
+  system_lo->addWidget(p_lambda_range, 1, 1);
 
-void Input_Widget::build_first()
-{ // Adjust layout
-  auto* main_lo = new QVBoxLayout(this);
-  main_lo->addStretch(1);
-  p_sys_grbx->setAlignment(Qt::AlignCenter);
-  main_lo->addWidget(p_sys_grbx,0);
-  p_sim_grbx->setAlignment(Qt::AlignCenter);
-  main_lo->addWidget(p_sim_grbx,0);
-  p_ctrl_grbx->setAlignment(Qt::AlignCenter);
-  main_lo->addWidget(p_ctrl_grbx,0);
-  main_lo->addStretch(1);
-}
-
-void Input_Widget::build_second()
-{ // Adjust system elements
-  auto*  sys_lo = new QGridLayout(p_sys_grbx);
-  auto*  load_lbl = new QLabel(tr("Load range:"), this);
-  auto*  load_desc = new QLabel(QString(tr("[%1;\t%2]"))
-                              .arg(min_load)
-                              .arg(max_load), this);
-  auto*  par_lbl = new QLabel(tr("Lambda range:"), this);
-  auto*  avg_lbl = new QLabel(tr("Average lambda range:"), this);
-  auto*  mu_lbl = new QLabel(tr("&mu parameter:"), this);
+  constexpr double kDefaultMu = 1.0;
+  auto* mu_lbl = new QLabel(tr("&mu parameter:"));
+  p_mu_input = new QDoubleSpinBox;
+  p_mu_input->setValue(kDefaultMu);
+  p_mu_input->setMinimum(kSingleStep);
+  p_mu_input->setSingleStep(kSingleStep);
   mu_lbl->setBuddy(p_mu_input);
-  auto*  ch_lbl = new QLabel(tr("Number of &channels:"), this);
+  system_lo->addWidget(mu_lbl, 2, 0);
+  system_lo->addWidget(p_mu_input, 2, 1);
+
+  constexpr int kDefaultChannels = 1;
+  auto* ch_lbl = new QLabel(tr("Number of &channels:"));
+  p_ch_input = new QSpinBox;
+  p_ch_input->setValue(kDefaultChannels);
+  p_ch_input->setRange(kDefaultChannels, kMaxChannels);
   ch_lbl->setBuddy(p_ch_input);
-  auto*  pr_lbl = new QLabel(tr("First priority &propability:"), this);
+  system_lo->addWidget(ch_lbl, 3, 0);
+  system_lo->addWidget(p_ch_input, 3, 1);
+
+  constexpr double kDefaultProp = 0.25;
+  constexpr double kMinProp = 0.00;
+  constexpr double kMaxProp = 1.00;
+  auto* pr_lbl = new QLabel(tr("First priority &propability:"));
+  p_pr_input = new QDoubleSpinBox;
+  p_pr_input->setValue(kDefaultProp);
+  p_pr_input->setRange(kMinProp, kMaxProp);
+  p_pr_input->setSingleStep(kSingleStep);
   pr_lbl->setBuddy(p_pr_input);
+  system_lo->addWidget(pr_lbl, 4, 0);
+  system_lo->addWidget(p_pr_input, 4, 1);
 
-  p_mu_input->setValue(1);
-  p_mu_input->setMinimum(single_step);
-  p_mu_input->setSingleStep(single_step);
-  p_ch_input->setValue(1);
-  p_ch_input->setRange(1,max_channels);
-  p_pr_input->setValue(0.25);
-  p_pr_input->setRange(single_step, 1.00);
-  p_pr_input->setSingleStep(single_step);
+  onUpdate();
 
-  sys_lo->addWidget(load_lbl,   0, 0);
-  sys_lo->addWidget(load_desc,  0, 1);
-  sys_lo->addWidget(par_lbl,    1, 0);
-  sys_lo->addWidget(p_par_desc, 1, 1);
-  sys_lo->addWidget(avg_lbl,    2, 0);
-  sys_lo->addWidget(p_avg_desc, 2, 1);
-  sys_lo->addWidget(mu_lbl,     3, 0);
-  sys_lo->addWidget(p_mu_input, 3, 1);
-  sys_lo->addWidget(ch_lbl,     4, 0);
-  sys_lo->addWidget(p_ch_input, 4, 1);
-  sys_lo->addWidget(pr_lbl,     5, 0);
-  sys_lo->addWidget(p_pr_input, 5, 1);
+  connect(p_mu_input,
+          static_cast<void (QDoubleSpinBox::*)(double)>(
+              &QDoubleSpinBox::valueChanged),
+          this, &InputWidget::onUpdate);
+  connect(p_ch_input,
+          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this,
+          &InputWidget::onUpdate);
+
+  return system_grbx;
 }
 
-void Input_Widget::build_third()
-{ // Adjust simulation elements
-  auto*  sim_lo = new QGridLayout(p_sim_grbx);
-  auto*  th_lbl = new QLabel(tr("Number of &threads"), this);
-  th_lbl->setBuddy(p_th_input);
-  auto*  ev_lbl = new QLabel(tr("Number of &events"), this);
-  ev_lbl->setBuddy(p_ev_input);
-  p_th_input->setRange(1,QThread::idealThreadCount());
-  p_ev_input->setRange(min_evnum,max_evnum);
-  sim_lo->addWidget(th_lbl,     0, 0);
-  sim_lo->addWidget(p_th_input, 0, 1);
-  sim_lo->addWidget(ev_lbl,     1, 0);
-  sim_lo->addWidget(p_ev_input, 1, 1);
+QWidget* InputWidget::makeSimulationGrpbx() {
+  auto* simulation_grbx = new QGroupBox(tr("Simulation parameters"));
+  simulation_grbx->setAlignment(Qt::AlignCenter);
+
+  auto* simulation_lo = new QGridLayout(simulation_grbx);
+
+  auto* threads_lbl = new QLabel(tr("Number of &threads"));
+  p_threads_input = new QSpinBox;
+  p_threads_input->setRange(1, QThread::idealThreadCount());
+  threads_lbl->setBuddy(p_threads_input);
+  simulation_lo->addWidget(threads_lbl, 0, 0);
+  simulation_lo->addWidget(p_threads_input, 0, 1);
+  auto* events_lbl = new QLabel(tr("Number of &events"));
+  p_events_input = new QSpinBox;
+  p_events_input->setRange(kMinEvents, kMaxEvents);
+  events_lbl->setBuddy(p_events_input);
+  simulation_lo->addWidget(events_lbl, 1, 0);
+  simulation_lo->addWidget(p_events_input, 1, 1);
+
+  return simulation_grbx;
 }
 
-void Input_Widget::build_fourth()
-{ // Adjust controls
-  auto*  ctrl_lo = new QGridLayout(p_ctrl_grbx);
+QWidget* InputWidget::makeControlsGrpbx() {
+  auto* control_grbx = new QGroupBox(tr("Process control"));
+  control_grbx->setAlignment(Qt::AlignCenter);
+
+  auto* control_lo = new QGridLayout(control_grbx);
+
+  p_stop_btn = new QPushButton(tr("S&top"));
   p_stop_btn->setDisabled(true);
+  control_lo->addWidget(p_stop_btn, 0, 0);
+
+  p_pause_btn = new QPushButton(tr("&Pause"));
   p_pause_btn->setDisabled(true);
-  ctrl_lo->addWidget(p_stop_btn,  0, 0);
-  ctrl_lo->addWidget(p_pause_btn, 0, 1);
-  ctrl_lo->addWidget(p_start_btn, 0, 2);
+  control_lo->addWidget(p_pause_btn, 0, 1);
+
+  p_start_btn = new QPushButton(tr("&Start"));
+  control_lo->addWidget(p_start_btn, 0, 2);
+
+  connect(p_start_btn, &QPushButton::clicked, this, &InputWidget::onStart);
+  connect(p_pause_btn, &QPushButton::clicked, this,
+          &InputWidget::onPauseResume);
+  connect(p_stop_btn, &QPushButton::clicked, this, &InputWidget::onStop);
+
+  return control_grbx;
 }
 
-void Input_Widget::paintEvent(QPaintEvent *event)
-{
-  QStyleOption opt;
-  opt.initFrom(this);
-  QPainter p(this);
-  style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-  QWidget::paintEvent(event);
+InputWidget::InputWidget(double min_load, double max_load, QWidget* parent)
+    : QWidget(parent), m_min_load{min_load}, m_max_load{max_load} {
+  auto* widget_lo = new QVBoxLayout(this);
+
+  widget_lo->addStretch(1);
+
+  widget_lo->addWidget(makeSystemGrpbx(), 0);
+  widget_lo->addWidget(makeSimulationGrpbx(), 0);
+  widget_lo->addWidget(makeControlsGrpbx(), 0);
+
+  widget_lo->addStretch(1);
 }
 
-void Input_Widget::update()
-{
-  p_par_desc->setText(QString(tr("[%1;\t%2]"))
-                      .arg(QString().setNum(p_mu_input->value() * p_ch_input->value() * min_load, 'g', 4))
-                      .arg(QString().setNum(p_mu_input->value() * p_ch_input->value() * max_load, 'g', 4)));
-  p_avg_desc->setText(QString(tr("[%1;\t%2]"))
-                      .arg(QString().setNum(1/(p_mu_input->value() * p_ch_input->value() * max_load), 'g', 4))
-                      .arg(QString().setNum(1/(p_mu_input->value() * p_ch_input->value() * min_load), 'g', 4)));
+InputWidget::~InputWidget() = default;
+
+const InputData& InputWidget::inputData() const noexcept { return m_data; }
+
+void InputWidget::onUpdate() {
+  auto lambdaLower = QString().setNum(
+      p_mu_input->value() * p_ch_input->value() * m_min_load, 'g', 4);
+  auto lambdaUpper = QString().setNum(
+      p_mu_input->value() * p_ch_input->value() * m_max_load, 'g', 4);
+
+  p_lambda_range->setText(
+      QString(tr("[%1;  %2]")).arg(lambdaLower).arg(lambdaUpper));
 }
 
-void Input_Widget::load_data()
-{
-  p_system_parameters->set({min_load, max_load}, p_mu_input->value(),
-                           p_ch_input->value(), p_pr_input->value(),
-                           p_th_input->value(), p_ev_input->value());
+void InputWidget::loadData() {
+  m_data =
+      InputData{.mu = p_mu_input->value(),
+                .propability = p_pr_input->value(),
+                .channels = p_ch_input->value(),
+                .threads = p_threads_input->value(),
+                .events = static_cast<std::uint32_t>(p_events_input->value())};
 }
 
-void Input_Widget::slot_done()
-{
+void InputWidget::onDone() {
   p_start_btn->setDisabled(false);
   p_pause_btn->setDisabled(true);
   p_stop_btn->setDisabled(true);
-  p_system_parameters->set({min_load, max_load}, p_mu_input->value(),
-                           p_ch_input->value(), p_pr_input->value(),
-                           p_th_input->value(), p_ev_input->value());
 }
 
-void Input_Widget::slot_start()
-{
+void InputWidget::onStart() {
   p_start_btn->setDisabled(true);
   p_pause_btn->setDisabled(false);
   p_stop_btn->setDisabled(false);
-  load_data();
-  emit signal_start();
+  loadData();
+  emit sigStart();
 }
 
-void Input_Widget::slot_pause_resume()
-{
-  if( (m_paused = (!m_paused)) )
-    {
-      p_pause_btn->setText(tr("Resume"));
-      emit signal_pause();
-    }
-  else
-    {
-      p_pause_btn->setText(tr("Pause"));
-      emit signal_resume();
-    }
+void InputWidget::onPauseResume() {
+  if ((m_paused = (!m_paused))) {
+    p_pause_btn->setText(tr("Resume"));
+    emit sigPause();
+  } else {
+    p_pause_btn->setText(tr("Pause"));
+    emit sigResume();
+  }
 }
 
-void Input_Widget::slot_stop()
-{
+void InputWidget::onStop() {
   p_start_btn->setDisabled(false);
   p_pause_btn->setDisabled(true);
   p_stop_btn->setDisabled(true);
   p_pause_btn->setText(tr("Pause"));
   m_paused = false;
-  emit signal_stop();
+  emit sigStop();
 }

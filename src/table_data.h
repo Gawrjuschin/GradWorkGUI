@@ -1,25 +1,33 @@
 #ifndef TABLE_DATA_H
 #define TABLE_DATA_H
 
-#include <memory>
+#include <QVector>
 
-class Request_Model;
-class Event_Model;
+#include <QueSys/event.hpp>
+#include <QueSys/request.hpp>
 
-class Table_Data
+/**
+ * @brief The TableData class - данные таблиц заявок и событий СМО.
+ */
+struct TableData
 {
-
-public:
-  Table_Data();
-  ~Table_Data();
-
-  Request_Model* request_model();
-  Event_Model*   event_model();
-
-private:
-  std::unique_ptr<Request_Model> p_rmodel;
-  std::unique_ptr<Event_Model>   p_emodel;
-
+  /**
+   * @brief kEventsNumber - число событий СМО в таблице.
+   */
+  static constexpr std::size_t kEventsNumber = 1000;
+  /**
+   * @brief kRequestsNumber - максимальное число заявок в таблице (теоретический
+   * предел).
+   */
+  static constexpr std::size_t kRequestsNumber = kEventsNumber / 2;
+  /**
+   * @brief requests - вектор данных заявок.
+   */
+  QVector<queueing_system::Request> requests{};
+  /**
+   * @brief events - вектор данных событий.
+   */
+  QVector<queueing_system::Event> events{};
 };
 
 #endif // TABLE_DATA_H
