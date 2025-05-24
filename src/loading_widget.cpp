@@ -8,9 +8,9 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
-constexpr int interval_p_text = 1000;
-constexpr int interval_pic = 1000 / 33;
-constexpr int angle = 5;
+constexpr int kTextUpdateInterval = 1000;
+constexpr int kIntervalPic = 1000 / 33;
+constexpr int kAngle = 5;
 
 LoadingWidget::LoadingWidget(const int pix_size, QWidget* parent)
     : QWidget(parent), p_text(new QLabel(tr("Loading"))), p_pic_lbl(new QLabel),
@@ -95,7 +95,7 @@ void LoadingWidget::onNextText() {
   }
   ++m_stage;
   m_stage %= 4;
-  p_timer_text->start(interval_p_text);
+  p_timer_text->start(kTextUpdateInterval);
 }
 
 void LoadingWidget::setPixmap(const QPixmap& pic) {
@@ -115,6 +115,6 @@ void LoadingWidget::rotatePic(double angle) {
 }
 
 void LoadingWidget::onNextPic() {
-  rotatePic(angle);
-  p_timer_pic->start(interval_pic);
+  rotatePic(kAngle);
+  p_timer_pic->start(kIntervalPic);
 }

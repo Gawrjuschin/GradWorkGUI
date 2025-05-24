@@ -95,7 +95,7 @@ static inline auto StartNext(RequestsFlow& req_generator, Request& next_request,
           .queue_status = queue.status(),
           .request = free_it->number,
           .time_next = next_request.arrive_time - free_it->arrive_time};
-};
+}
 
 // 2)
 // Первая в очереди заявка встаёт на обслуживание
@@ -126,7 +126,7 @@ static inline Event StartQueued(Request& next_request,
           .request = free_it->number,
           .time_next =
               next_request.arrive_time - simulation_status.time_passed};
-};
+}
 
 // 3)
 // Канал с минимальным оставшимся временем обслуживания освободится раньше
@@ -179,7 +179,7 @@ FreeMin(Request& next_request, RequestsQueue& queue,
   (*min_it) = Request{};
 
   return current_event;
-};
+}
 
 // Перегрузка без записи вышедшей из системы заявки
 static inline auto FreeMin(Request& next_request, RequestsQueue& queue,
@@ -223,7 +223,7 @@ static inline auto FreeMin(Request& next_request, RequestsQueue& queue,
   (*min_it) = Request{};
 
   return current_event;
-};
+}
 
 // 4)
 //  Очередная заявка прийдёт раньше, чем освободится канал с минимальным

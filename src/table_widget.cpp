@@ -2,28 +2,51 @@
 #include "events_model.h"
 #include "requests_model.h"
 #include "table_data.h"
+
+#include <QApplication>
+#include <QClipboard>
+#include <QGridLayout>
 #include <QHeaderView>
 #include <QLabel>
 #include <QPainter>
+#include <QPushButton>
 #include <QSortFilterProxyModel>
 #include <QTableView>
-#include <QVBoxLayout>
+
+#include <sstream>
+
+namespace detail {
+static inline auto MakeClipboardCb(auto* model) {
+  return [model] {
+    std::stringstream sstream;
+    model->asText(sstream);
+
+    QClipboard* clipboard = QApplication::clipboard();
+    clipboard->setText(QString::fromStdString(sstream.str()));
+  };
+}
+} // namespace detail
 
 TableWidget::TableWidget(TableData& tdata, QWidget* parent)
     : QWidget(parent), r_tdata(tdata), p_tab_reqs(new QTableView),
-      p_tab_evs(new QTableView), p_model_reqs(new RequestModel),
-      p_model_evs(new EventModel) {
-  auto* main_lo = new QVBoxLayout(this);
+      p_tab_evs(new QTableView), p_requests_model(new RequestModel),
+      p_events_model(new EventModel) {
+  auto* main_lo = new QGridLayout(this);
 
-  main_lo->addWidget(new QLabel(tr("Requests:")));
-  main_lo->addWidget(p_tab_reqs);
-  main_lo->addWidget(new QLabel(tr("Events:")));
-  main_lo->addWidget(p_tab_evs);
+  auto* requests_copy_btn = new QPushButton(tr("Copy"));
+  main_lo->addWidget(new QLabel(tr("Requests:")), 0, 0, 1, 1, Qt::AlignLeft);
+  main_lo->addWidget(requests_copy_btn, 0, 1, 1, 1, Qt::AlignRight);
+  main_lo->addWidget(p_tab_reqs, 1, 0, 1, 2);
+
+  auto* events_copy_btn = new QPushButton(tr("Copy"));
+  main_lo->addWidget(new QLabel(tr("Events:")), 2, 0, 1, 1, Qt::AlignLeft);
+  main_lo->addWidget(events_copy_btn, 2, 1, 1, 1, Qt::AlignRight);
+  main_lo->addWidget(p_tab_evs, 3, 0, 1, 2);
 
   auto* reqs_proxy = new QSortFilterProxyModel;
-  reqs_proxy->setSourceModel(p_model_reqs);
+  reqs_proxy->setSourceModel(p_requests_model);
   auto* evs_proxy = new QSortFilterProxyModel;
-  evs_proxy->setSourceModel(p_model_evs);
+  evs_proxy->setSourceModel(p_events_model);
 
   p_tab_reqs->setModel(reqs_proxy);
   p_tab_evs->setModel(evs_proxy);
@@ -40,24 +63,21 @@ TableWidget::TableWidget(TableData& tdata, QWidget* parent)
   p_tab_reqs->verticalHeader()->hide();
   p_tab_evs->verticalHeader()->hide();
 
-  connect(p_model_reqs, &RequestModel::sigUpdate,
+  connect(p_requests_model, &RequestModel::sigUpdate,
           [reqs_proxy]() { reqs_proxy->sort(0, Qt::AscendingOrder); });
-  connect(p_model_evs, &EventModel::sigUpdate,
+  connect(p_events_model, &EventModel::sigUpdate,
           [evs_proxy]() { evs_proxy->sort(1, Qt::AscendingOrder); });
+
+  connect(requests_copy_btn, &QPushButton::clicked,
+          detail::MakeClipboardCb(p_requests_model));
+
+  connect(events_copy_btn, &QPushButton::clicked,
+          detail::MakeClipboardCb(p_events_model));
 }
 
 TableWidget::~TableWidget() = default;
 
 void TableWidget::onDataReady() {
-  p_model_reqs->swap(r_tdata.requests);
-  p_model_evs->swap(r_tdata.events);
+  p_requests_model->swap(r_tdata.requests);
+  p_events_model->swap(r_tdata.events);
 }
-
-// void Table_Widget::paintEvent(QPaintEvent* event)
-// {
-//   QStyleOption opt;
-//   opt.initFrom(this);
-//   QPainter p(this);
-//   style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-//   QWidget::paintEvent(event);
-// }

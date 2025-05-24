@@ -9,7 +9,7 @@ class QProgressBar;
 class QLabel;
 
 /**
- * @brief The StatusBar class - виджет статусбара с индикацией прогресса
+ * @brief The StatusBar class - виджет статусбара с индикацией прогресса.
  */
 class StatusBar : public QStatusBar {
   Q_OBJECT
@@ -25,32 +25,32 @@ public:
   ~StatusBar();
 
   /**
-   * @brief setMaximum - установить максимальное значение прогресса
-   * @param maximum - новый максимум
+   * @brief setMaximum - установить максимальное значение прогресса.
+   * @param maximum - новый максимум.
    */
   void setMaximum(int maximum);
   /**
-   * @brief setProgressBarWidth - установить ширину виджетп
-   * @param width - ширина
+   * @brief setProgressBarWidth - установить ширину виджетп.
+   * @param width - ширина.
    */
   void setProgressBarWidth(int width);
 
 public slots:
   /**
    * @brief onStop - при остановке симуляции сбрасывает прогресс и останавливает
-   * таймер
+   * таймер.
    */
   void onStop();
   /**
-   * @brief onUpdate - слот таймера обновления прогресса
+   * @brief onUpdate - слот таймера обновления прогресса.
    */
   void onUpdate();
   /**
-   * @brief onStart - запустить таймер обновления прогресса
+   * @brief onStart - запустить таймер обновления прогресса.
    */
   void onStart();
   /**
-   * @brief onReady - при готовности останавливает таймер и меняет сообщение
+   * @brief onReady - при готовности останавливает таймер и меняет сообщение.
    */
   void onReady();
 };

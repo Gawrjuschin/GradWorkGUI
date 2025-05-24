@@ -4,13 +4,11 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QLabel>
-#include <QPaintEvent>
 #include <QPainter>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QStyleOption>
 #include <QThread>
-// #include <QtMath>
 
 #include <cstdint>
 #include <limits>

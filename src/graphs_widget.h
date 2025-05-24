@@ -30,13 +30,6 @@ public:
 
   ~GraphsWidget();
 
-protected:
-  /**
-   * @brief paintEvent - перегрузка метода для работы со стилями
-   * @param event
-   */
-  // void paintEvent(QPaintEvent* event) override;
-
 public slots:
   void onPointsReady();
 

@@ -10,6 +10,8 @@
  * симуляции.
  */
 class Progress {
+  std::atomic_uint32_t m_value{};
+
 public:
   Progress() = default;
 
@@ -22,14 +24,14 @@ public:
   ~Progress() = default;
 
   /**
-   * @brief operator std::uint32_t - неявное преобразование к uint32_t
+   * @brief operator std::uint32_t - неявное преобразование к std::uint32_t.
    */
   operator std::uint32_t() const noexcept {
     return m_value.load(std::memory_order_acquire);
   }
 
   /**
-   * @brief value - метод явного преобразования к uint32_t
+   * @brief value - метод явного преобразования к std::uint32_t.
    * @return
    */
   std::uint32_t value() const noexcept {
@@ -38,18 +40,15 @@ public:
 
   /**
    * @brief arrive - метод, который требуется вызывать по выполнению чанка
-   * симуляции
+   * симуляции.
    * @return
    */
   std::uint32_t arrive() noexcept { return ++m_value; };
 
   /**
-   * @brief reset - сброс прогресса симуляции
+   * @brief reset - сброс прогресса симуляции.
    */
   void reset() noexcept { m_value.store(0, std::memory_order_release); }
-
-private:
-  std::atomic_uint32_t m_value{};
 };
 
 #endif // PROGRESS_H

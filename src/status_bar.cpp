@@ -6,7 +6,7 @@
 #include <QProgressBar>
 #include <QTimer>
 
-constexpr auto timer_interval = 100;
+constexpr auto kProgressUpdateInterval{100};
 
 StatusBar::StatusBar(const Progress& progress, QWidget* parent)
     : QStatusBar(parent)
@@ -47,15 +47,17 @@ void StatusBar::onStop()
 }
 
 void StatusBar::onUpdate() {
-  auto temp = r_progress.value() + 1;
-  if (temp < p_progressbar->maximum()) {
-    p_text->setText(tr("(%1/%2) simulations completed.").arg(temp).arg(p_progressbar->maximum()));
-    p_progressbar->setValue(temp);
+  const auto progress_displayed = r_progress.value() + 1;
+  if (progress_displayed < p_progressbar->maximum()) {
+    p_text->setText(tr("(%1/%2) simulations completed.")
+                        .arg(progress_displayed)
+                        .arg(p_progressbar->maximum()));
+    p_progressbar->setValue(progress_displayed);
   } else {
     p_text->setText(tr("Simulation done. Ready for input."));
     p_progressbar->setValue(p_progressbar->maximum());
   }
-  p_timer->start(timer_interval);
+  p_timer->start(kProgressUpdateInterval);
 }
 void StatusBar::onStart() {
   p_progressbar->setValue(0);

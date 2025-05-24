@@ -2,7 +2,7 @@
 #define SIMULATION_INTERFACE_H
 
 #include "progress.h"
-#include "threadscontrol.h"
+#include "threads_control.h"
 
 #include <QObject>
 
@@ -21,11 +21,10 @@ public:
   virtual ~SimulationInterface() = default;
 
   /**
-   * @brief getProgress - геттер прогресса
+   * @brief getProgress - геттер прогресса.
    * @return
    */
   const Progress& getProgress() const noexcept { return progress_; }
-
   /**
    * @brief pause - метод паузы выполнения чанков. Вызывается из слота в
    * SimulationControl.
@@ -41,7 +40,6 @@ public:
    * SimulationControl.
    */
   void stop() { threads_control_.cancel(); }
-
   /**
    * @brief paused - состояние флага паузы.
    * @return
@@ -54,22 +52,18 @@ public:
   bool canceled() const noexcept { return threads_control_.canceled(); }
 
 protected:
-  //
   /**
-   * @brief arrive - Сигнал о выполненном куске processBody. Должен вызываться
+   * @brief arrive - сигнал о выполненном куске processBody. Должен вызываться
    * при выполнении части симуляции для расчёта прогресса.
    */
   void arrive() noexcept { progress_.arrive(); }
-
-  //
   /**
-   * @brief sleep - Сон для реализации паузы. Вызывается перед частью симуляции
+   * @brief sleep - сон для реализации паузы. Вызывается перед частью симуляции
    * для поддержки паузы.
    */
   void sleep() const noexcept { threads_control_.sleep(); }
-
   /**
-   * @brief processBody - Тело симуляции, определяемое пользователем.
+   * @brief processBody - тело симуляции, определяемое пользователем.
    */
   virtual void processBody() = 0;
 

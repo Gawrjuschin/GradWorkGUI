@@ -11,8 +11,8 @@
 #include <QPushButton>
 #include <QSizePolicy>
 
-constexpr int button_width = 64;
-constexpr int button_height = 52;
+constexpr int kButtonWidth = 64;
+constexpr int kButtonHeight = 52;
 
 GraphsSwitch::GraphsSwitch(QWidget* parent)
     : QWidget(parent), m_graphs_buttons{new QPushButton(tr("W(L)"), this),
@@ -48,7 +48,7 @@ QGroupBox* GraphsSwitch::MakeGraphsGroup() {
 
   chart_switch_lo->addWidget(new QLabel(tr("Priority:"), this), 0, 3,
                              Qt::AlignCenter);
-  p_prior_cbox->setFixedWidth(button_width);
+  p_prior_cbox->setFixedWidth(kButtonWidth);
   chart_switch_lo->addWidget(p_prior_cbox, 1, 3, Qt::AlignCenter);
   p_prior_cbox->addItems({tr("First"), tr("Second")});
 
@@ -56,7 +56,7 @@ QGroupBox* GraphsSwitch::MakeGraphsGroup() {
     chart_switch_lo->addWidget(m_graphs_buttons[i], 0, i, 2, 1,
                                Qt::AlignCenter);
     m_graphs_buttons[i]->setMenu(m_graphs_menus[i * 2]);
-    m_graphs_buttons[i]->setFixedSize({button_width, button_height});
+    m_graphs_buttons[i]->setFixedSize({kButtonWidth, kButtonHeight});
   }
   return chart_switch_gb;
 }
@@ -68,15 +68,15 @@ QGroupBox* GraphsSwitch::MakeZoomGroup() {
   auto* zoom_lo = new QHBoxLayout(zoom_gb);
 
   auto* zoom_in_btn = new QPushButton(tr("+"));
-  zoom_in_btn->setFixedSize({button_height, button_height});
+  zoom_in_btn->setFixedSize({kButtonHeight, kButtonHeight});
   zoom_in_btn->setObjectName("zoomInBtn");
 
   auto* zoom_out_btn = new QPushButton(tr("-"));
-  zoom_out_btn->setFixedSize({button_height, button_height});
+  zoom_out_btn->setFixedSize({kButtonHeight, kButtonHeight});
   zoom_out_btn->setObjectName("zoomOutBtn");
 
   auto* zoom_reset_btn = new QPushButton(tr("X"));
-  zoom_reset_btn->setFixedSize({button_height, button_height});
+  zoom_reset_btn->setFixedSize({kButtonHeight, kButtonHeight});
   zoom_reset_btn->setObjectName("zoomResetBtn");
 
   zoom_lo->addWidget(zoom_in_btn);

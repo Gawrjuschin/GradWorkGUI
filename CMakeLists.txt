@@ -5,11 +5,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(
     GradWorkGUI
-    VERSION 1.0
+    VERSION 2.0
     LANGUAGES CXX
 )
 
-option(GRADWORKGUI_ENABLE_DOCS "Build doxygen docs" ON)
+option(GRADWORKGUI_ENABLE_DOCS "Build doxygen docs" OFF)
 
 # TODO: Qt5 compatibility
 find_package(Qt6 COMPONENTS Core Widgets Charts REQUIRED)
@@ -72,8 +72,7 @@ set(GRADWORKGUI_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/simulation_interface.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/simulation_control.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/quesys_simulation.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/threadscontrol.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/threads_control.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/events_model.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/events_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/requests_model.h

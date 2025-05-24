@@ -2,7 +2,10 @@
 #define EVENTS_MODEL_H
 
 #include <QAbstractTableModel>
+
 #include <QueSys/queueing_system.h>
+
+#include <iosfwd>
 
 /**
  * @brief The EventModel class  - модель событий СМО. Используется таблицей
@@ -15,9 +18,9 @@ class EventModel : public QAbstractTableModel {
 
 public:
   /**
-   * @brief COL_COUNT - количество столбцов в таблице
+   * @brief kColCount - количество столбцов в таблице
    */
-  static constexpr auto COL_COUNT{7};
+  static constexpr auto kColCount{7};
 
   explicit EventModel(QObject* parent = nullptr);
 
@@ -58,7 +61,11 @@ public:
    * @param vec
    */
   void swap(QVector<queueing_system::Event>& vec);
-
+  /**
+   * @brief asText - генерация строки, которую можно вставить в Word
+   * @return
+   */
+  std::ostream& asText(std::ostream& os) const;
   /**
    * @brief clear - очистка модели
    */

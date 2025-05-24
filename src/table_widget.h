@@ -10,7 +10,7 @@ class QTableView;
 
 /**
  * @brief The TableWidget class - виджет, отвечающий за отображение таблиц
- * событий и заявок СМО
+ * событий и заявок СМО.
  */
 class TableWidget : public QWidget {
   Q_OBJECT
@@ -18,8 +18,8 @@ class TableWidget : public QWidget {
   TableData& r_tdata;
   QTableView* p_tab_reqs;
   QTableView* p_tab_evs;
-  RequestModel* p_model_reqs;
-  EventModel* p_model_evs;
+  RequestModel* p_requests_model;
+  EventModel* p_events_model;
 
 public:
   explicit TableWidget(TableData& tdata, QWidget* parent = nullptr);
@@ -28,12 +28,9 @@ public:
 
 public slots:
   /**
-   * @brief onDataReady - загружает новые данные в модели таблиц из TableData
+   * @brief onDataReady - загружает новые данные в модели таблиц из TableData.
    */
   void onDataReady();
-
-protected:
-  // void paintEvent(QPaintEvent* event) override;
 };
 
 #endif // TABLE_WIDGET_H

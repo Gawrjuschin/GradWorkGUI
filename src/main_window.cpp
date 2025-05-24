@@ -17,7 +17,6 @@
 
 constexpr int kInputWidth = 280;
 constexpr int kProgressbarMargins = 4; // Где-то зашиты отступы в 2px
-// constexpr auto stylesheet_reference = ":/style.qss";
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),

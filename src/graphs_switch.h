@@ -2,6 +2,7 @@
 #define GRAPHS_SWITCH_H
 
 #include <QWidget>
+
 #include <array>
 
 class QPushButton;
@@ -15,11 +16,11 @@ class QGroupBox;
 class GraphsSwitch : public QWidget {
   Q_OBJECT
 
-  static constexpr std::size_t BUTTONS_COUNT{3};
-  static constexpr std::size_t GRAPHS_COUNT{6};
+  static constexpr std::size_t kButtonsCount{3};
+  static constexpr std::size_t kGraphsCount{6};
 
-  std::array<QPushButton*, BUTTONS_COUNT> m_graphs_buttons;
-  std::array<QMenu*, GRAPHS_COUNT> m_graphs_menus;
+  std::array<QPushButton*, kButtonsCount> m_graphs_buttons;
+  std::array<QMenu*, kGraphsCount> m_graphs_menus;
   QComboBox* p_prior_cbox;
   int m_selected_graph{0};
 

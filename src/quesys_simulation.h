@@ -8,26 +8,24 @@
 
 #include <QThreadPool>
 
-struct InputData;
-
 /**
  * @brief The QueSysData class - результаты симуляции
  */
 struct QueSysData {
   /**
    * @brief points_data - экспериментально полученные значения характеристик СМО
-   * в зависимости от коэффициентов нагрузки
+   * в зависимости от коэффициентов нагрузки.
    */
   PointsData points_data{};
   /**
-   * @brief table_data - данные первых 1'000 событий и соответствующих заявок
+   * @brief table_data - данные первых 1'000 событий и соответствующих заявок.
    */
   TableData table_data{};
 };
 
 /**
  * @brief The QueSysSimulation class - реализация многопоточной симуляции СМО с
- * заданными параметрами
+ * заданными параметрами.
  */
 class QueSysSimulation : public SimulationInterface {
   Q_OBJECT
@@ -47,19 +45,19 @@ public:
   ~QueSysSimulation() override = default;
 
   /**
-   * @brief PointsData - геттер данных точек
+   * @brief PointsData - геттер данных точек.
    * @return
    */
   PointsData& PointsData() noexcept { return m_data.points_data; }
   /**
-   * @brief TableData - геттер данных таблиц
+   * @brief TableData - геттер данных таблиц.
    * @return
    */
   TableData& TableData() noexcept { return m_data.table_data; }
 
 signals:
   /**
-   * @brief sigDone - сигнал об окончании симуляции
+   * @brief sigDone - сигнал об окончании симуляции.
    */
   void sigDone();
 
@@ -73,9 +71,9 @@ protected:
 private:
   /**
    * @brief MakeSimulationPartTask - чанк симуляции. Происходит заполнение
-   * участка графика значениями
-   * @param start_point - номер начальной точки массива точек графика
-   * @param end_point - номер последней точки массива точек графика
+   * участка графика значениями.
+   * @param start_point - номер начальной точки массива точек графика.
+   * @param end_point - номер последней точки массива точек графика.
    */
   auto MakeSimulationPartTask(const int start_point, const int end_point) {
     Q_ASSERT(start_point < end_point);
@@ -103,7 +101,7 @@ private:
   }
   /**
    * @brief MakeSimulationTableTask - заполнение таблиц симуляции до 1'000
-   * события
+   * события.
    */
   auto MakeSimulationTableTask() noexcept {
     return [this] {
@@ -129,7 +127,7 @@ private:
   }
 
   /**
-   * @brief MakeGraphsPrepareTask - подготовка данных графиков
+   * @brief MakeGraphsPrepareTask - подготовка данных графиков.
    */
   auto MakeGraphsPrepareTask() noexcept {
     return [this]() { m_data.points_data.processResults(); };

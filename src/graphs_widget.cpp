@@ -6,7 +6,6 @@
 #include <QElapsedTimer>
 #include <QGraphicsLayout>
 #include <QLegendMarker>
-#include <QPaintEvent>
 #include <QPainter>
 #include <QStyleOption>
 #include <QVBoxLayout>
@@ -14,15 +13,15 @@
 #include <QtAlgorithms>
 #include <QtMath>
 
-constexpr int TICK_COUNT = 10;
-constexpr int LABEL_FONTSIZE = 12;
-constexpr int TITLE_FONTSIZE = 18;
+constexpr int kTickCount = 10;
+constexpr int kLabelFontsize = 12;
+constexpr int kTitleFontsize = 18;
 
 namespace detail {
 
 static inline std::pair<QValueAxis*, QValueAxis*> MakeAxis() {
   QFont labels_font;
-  labels_font.setPixelSize(LABEL_FONTSIZE);
+  labels_font.setPixelSize(kLabelFontsize);
   QPen axis_pen(Qt::black);
   axis_pen.setWidth(2);
   QBrush axis_brush(Qt::black);
@@ -37,8 +36,8 @@ static inline std::pair<QValueAxis*, QValueAxis*> MakeAxis() {
 
   x_axis->setRange(PointsData::kMinLoad, PointsData::kMaxLoad);
 
-  x_axis->setTickCount(TICK_COUNT);
-  y_axis->setTickCount(TICK_COUNT);
+  x_axis->setTickCount(kTickCount);
+  y_axis->setTickCount(kTickCount);
 
   x_axis->setLinePen(axis_pen);
   y_axis->setLinePen(axis_pen);
@@ -77,14 +76,12 @@ static inline QChart* MakeChart(int index) {
 
   QFont title_font;
   QBrush title_brush(Qt::black);
-  title_font.setPixelSize(TITLE_FONTSIZE);
+  title_font.setPixelSize(kTitleFontsize);
   chart->setTitleFont(title_font);
   chart->setTitleBrush(title_brush);
   chart->setTitle(QString((QObject::tr("Graph of dependency %1_%2(λ)")))
                       .arg(index >= 4 ? 'Z' : (index >= 2 ? 'U' : 'W'))
                       .arg((index % 2) == 1 ? '1' : '0'));
-
-  chart->setBackgroundVisible(false);
 
   chart->legend()->setAlignment(Qt::AlignBottom);
   chart->legend()->markers().at(0)->setLabel(
@@ -113,9 +110,6 @@ GraphsWidget::GraphsWidget(const PointsData& points_data, QWidget* parent)
 
   for (std::size_t i{}; i < std::size(charts_array); ++i) {
     charts_array[i] = detail::MakeChart(i);
-
-    // connect(p_points_data->series(i), &QLineSeries::pointsReplaced, [=] {
-    // update_series(i); });
   }
 
   connect(p_chart_switch, &GraphsSwitch::sigShow, this, &GraphsWidget::onShow);
@@ -140,25 +134,17 @@ GraphsWidget::~GraphsWidget() {
   }
 }
 
-// void GraphsWidget::paintEvent(QPaintEvent* event) {
-//   QStyleOption opt;
-//   opt.initFrom(this);
-//   QPainter p(this);
-//   style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-//   QWidget::paintEvent(event);
-// }
-
 void GraphsWidget::updateSeries(int index) {
   const auto [y_min, y_max] = r_points_data.RangeY(index);
 
   auto* y_axis = static_cast<QValueAxis*>(charts_array[index]->axes().back());
 
   expSeries(index)->replace(r_points_data.pointsExperimental(index));
-  aprSeries(index)->replace(r_points_data.pointsAproximation(index));
+  aprSeries(index)->replace(r_points_data.pointsApproximation(index));
 
   y_axis->setRange(y_min, y_max);
 
-  y_axis->setTickCount(TICK_COUNT);
+  y_axis->setTickCount(kTickCount);
   y_axis->applyNiceNumbers();
 
   aprSeries(index)->hide();

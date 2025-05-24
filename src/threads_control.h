@@ -1,5 +1,5 @@
-#ifndef THREADSCONTROL_H
-#define THREADSCONTROL_H
+#ifndef THREADS_CONTROL_H
+#define THREADS_CONTROL_H
 
 #include <atomic>
 #include <condition_variable>
@@ -86,4 +86,4 @@ public:
   }
 };
 
-#endif // THREADSCONTROL_H
+#endif // THREADS_CONTROL_H

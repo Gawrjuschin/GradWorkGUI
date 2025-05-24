@@ -36,13 +36,6 @@ public:
 
   ~ResultsWidget();
 
-protected:
-  /**
-   * @brief paintEvent - перегрузка метода для отображения стилей
-   * @param event
-   */
-  // void paintEvent(QPaintEvent* event) override;
-
 public slots:
   /**
    * @brief onStart - при запуске симуляции переключается на LoadingWidget

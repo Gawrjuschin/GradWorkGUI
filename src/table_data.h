@@ -17,10 +17,9 @@ struct TableData
   static constexpr std::size_t kEventsNumber = 1000;
   /**
    * @brief kRequestsNumber - максимальное число заявок в таблице (теоретический
-   * предел)
+   * предел).
    */
   static constexpr std::size_t kRequestsNumber = kEventsNumber / 2;
-
   /**
    * @brief requests - вектор данных заявок.
    */

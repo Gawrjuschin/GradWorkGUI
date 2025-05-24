@@ -19,17 +19,16 @@ class MainWindow : public QMainWindow
 {
   Q_OBJECT
 
-public:
-  explicit MainWindow(QWidget* parent = nullptr);
-
-  ~MainWindow();
-
-private:
   InputWidget* p_input;
   QueSysSimulation* p_worker;
   SimulationControl* p_backend;
   ResultsWidget* p_results;
   StatusBar* p_status;
+
+public:
+  explicit MainWindow(QWidget* parent = nullptr);
+
+  ~MainWindow();
 
 protected:
   /**

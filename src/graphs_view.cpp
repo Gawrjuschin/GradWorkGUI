@@ -34,11 +34,14 @@ void GraphsView::onSave(QString filename)
   QPainter painter(&pixmap);
   painter.setRenderHint(QPainter::Antialiasing);
   render(&painter);
-  auto savepath = QFileDialog::getSaveFileName(this,
-					       tr("Save graph"),
-					       filename,
-					       QString::fromLatin1("PNG (*.png);;JPEG (*.jpg)"));
-  pixmap.save(savepath);
+  auto savepath = QFileDialog::getSaveFileName(
+      this, tr("Save graph"), filename,
+      QString::fromLatin1("PNG (*.png);;JPEG (*.jpg)"));
+  if (savepath.endsWith(".jpg")) {
+    pixmap.save(savepath, "JPG", 90);
+  } else {
+    pixmap.save(savepath, "PNG", 100);
+  }
 }
 
 void GraphsView::wheelEvent(QWheelEvent* event)

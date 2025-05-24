@@ -2,7 +2,10 @@
 #define REQUESTS_MODEL_H
 
 #include <QAbstractTableModel>
+
 #include <QueSys/queueing_system.h>
+
+#include <iosfwd>
 
 /**
  * @brief The RequestModel class - модель заявок СМО. Используется таблицей
@@ -15,9 +18,9 @@ class RequestModel : public QAbstractTableModel {
 
 public:
   /**
-   * @brief COL_COUNT - количество столбцов в таблице
+   * @brief kColCount - количество столбцов в таблице
    */
-  static constexpr auto COL_COUNT{9};
+  static constexpr auto kColCount{9};
 
   explicit RequestModel(QObject* parent = 0);
 
@@ -54,7 +57,11 @@ public:
    */
   QVariant headerData(int section, Qt::Orientation orientation,
                       int role) const override;
-
+  /**
+   * @brief asText - генерация строки, которую можно вставить в Word в os
+   * @return
+   */
+  std::ostream& asText(std::ostream& os) const;
   /**
    * @brief swap - обменивается векторами точек с vec
    * @param vec

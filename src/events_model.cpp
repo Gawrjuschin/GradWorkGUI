@@ -1,7 +1,15 @@
 #include "events_model.h"
 
 namespace EventsModelCol {
-enum { EV_NUM = 0, TIME, TYPE, S_STATUS, Q_STATUS, REQ_NUM, NEXT };
+enum {
+  kEventNumber = 0,
+  kTime,
+  kType,
+  kSystemStatus,
+  kQueueStatus,
+  kRequestNumber,
+  kNext
+};
 }
 
 EventModel::EventModel(QObject* parent) : QAbstractTableModel(parent) {}
@@ -10,7 +18,7 @@ EventModel::~EventModel() = default;
 
 int EventModel::rowCount(const QModelIndex&) const { return m_data.count(); }
 
-int EventModel::columnCount(const QModelIndex&) const { return COL_COUNT; }
+int EventModel::columnCount(const QModelIndex&) const { return kColCount; }
 
 QVariant EventModel::data(const QModelIndex& index, int role) const {
   if (role != Qt::DisplayRole && role != Qt::EditRole) {
@@ -19,23 +27,23 @@ QVariant EventModel::data(const QModelIndex& index, int role) const {
 
   const queueing_system::Event& data = m_data[index.row()];
   switch (index.column()) {
-  case EventsModelCol::EV_NUM:
+  case EventsModelCol::kEventNumber:
     return data.number;
-  case EventsModelCol::TIME:
+  case EventsModelCol::kTime:
     return data.time;
-  case EventsModelCol::TYPE:
+  case EventsModelCol::kType:
     return data.type;
-  case EventsModelCol::S_STATUS:
+  case EventsModelCol::kSystemStatus:
     return QString(tr("(%1, %2)"))
         .arg(data.system_status.first)
         .arg(data.system_status.second);
-  case EventsModelCol::Q_STATUS:
+  case EventsModelCol::kQueueStatus:
     return QString(tr("(%1, %2)"))
         .arg(data.queue_status.first)
         .arg(data.queue_status.second);
-  case EventsModelCol::REQ_NUM:
+  case EventsModelCol::kRequestNumber:
     return data.request;
-  case EventsModelCol::NEXT:
+  case EventsModelCol::kNext:
     return data.time_next;
   default:
     return {};
@@ -49,19 +57,19 @@ QVariant EventModel::headerData(int section, Qt::Orientation orientation,
   }
 
   switch (section) {
-  case EventsModelCol::EV_NUM:
+  case EventsModelCol::kEventNumber:
     return tr("#");
-  case EventsModelCol::TIME:
+  case EventsModelCol::kTime:
     return tr("time");
-  case EventsModelCol::TYPE:
+  case EventsModelCol::kType:
     return tr("type");
-  case EventsModelCol::S_STATUS:
+  case EventsModelCol::kSystemStatus:
     return tr("S State");
-  case EventsModelCol::Q_STATUS:
+  case EventsModelCol::kQueueStatus:
     return tr("Q State");
-  case EventsModelCol::REQ_NUM:
+  case EventsModelCol::kRequestNumber:
     return tr("R #");
-  case EventsModelCol::NEXT:
+  case EventsModelCol::kNext:
     return tr("Next");
   default:
     return {};
@@ -73,6 +81,16 @@ void EventModel::swap(QVector<queueing_system::Event>& vec) {
   m_data.swap(vec);
   endResetModel();
   emit sigUpdate();
+}
+
+std::ostream& EventModel::asText(std::ostream& os) const {
+  for (const auto& event : m_data) {
+    os << event.number << '\t' << event.time << '\t' << event.type << "\t("
+       << event.system_status.first << ',' << event.system_status.second
+       << ")\t(" << event.queue_status.first << ',' << event.queue_status.second
+       << ")\t" << event.request << '\t' << event.time_next << '\n';
+  }
+  return os;
 }
 
 void EventModel::clear() {

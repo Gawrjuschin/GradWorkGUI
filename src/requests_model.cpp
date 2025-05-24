@@ -1,7 +1,17 @@
 #include "requests_model.h"
 
 namespace RequestsModelCol {
-enum { NUMBER = 0, TYPE, ARRIVE, Q_NUM, CH_NUM, START, SERVE, WAIT, END };
+enum {
+  kNumber = 0,
+  kType,
+  kArrive,
+  kQueueNumber,
+  kChannelNumber,
+  kStart,
+  kServe,
+  kWait,
+  kEnd
+};
 }
 
 RequestModel::RequestModel(QObject* parent) : QAbstractTableModel(parent) {}
@@ -10,7 +20,7 @@ RequestModel::~RequestModel() = default;
 
 int RequestModel::rowCount(const QModelIndex&) const { return m_data.count(); }
 
-int RequestModel::columnCount(const QModelIndex&) const { return COL_COUNT; }
+int RequestModel::columnCount(const QModelIndex&) const { return kColCount; }
 
 QVariant RequestModel::data(const QModelIndex& index, int role) const {
   if (role != Qt::DisplayRole && role != Qt::EditRole) {
@@ -18,69 +28,90 @@ QVariant RequestModel::data(const QModelIndex& index, int role) const {
   }
   const queueing_system::Request& data = m_data[index.row()];
   switch (index.column()) {
-  case RequestsModelCol::NUMBER:
+  case RequestsModelCol::kNumber:
     return qint32(data.number);
-  case RequestsModelCol::TYPE:
+  case RequestsModelCol::kType:
     return static_cast<qint32>(data.type);
-  case RequestsModelCol::ARRIVE:
+  case RequestsModelCol::kArrive:
     return data.arrive_time;
-  case RequestsModelCol::Q_NUM:
+  case RequestsModelCol::kQueueNumber:
     return data.queue_number;
-  case RequestsModelCol::CH_NUM:
-    return (data.ch_number == -1 ? QString(tr("N/A"))
-                                 : QString(tr("%1")).arg(data.ch_number));
-  case RequestsModelCol::START:
-    return (data.start_time == -1 ? QString(tr("N/A"))
-                                  : QString(tr("%1")).arg(data.start_time));
-  case RequestsModelCol::SERVE:
+  case RequestsModelCol::kChannelNumber:
+    return ((data.start_time == 0) ? QString(tr("N/A"))
+                                   : QString(tr("%1")).arg(data.ch_number));
+  case RequestsModelCol::kStart:
+    return ((data.start_time == 0) ? QString(tr("N/A"))
+                                   : QString(tr("%1")).arg(data.start_time));
+  case RequestsModelCol::kServe:
     return data.serve_time;
-  case RequestsModelCol::WAIT:
-    return (data.wait_time == -1 ? QString(tr("N/A"))
-                                 : QString(tr("%1")).arg(data.wait_time));
-  case RequestsModelCol::END:
-    return (data.serve_end == -1 ? QString(tr("N/A"))
-                                 : QString(tr("%1")).arg(data.serve_end));
+  case RequestsModelCol::kWait:
+    return QString(tr("%1")).arg(data.wait_time);
+  case RequestsModelCol::kEnd:
+    return ((data.serve_end == 0) ? QString(tr("N/A"))
+                                  : QString(tr("%1")).arg(data.serve_end));
   default:
     return {};
   }
 }
 
 QVariant RequestModel::headerData(int section, Qt::Orientation orientation,
-                                  int role) const { // Шапка таблицы
+                                  int role) const {
   if (orientation != Qt::Horizontal || role != Qt::DisplayRole) {
     return QVariant();
   }
   switch (section) {
-  case RequestsModelCol::NUMBER:
+  case RequestsModelCol::kNumber:
     return tr("#");
-  case RequestsModelCol::TYPE:
+  case RequestsModelCol::kType:
     return tr("type");
-  case RequestsModelCol::ARRIVE:
+  case RequestsModelCol::kArrive:
     return tr("arrive");
-  case RequestsModelCol::Q_NUM:
+  case RequestsModelCol::kQueueNumber:
     return tr("q_num");
-  case RequestsModelCol::CH_NUM:
+  case RequestsModelCol::kChannelNumber:
     return tr("ch_num");
-  case RequestsModelCol::START:
+  case RequestsModelCol::kStart:
     return tr("start");
-  case RequestsModelCol::SERVE:
+  case RequestsModelCol::kServe:
     return tr("serve");
-  case RequestsModelCol::WAIT:
+  case RequestsModelCol::kWait:
     return tr("wait");
-  case RequestsModelCol::END:
-    return tr("serve");
+  case RequestsModelCol::kEnd:
+    return tr("end");
   default:
     return QVariant();
   }
 }
 
 void RequestModel::swap(QVector<queueing_system::Request>& vec) {
-  // По Мейерсу
-  using std::swap;
   beginResetModel();
-  swap(m_data, vec);
+  m_data.swap(vec);
   endResetModel();
   emit sigUpdate();
+}
+
+std::ostream& RequestModel::asText(std::ostream& os) const {
+
+  for (const auto& request : m_data) {
+    os << request.number << '\t' << static_cast<int>(request.type) << '\t'
+       << request.arrive_time << '\t' << request.queue_number << '\t';
+
+    if (request.start_time == 0) {
+      os << "N/A\tN/A\t";
+    } else {
+      os << request.ch_number << '\t' << request.start_time << '\t';
+    }
+
+    os << request.serve_time << '\t' << request.wait_time << '\t';
+
+    if (request.serve_end == 0) {
+      os << "N/A";
+    } else {
+      os << request.serve_end;
+    }
+    os << '\n';
+  }
+  return os;
 }
 
 void RequestModel::clear() {
